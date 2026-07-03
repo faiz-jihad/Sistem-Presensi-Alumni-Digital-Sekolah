@@ -28,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return route('login');
         });
+        // Daftarkan middleware alias
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
