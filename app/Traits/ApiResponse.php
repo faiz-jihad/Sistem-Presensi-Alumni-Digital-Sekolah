@@ -2,12 +2,14 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\JsonResponse;
+
 trait ApiResponse
 {
     /**
-     * Success Response
+     * Response sukses
      */
-    protected function success($data = null, string $message = 'Berhasil', int $code = 200)
+    protected function success($data = null, string $message = 'Berhasil', int $code = 200): JsonResponse
     {
         return response()->json([
             'success' => true,
@@ -17,19 +19,59 @@ trait ApiResponse
     }
 
     /**
-     * Error Response
+     * Response error
      */
-    protected function error(string $message = 'Gagal', int $code = 400, $errors = null)
+    protected function error(string $message = 'Terjadi kesalahan', int $code = 400, $data = null): JsonResponse
     {
-        $response = [
+        return response()->json([
             'success' => false,
             'message' => $message,
-        ];
+            'data' => $data,
+        ], $code);
+    }
 
-        if ($errors) {
-            $response['errors'] = $errors;
-        }
+    /**
+     * Response validasi gagal
+     */
+    protected function validationError($errors, string $message = 'Validasi gagal', int $code = 422): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'errors' => $errors,
+        ], $code);
+    }
 
-        return response()->json($response, $code);
+    /**
+     * Response tidak diizinkan
+     */
+    protected function unauthorized(string $message = 'Tidak diizinkan', int $code = 401): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], $code);
+    }
+
+    /**
+     * Response akses ditolak
+     */
+    protected function forbidden(string $message = 'Akses ditolak', int $code = 403): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], $code);
+    }
+
+    /**
+     * Response data tidak ditemukan
+     */
+    protected function notFound(string $message = 'Data tidak ditemukan', int $code = 404): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+        ], $code);
     }
 }

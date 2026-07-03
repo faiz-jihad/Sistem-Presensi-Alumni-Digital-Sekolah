@@ -67,4 +67,12 @@ class School extends Model
     {
         return $this->hasMany(User::class)->where('role', 'admin');
     }
+
+    /**
+     * Relasi ke Classes (kelas di sekolah ini)
+     */
+    public function classes()
+    {
+        return $this->hasMany(SchoolClass::class);
+    }
 }
