@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Hash;
 class AuthService
 {
     /**
-     * Login user
+     * Proses login user
      */
-    public function login(array $data): array  // <-- NAMA METHOD: login
+    public function login(array $data): array
     {
         $user = User::where('email', $data['email'])->first();
 
@@ -41,10 +41,18 @@ class AuthService
     }
 
     /**
-     * Logout user
+     * Proses logout user
      */
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
+    }
+
+    /**
+     * Login user (alias untuk konsistensi)
+     */
+    public function loginApi(array $data): array
+    {
+        return $this->login($data);
     }
 }
