@@ -27,15 +27,15 @@ class AuthService
 
         return [
             'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'role' => $user->role,
-                'status' => $user->status,
+                'id'        => $user->id,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'phone'     => $user->phone,
+                'role'      => $user->role,
+                'status'    => $user->status,
                 'school_id' => $user->school_id,
             ],
-            'token' => $token,
+            'token'      => $token,
             'token_type' => 'Bearer',
         ];
     }

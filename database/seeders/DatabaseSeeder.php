@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +16,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Jalankan RoleAndPermissionSeeder dulu agar role tersedia
+        $this->call(RoleAndPermissionSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Buat Super Admin default jika belum ada
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@simpad.test'],
+            [
+                'name'      => 'Super Admin',
+                'password'  => Hash::make('password'),
+                'role'      => 'super_admin',
+                'status'    => 'active',
+                'school_id' => null,
+            ]
+        );
+
+        // Pastikan role Spatie di-assign ke admin ini
+        $admin->syncRoles(['super_admin']);
     }
 }
