@@ -16,7 +16,6 @@ class AuthController extends BaseController
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            // PANGGIL METHOD login() 
             $result = $this->authService->login($request->validated());
             return $this->success($result, 'Login berhasil', 200);
         } catch (\Exception $e) {
@@ -39,15 +38,15 @@ class AuthController extends BaseController
         $user = $request->user()->load('school');
 
         return $this->success([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'role' => $user->role,
-            'status' => $user->status,
-            'school_id' => $user->school_id,
+            'id'          => $user->id,
+            'name'        => $user->name,
+            'email'       => $user->email,
+            'phone'       => $user->phone,
+            'role'        => $user->role,
+            'status'      => $user->status,
+            'school_id'   => $user->school_id,
             'school_name' => $user->school?->name,
-            'created_at' => $user->created_at->format('Y-m-d H:i:s'),
+            'created_at'  => $user->created_at->format('Y-m-d H:i:s'),
         ], 'Data user berhasil diambil');
     }
 }
