@@ -3116,12 +3116,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"nisn\": \"ykcmyuwpwl\",
     \"name\": \"v\",
     \"gender\": \"male\",
-    \"birth_date\": \"2026-07-03T02:31:29\",
-    \"birth_place\": \"q\",
-    \"address\": \"architecto\",
-    \"parent_name\": \"n\",
-    \"parent_phone\": \"gzmiyvdljnikhway\",
-    \"enrollment_year\": 16
+    \"birth_date\": \"2026-07-03T03:23:04\",
+    \"parent_name\": \"q\",
+    \"parent_phone\": \"wrsitcpscqldzsnr\"
 }"
 </code></pre></div>
 
@@ -3143,12 +3140,9 @@ let body = {
     "nisn": "ykcmyuwpwl",
     "name": "v",
     "gender": "male",
-    "birth_date": "2026-07-03T02:31:29",
-    "birth_place": "q",
-    "address": "architecto",
-    "parent_name": "n",
-    "parent_phone": "gzmiyvdljnikhway",
-    "enrollment_year": 16
+    "birth_date": "2026-07-03T03:23:04",
+    "parent_name": "q",
+    "parent_phone": "wrsitcpscqldzsnr"
 };
 
 fetch(url, {
@@ -3258,18 +3252,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must match an existing stored value. Example: <code>architecto</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>class_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="class_id"                data-endpoint="POSTapi-v1-students"
-               value=""
-               data-component="body">
-    <br>
-<p>Must match an existing stored value.</p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>nis</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
@@ -3326,34 +3308,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="birth_date"                data-endpoint="POSTapi-v1-students"
-               value="2026-07-03T02:31:29"
+               value="2026-07-03T03:23:04"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-07-03T02:31:29</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>birth_place</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="birth_place"                data-endpoint="POSTapi-v1-students"
-               value="q"
-               data-component="body">
-    <br>
-<p>Must not be greater than 100 characters. Example: <code>q</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>address</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="address"                data-endpoint="POSTapi-v1-students"
-               value="architecto"
-               data-component="body">
-    <br>
-<p>Example: <code>architecto</code></p>
+<p>Must be a valid date. Example: <code>2026-07-03T03:23:04</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>parent_name</code></b>&nbsp;&nbsp;
@@ -3362,10 +3320,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="parent_name"                data-endpoint="POSTapi-v1-students"
-               value="n"
+               value="q"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+<p>Must not be greater than 255 characters. Example: <code>q</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>parent_phone</code></b>&nbsp;&nbsp;
@@ -3374,22 +3332,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="parent_phone"                data-endpoint="POSTapi-v1-students"
-               value="gzmiyvdljnikhway"
+               value="wrsitcpscqldzsnr"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>gzmiyvdljnikhway</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>enrollment_year</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="enrollment_year"                data-endpoint="POSTapi-v1-students"
-               value="16"
-               data-component="body">
-    <br>
-<p>Example: <code>16</code></p>
+<p>Must not be greater than 20 characters. Example: <code>wrsitcpscqldzsnr</code></p>
         </div>
         </form>
 
@@ -3570,12 +3516,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"school_id\": \"architecto\",
     \"name\": \"n\",
     \"gender\": \"male\",
-    \"birth_date\": \"2026-07-03T02:31:30\",
-    \"birth_place\": \"g\",
-    \"address\": \"architecto\",
-    \"parent_name\": \"n\",
-    \"parent_phone\": \"gzmiyvdljnikhway\",
-    \"status\": \"active\"
+    \"birth_date\": \"2026-07-03T03:23:04\",
+    \"status\": \"dropout\"
 }"
 </code></pre></div>
 
@@ -3595,12 +3537,8 @@ let body = {
     "school_id": "architecto",
     "name": "n",
     "gender": "male",
-    "birth_date": "2026-07-03T02:31:30",
-    "birth_place": "g",
-    "address": "architecto",
-    "parent_name": "n",
-    "parent_phone": "gzmiyvdljnikhway",
-    "status": "active"
+    "birth_date": "2026-07-03T03:23:04",
+    "status": "dropout"
 };
 
 fetch(url, {
@@ -3727,18 +3665,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must match an existing stored value. Example: <code>architecto</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>class_id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="class_id"                data-endpoint="PUTapi-v1-students--id-"
-               value=""
-               data-component="body">
-    <br>
-<p>Must match an existing stored value.</p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>nis</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -3795,58 +3721,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="birth_date"                data-endpoint="PUTapi-v1-students--id-"
-               value="2026-07-03T02:31:30"
+               value="2026-07-03T03:23:04"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2026-07-03T02:31:30</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>birth_place</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="birth_place"                data-endpoint="PUTapi-v1-students--id-"
-               value="g"
-               data-component="body">
-    <br>
-<p>Must not be greater than 100 characters. Example: <code>g</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>address</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="address"                data-endpoint="PUTapi-v1-students--id-"
-               value="architecto"
-               data-component="body">
-    <br>
-<p>Example: <code>architecto</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>parent_name</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="parent_name"                data-endpoint="PUTapi-v1-students--id-"
-               value="n"
-               data-component="body">
-    <br>
-<p>Must not be greater than 255 characters. Example: <code>n</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>parent_phone</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="parent_phone"                data-endpoint="PUTapi-v1-students--id-"
-               value="gzmiyvdljnikhway"
-               data-component="body">
-    <br>
-<p>Must not be greater than 20 characters. Example: <code>gzmiyvdljnikhway</code></p>
+<p>Must be a valid date. Example: <code>2026-07-03T03:23:04</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -3855,10 +3733,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PUTapi-v1-students--id-"
-               value="active"
+               value="dropout"
                data-component="body">
     <br>
-<p>Example: <code>active</code></p>
+<p>Example: <code>dropout</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>active</code></li> <li><code>inactive</code></li> <li><code>graduated</code></li> <li><code>transferred</code></li> <li><code>dropout</code></li></ul>
         </div>

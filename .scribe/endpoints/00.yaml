@@ -1148,17 +1148,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      class_id:
-        custom: []
-        name: class_id
-        description: 'Must match an existing stored value.'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
       nis:
         custom: []
         name: nis
@@ -1210,40 +1199,18 @@ endpoints:
         name: birth_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-07-03T02:31:29'
+        example: '2026-07-03T03:23:04'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      birth_place:
-        custom: []
-        name: birth_place
-        description: 'Must not be greater than 100 characters.'
-        required: false
-        example: q
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      address:
-        custom: []
-        name: address
-        description: ''
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
         deprecated: false
       parent_name:
         custom: []
         name: parent_name
         description: 'Must not be greater than 255 characters.'
         required: false
-        example: 'n'
+        example: q
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1254,19 +1221,8 @@ endpoints:
         name: parent_phone
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: gzmiyvdljnikhway
+        example: wrsitcpscqldzsnr
         type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      enrollment_year:
-        custom: []
-        name: enrollment_year
-        description: ''
-        required: false
-        example: 16
-        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
@@ -1277,12 +1233,9 @@ endpoints:
       nisn: ykcmyuwpwl
       name: v
       gender: male
-      birth_date: '2026-07-03T02:31:29'
-      birth_place: q
-      address: architecto
-      parent_name: 'n'
-      parent_phone: gzmiyvdljnikhway
-      enrollment_year: 16
+      birth_date: '2026-07-03T03:23:04'
+      parent_name: q
+      parent_phone: wrsitcpscqldzsnr
     fileParameters: []
     responses: []
     responseFields: []
@@ -1397,17 +1350,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      class_id:
-        custom: []
-        name: class_id
-        description: 'Must match an existing stored value.'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
       nis:
         custom: []
         name: nis
@@ -1459,62 +1401,18 @@ endpoints:
         name: birth_date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-07-03T02:31:30'
+        example: '2026-07-03T03:23:04'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      birth_place:
-        custom: []
-        name: birth_place
-        description: 'Must not be greater than 100 characters.'
-        required: false
-        example: g
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      address:
-        custom: []
-        name: address
-        description: ''
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      parent_name:
-        custom: []
-        name: parent_name
-        description: 'Must not be greater than 255 characters.'
-        required: false
-        example: 'n'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      parent_phone:
-        custom: []
-        name: parent_phone
-        description: 'Must not be greater than 20 characters.'
-        required: false
-        example: gzmiyvdljnikhway
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
         deprecated: false
       status:
         custom: []
         name: status
         description: ''
         required: true
-        example: active
+        example: dropout
         type: string
         enumValues:
           - active
@@ -1529,12 +1427,8 @@ endpoints:
       school_id: architecto
       name: 'n'
       gender: male
-      birth_date: '2026-07-03T02:31:30'
-      birth_place: g
-      address: architecto
-      parent_name: 'n'
-      parent_phone: gzmiyvdljnikhway
-      status: active
+      birth_date: '2026-07-03T03:23:04'
+      status: dropout
     fileParameters: []
     responses: []
     responseFields: []

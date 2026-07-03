@@ -12,20 +12,24 @@ class School extends Model
 
     protected $fillable = [
         'name',
+        'npsn',
         'address',
         'phone',
         'email',
         'website',
         'logo',
-        'active',
+        'principal_name',
+        'level',
+        'accreditation',
+        'status',
     ];
 
     protected $casts = [
-        'active' => 'boolean',
+        'status' => 'string',
     ];
 
     /**
-     * Relasi ke User
+     * Relasi ke semua Users di sekolah ini
      */
     public function users()
     {
@@ -33,7 +37,7 @@ class School extends Model
     }
 
     /**
-     * Relasi ke Student (User dengan role student)
+     * Relasi ke Students (User role = student)
      */
     public function students()
     {
@@ -41,15 +45,7 @@ class School extends Model
     }
 
     /**
-     * Relasi ke Alumni (User dengan role alumni)
-     */
-    public function alumni()
-    {
-        return $this->hasMany(User::class)->where('role', 'alumni');
-    }
-
-    /**
-     * Relasi ke Teacher (User dengan role teacher)
+     * Relasi ke Teachers (User role = teacher)
      */
     public function teachers()
     {
@@ -57,7 +53,15 @@ class School extends Model
     }
 
     /**
-     * Relasi ke Admin (User dengan role admin)
+     * Relasi ke Alumni (User role = alumni)
+     */
+    public function alumni()
+    {
+        return $this->hasMany(User::class)->where('role', 'alumni');
+    }
+
+    /**
+     * Relasi ke Admins (User role = admin)
      */
     public function admins()
     {

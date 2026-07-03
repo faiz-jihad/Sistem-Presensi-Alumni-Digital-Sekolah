@@ -19,7 +19,7 @@ class AuthController extends BaseController
     public function login(LoginRequest $request): JsonResponse
     {
         try {
-            // PANGGIL METHOD login() BUKAN loginApi()
+            // PANGGIL METHOD login() 
             $result = $this->authService->login($request->validated());
 
             return $this->success($result, 'Login berhasil', 200);

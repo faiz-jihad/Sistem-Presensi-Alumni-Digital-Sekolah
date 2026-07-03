@@ -13,14 +13,10 @@ class StudentController extends BaseController
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Student::with(['class', 'school']);
+        $query = Student::query();
 
-        // Filter
         if ($request->school_id) {
             $query->where('school_id', $request->school_id);
-        }
-        if ($request->class_id) {
-            $query->where('class_id', $request->class_id);
         }
         if ($request->status) {
             $query->where('status', $request->status);
@@ -28,13 +24,12 @@ class StudentController extends BaseController
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('nis', 'like', "%{$request->search}%")
-                  ->orWhere('nisn', 'like', "%{$request->search}%");
+                    ->orWhere('nis', 'like', "%{$request->search}%")
+                    ->orWhere('nisn', 'like', "%{$request->search}%");
             });
         }
 
         $students = $query->orderBy('name')->paginate($request->per_page ?? 15);
-
         return $this->success($students, 'List siswa berhasil diambil');
     }
 
@@ -43,7 +38,7 @@ class StudentController extends BaseController
      */
     public function show($id): JsonResponse
     {
-        $student = Student::with(['class', 'school', 'parent'])->findOrFail($id);
+        $student = Student::findOrFail($id);
         return $this->success($student, 'Detail siswa berhasil diambil');
     }
 
@@ -54,22 +49,17 @@ class StudentController extends BaseController
     {
         $request->validate([
             'school_id' => 'required|exists:schools,id',
-            'class_id' => 'nullable|exists:classes,id',
             'nis' => 'required|string|max:20|unique:students,nis',
             'nisn' => 'required|string|size:10|unique:students,nisn',
             'name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
             'birth_date' => 'required|date',
-            'birth_place' => 'nullable|string|max:100',
-            'address' => 'nullable|string',
             'parent_name' => 'nullable|string|max:255',
             'parent_phone' => 'nullable|string|max:20',
-            'enrollment_year' => 'nullable|integer',
         ]);
 
         $student = Student::create($request->all());
-
-        return $this->success($student->load(['class', 'school']), 'Siswa berhasil ditambahkan', 201);
+        return $this->success($student, 'Siswa berhasil ditambahkan', 201);
     }
 
     /**
@@ -81,22 +71,16 @@ class StudentController extends BaseController
 
         $request->validate([
             'school_id' => 'required|exists:schools,id',
-            'class_id' => 'nullable|exists:classes,id',
             'nis' => 'required|string|max:20|unique:students,nis,' . $id,
             'nisn' => 'required|string|size:10|unique:students,nisn,' . $id,
             'name' => 'required|string|max:255',
             'gender' => 'required|in:male,female',
             'birth_date' => 'required|date',
-            'birth_place' => 'nullable|string|max:100',
-            'address' => 'nullable|string',
-            'parent_name' => 'nullable|string|max:255',
-            'parent_phone' => 'nullable|string|max:20',
             'status' => 'required|in:active,inactive,graduated,transferred,dropout',
         ]);
 
         $student->update($request->all());
-
-        return $this->success($student->load(['class', 'school']), 'Siswa berhasil diupdate');
+        return $this->success($student, 'Siswa berhasil diupdate');
     }
 
     /**
