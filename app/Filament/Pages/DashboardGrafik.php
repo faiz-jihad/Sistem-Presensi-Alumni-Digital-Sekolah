@@ -17,9 +17,13 @@ class DashboardGrafik extends Page
 
     protected static ?string $title = 'Dashboard Grafik';
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Presensi';
+    protected ?string $heading = 'Dashboard Grafik';
 
-    protected static ?int $navigationSort = 6;
+    protected ?string $subheading = 'Pantau ringkasan sekolah, presensi siswa, dan status alumni dalam satu tampilan visual.';
+
+    protected static \UnitEnum|string|null $navigationGroup = 'Laporan & Monitoring';
+
+    protected static ?int $navigationSort = 2;
 
     protected string $view = 'filament.pages.dashboard-grafik';
 
@@ -35,6 +39,10 @@ class DashboardGrafik extends Page
 
     public function getHeaderWidgetsColumns(): int | array
     {
-        return 12;
+        return [
+            'default' => 1,
+            'md' => 6,
+            'xl' => 12,
+        ];
     }
 }

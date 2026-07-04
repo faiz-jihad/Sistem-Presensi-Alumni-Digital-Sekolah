@@ -1,163 +1,384 @@
 <x-filament-panels::page>
-    <div class="space-y-6">
+<style>
+    .wn-header {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.25rem;
+        background: linear-gradient(135deg, #1d4ed8 0%, #4f46e5 50%, #1e40af 100%);
+        padding: 1.75rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 20px 40px -10px rgba(30, 64, 175, 0.4);
+    }
+    @media (min-width: 768px) {
+        .wn-header { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .wn-header-deco1 {
+        position: absolute; top: -3rem; right: -3rem;
+        width: 10rem; height: 10rem; border-radius: 50%;
+        background: rgba(255,255,255,0.08); pointer-events: none;
+    }
+    .wn-header-deco2 {
+        position: absolute; bottom: -4rem; left: -2rem;
+        width: 12rem; height: 12rem; border-radius: 50%;
+        background: rgba(255,255,255,0.05); pointer-events: none;
+    }
+    .wn-header-left { display: flex; align-items: flex-start; gap: 1rem; position: relative; z-index: 1; }
+    @media (min-width: 768px) { .wn-header-left { align-items: center; } }
+    .wn-header-icon {
+        width: 3.25rem; height: 3.25rem; flex-shrink: 0;
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .wn-header-title {
+        font-size: 1.4rem; font-weight: 800; color: white;
+        letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .wn-header-desc {
+        font-size: 0.85rem; color: rgba(219,234,254,0.9);
+        margin-top: 0.35rem; max-width: 38rem; line-height: 1.5;
+    }
+    .wn-header-badge {
+        position: relative; z-index: 1;
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: rgba(0,0,0,0.18);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 0.75rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.75rem; font-weight: 600; color: rgba(255,255,255,0.9);
+        white-space: nowrap;
+    }
+    .wn-badge-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #fbbf24; flex-shrink: 0;
+        animation: wn-pulse 1.5s infinite;
+    }
+    @keyframes wn-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        {{-- Hero Header Section --}}
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 to-blue-700 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 border border-primary-500/10">
-            {{-- Decorative Subtle SVG Shapes --}}
-            <div class="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none"></div>
-            <div class="absolute -bottom-16 right-16 w-56 h-56 rounded-full bg-white/5 pointer-events-none"></div>
+    .wn-card {
+        position: relative;
+        border-radius: 1.25rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        overflow: hidden;
+    }
+    .dark .wn-card { background: #18181b; border-color: #27272a; }
+    .wn-card-topbar {
+        height: 4px;
+        background: linear-gradient(to right, #3b82f6, #6366f1, #a855f7);
+    }
+    .wn-card-body { padding: 1.75rem 2rem; }
 
-            <div class="flex items-center gap-4 relative z-10">
-                <div class="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm border border-white/20">
-                    <x-heroicon-o-chat-bubble-left-right class="text-white" style="width: 24px; height: 24px;" />
+    .wn-form-wrap {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+    }
+    .dark .wn-form-wrap { background: rgba(39,39,42,0.4); border-color: rgba(63,63,70,0.5); }
+
+    .wn-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    @media (max-width: 767px) {
+        .wn-stats-grid { grid-template-columns: 1fr; }
+    }
+
+    .wn-stat-card {
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #3b82f6;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .wn-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .dark .wn-stat-card { background: #18181b; border-color: #27272a; }
+
+    .wn-stat-card-green { border-left-color: #059669; }
+    .wn-stat-card-rose { border-left-color: #e11d48; }
+
+    .wn-stat-icon {
+        width: 2.75rem; height: 2.75rem; flex-shrink: 0;
+        border-radius: 0.75rem;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .wn-stat-icon-blue { background: #eff6ff; color: #2563eb; }
+    .dark .wn-stat-icon-blue { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    .wn-stat-icon-green { background: #ecfdf5; color: #059669; }
+    .dark .wn-stat-icon-green { background: rgba(5,150,105,0.15); color: #34d399; }
+    .wn-stat-icon-rose { background: #fff1f2; color: #e11d48; }
+    .dark .wn-stat-icon-rose { background: rgba(225,29,72,0.15); color: #fb7185; }
+
+    .wn-stat-label {
+        font-size: 0.7rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        color: #6b7280;
+    }
+    .dark .wn-stat-label { color: #9ca3af; }
+    .wn-stat-value {
+        font-size: 2rem; font-weight: 800; line-height: 1.2;
+        color: #111827;
+    }
+    .dark .wn-stat-value { color: #f9fafb; }
+    .wn-stat-value-green { color: #059669; }
+    .dark .wn-stat-value-green { color: #34d399; }
+    .wn-stat-value-rose { color: #e11d48; }
+    .dark .wn-stat-value-rose { color: #fb7185; }
+
+    .wn-actions {
+        display: flex; flex-wrap: wrap; gap: 0.75rem;
+        justify-content: space-between; align-items: center;
+        padding-top: 1.25rem; margin-top: 1.25rem;
+        border-top: 1px solid #f1f5f9;
+    }
+    .dark .wn-actions { border-top-color: rgba(39,39,42,0.8); }
+
+    .wn-recipient-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        font-size: 0.75rem; font-weight: 600; color: #065f46;
+    }
+    .dark .wn-recipient-badge { background: rgba(6,78,59,0.2); border-color: rgba(6,95,70,0.3); color: #6ee7b7; }
+
+    .wn-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 0.5rem;
+    }
+    @media (max-width: 767px) {
+        .wn-info-grid { grid-template-columns: 1fr; }
+    }
+
+    .wn-info-box {
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .dark .wn-info-box { background: #18181b; border-color: #27272a; }
+
+    .wn-info-title {
+        display: flex; align-items: center; gap: 0.5rem;
+        font-size: 0.85rem; font-weight: 700; color: #111827;
+        margin-bottom: 0.75rem;
+    }
+    .dark .wn-info-title { color: #f9fafb; }
+
+    .wn-step {
+        display: flex; gap: 0.75rem; margin-bottom: 0.75rem;
+    }
+    .wn-step-num {
+        width: 1.75rem; height: 1.75rem; flex-shrink: 0;
+        border-radius: 50%;
+        background: #eff6ff; color: #2563eb;
+        font-size: 0.7rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .dark .wn-step-num { background: rgba(37,99,235,0.15); color: #60a5fa; }
+    .wn-step-text {
+        font-size: 0.75rem; color: #4b5563; line-height: 1.4;
+    }
+    .dark .wn-step-text { color: #9ca3af; }
+    .wn-step-text strong { color: #111827; }
+    .dark .wn-step-text strong { color: #f9fafb; }
+
+    .wn-check-item {
+        display: flex; align-items: flex-start; gap: 0.5rem;
+        font-size: 0.75rem; color: #4b5563; line-height: 1.4;
+        margin-bottom: 0.5rem;
+    }
+    .dark .wn-check-item { color: #9ca3af; }
+    .wn-check-item code {
+        background: #f1f5f9; padding: 0.1rem 0.4rem;
+        border-radius: 0.25rem; font-size: 0.65rem;
+        color: #be123c;
+    }
+    .dark .wn-check-item code { background: rgba(39,39,42,0.8); color: #fb7185; }
+
+    .wn-warning-box {
+        margin-top: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        font-size: 0.7rem; color: #92400e; line-height: 1.5;
+        display: flex; align-items: flex-start; gap: 0.5rem;
+    }
+    .dark .wn-warning-box { background: rgba(120,53,15,0.15); border-color: rgba(146,64,14,0.3); color: #fcd34d; }
+</style>
+
+<div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+    {{-- Header Banner --}}
+    <div class="wn-header">
+        <div class="wn-header-deco1"></div>
+        <div class="wn-header-deco2"></div>
+
+        <div class="wn-header-left">
+            <div class="wn-header-icon">
+                <x-heroicon-o-chat-bubble-left-right style="width:26px;height:26px;color:white;" />
+            </div>
+            <div>
+                <div class="wn-header-title">Kirim Notifikasi WhatsApp</div>
+                <div class="wn-header-desc">
+                    Kirim rekapitulasi kehadiran massal ke nomor WhatsApp orang tua siswa terdaftar secara otomatis.
+                    Notifikasi akan <strong style="color:white;">dikirim via Fonnte</strong> ke orang tua siswa.
                 </div>
+            </div>
+        </div>
+
+        <div class="wn-header-badge">
+            <span class="wn-badge-dot"></span>
+            Antrean Aktif
+        </div>
+    </div>
+
+    {{-- Stats Cards --}}
+    <div class="wn-stats-grid">
+        <div class="wn-stat-card">
+            <div class="wn-stat-icon wn-stat-icon-blue">
+                <x-heroicon-o-user-group style="width:22px;height:22px;" />
+            </div>
+            <div>
+                <div class="wn-stat-label">Total Siswa Aktif</div>
+                <div class="wn-stat-value">{{ $this->getStats()['total_students'] ?? 0 }}</div>
+            </div>
+        </div>
+
+        <div class="wn-stat-card wn-stat-card-green">
+            <div class="wn-stat-icon wn-stat-icon-green">
+                <x-heroicon-o-device-phone-mobile style="width:22px;height:22px;" />
+            </div>
+            <div>
+                <div class="wn-stat-label">Orang Tua Terdaftar WA</div>
+                <div class="wn-stat-value wn-stat-value-green">{{ $this->getStats()['has_phone'] ?? 0 }}</div>
+            </div>
+        </div>
+
+        <div class="wn-stat-card wn-stat-card-rose">
+            <div class="wn-stat-icon wn-stat-icon-rose">
+                <x-heroicon-o-exclamation-triangle style="width:22px;height:22px;" />
+            </div>
+            <div>
+                <div class="wn-stat-label">Belum Ada No. WA</div>
+                <div class="wn-stat-value wn-stat-value-rose">{{ $this->getStats()['no_phone'] ?? 0 }}</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Main Card --}}
+    <div class="wn-card">
+        <div class="wn-card-topbar"></div>
+
+        <div class="wn-card-body">
+            <div style="display:flex;flex-direction:column;gap:1.75rem;">
+
+                {{-- Filter & Configuration --}}
                 <div>
-                    <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">Kirim Notifikasi WhatsApp</h2>
-                    <p class="text-xs text-blue-100/90 mt-0.5">Kirim rekapitulasi kehadiran massal ke nomor WhatsApp orang tua siswa terdaftar secara otomatis.</p>
-                </div>
-            </div>
-            
-            <div class="relative z-10 flex flex-wrap items-center gap-2.5 self-start md:self-auto">
-                <span class="inline-flex items-center gap-1.5 bg-white/10 dark:bg-white/5 border border-white/25 dark:border-white/10 rounded-full px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-                    <span class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
-                    Antrean Aktif
-                </span>
-                <span class="inline-flex items-center bg-white/10 dark:bg-white/5 border border-white/25 dark:border-white/10 rounded-full px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-                    Integrasi Fonnte
-                </span>
-            </div>
-        </div>
-
-        {{-- Stats Cards Grid (Precise border indicators & alignment) --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {{-- Total Siswa --}}
-            <div class="relative rounded-2xl bg-white p-6 shadow-sm border border-gray-200 border-l-4 border-l-primary-600 dark:bg-zinc-900 dark:border-zinc-800 dark:border-l-primary-500 transition duration-300 hover:shadow-md">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 rounded-xl">
-                        <x-heroicon-o-user-group style="width: 24px; height: 24px;" />
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                        <x-heroicon-o-adjustments-horizontal style="width:20px;height:20px;color:#4f46e5;" />
+                        <span style="font-size:0.85rem;font-weight:700;color:#111827;">Filter & Konfigurasi Notifikasi</span>
+                        <span style="font-size:0.7rem;color:#6b7280;margin-left:0.25rem;">Tentukan tipe laporan dan periode rekapitulasi</span>
                     </div>
-                    <div class="space-y-1">
-                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider leading-none">Total Siswa Aktif</div>
-                        <div class="text-3xl font-black text-gray-900 dark:text-white leading-none mt-1">{{ $this->getStats()['total_students'] }}</div>
+                    <div class="wn-form-wrap">
+                        {{ $this->form }}
                     </div>
                 </div>
-            </div>
 
-            {{-- Terdaftar WA --}}
-            <div class="relative rounded-2xl bg-white p-6 shadow-sm border border-gray-200 border-l-4 border-l-emerald-600 dark:bg-zinc-900 dark:border-zinc-800 dark:border-l-emerald-500 transition duration-300 hover:shadow-md">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 rounded-xl">
-                        <x-heroicon-o-device-phone-mobile style="width: 24px; height: 24px;" />
-                    </div>
-                    <div class="space-y-1">
-                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider leading-none">Orang Tua Terdaftar WA</div>
-                        <div class="text-3xl font-black text-emerald-600 dark:text-emerald-400 leading-none mt-1">{{ $this->getStats()['has_phone'] }}</div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Belum ada nomor --}}
-            <div class="relative rounded-2xl bg-white p-6 shadow-sm border border-gray-200 border-l-4 border-l-rose-600 dark:bg-zinc-900 dark:border-zinc-800 dark:border-l-rose-500 transition duration-300 hover:shadow-md">
-                <div class="flex items-center gap-4">
-                    <div class="p-3 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 rounded-xl">
-                        <x-heroicon-o-exclamation-triangle style="width: 24px; height: 24px;" />
-                    </div>
-                    <div class="space-y-1">
-                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider leading-none">Belum Ada No. WA</div>
-                        <div class="text-3xl font-black text-rose-600 dark:text-rose-500 leading-none mt-1">{{ $this->getStats()['no_phone'] }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Form & Actions Section --}}
-        <x-filament::section class="shadow-sm">
-            <x-slot name="heading">Filter &amp; Konfigurasi Notifikasi</x-slot>
-            <x-slot name="description">Tentukan tipe laporan serta periode rekapitulasi kehadiran.</x-slot>
-
-            <div class="space-y-6 mt-4">
-                {{ $this->form }}
-
-                <div class="pt-5 border-t border-gray-100 dark:border-zinc-850 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    {{-- Recipient badge --}}
-                    <div class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-400 text-xs font-semibold self-start">
-                        <x-heroicon-s-users style="width: 16px; height: 16px;" />
+                {{-- Actions --}}
+                <div class="wn-actions">
+                    <div class="wn-recipient-badge">
+                        <x-heroicon-s-users style="width:16px;height:16px;" />
                         <span>{{ $this->getRecipientCount() }} Orang tua terdaftar sebagai penerima</span>
                     </div>
-
-                    {{-- Action Button --}}
-                    <div class="flex justify-end">
+                    <div style="display:flex;gap:0.5rem;">
                         {{ $this->sendNotifAction }}
                     </div>
                 </div>
+
             </div>
-        </x-filament::section>
+        </div>
+    </div>
 
-        {{-- Info & Warning Grid --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Info Box --}}
-            <x-filament::section class="shadow-sm">
-                <x-slot name="heading">
-                    <div class="flex items-center gap-2">
-                        <x-heroicon-o-information-circle class="text-primary-600 dark:text-primary-400" style="width: 20px; height: 20px;" />
-                        <span class="text-sm font-bold text-gray-900 dark:text-white">Alur &amp; Cara Kerja</span>
-                    </div>
-                </x-slot>
-                
-                <ol class="space-y-4 mt-4 text-xs text-gray-600 dark:text-gray-400">
-                    <li class="flex gap-3">
-                        <span class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 font-bold flex items-center justify-center flex-shrink-0">1</span>
-                        <div class="space-y-0.5">
-                            <p class="font-bold text-gray-800 dark:text-gray-200">Pilih Periode Rekap</p>
-                            <p class="text-gray-500">Tentukan format rekapitulasi harian (tanggal) atau bulanan (bulan &amp; tahun).</p>
-                        </div>
-                    </li>
-                    <li class="flex gap-3">
-                        <span class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 font-bold flex items-center justify-center flex-shrink-0">2</span>
-                        <div class="space-y-0.5">
-                            <p class="font-bold text-gray-800 dark:text-gray-200">Kirim Notifikasi</p>
-                            <p class="text-gray-500">Klik tombol kirim di atas. Konfirmasi jumlah penerima akan muncul sebelum pengiriman.</p>
-                        </div>
-                    </li>
-                    <li class="flex gap-3">
-                        <span class="w-6 h-6 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400 font-bold flex items-center justify-center flex-shrink-0">3</span>
-                        <div class="space-y-0.5">
-                            <p class="font-bold text-gray-800 dark:text-gray-200">Sistem Antrean (Queue)</p>
-                            <p class="text-gray-500">Pesan diproses satu persatu secara asinkron agar aman dari rate limiting WhatsApp.</p>
-                        </div>
-                    </li>
-                </ol>
-            </x-filament::section>
+    {{-- Info & Warning Grid --}}
+    <div class="wn-info-grid">
 
-            {{-- Warning Box --}}
-            <x-filament::section class="shadow-sm">
-                <x-slot name="heading">
-                    <div class="flex items-center gap-2">
-                        <x-heroicon-o-exclamation-triangle class="text-amber-600 dark:text-amber-400" style="width: 20px; height: 20px;" />
-                        <span class="text-sm font-bold text-gray-900 dark:text-white">Persyaratan &amp; Status</span>
-                    </div>
-                </x-slot>
+        {{-- Info Box --}}
+        <div class="wn-info-box">
+            <div class="wn-info-title">
+                <x-heroicon-o-information-circle style="width:20px;height:20px;color:#2563eb;" />
+                <span>Alur &amp; Cara Kerja</span>
+            </div>
 
-                <div class="space-y-4 mt-4 text-xs text-gray-600 dark:text-gray-400">
-                    <ul class="space-y-3">
-                        <li class="flex items-start gap-2.5">
-                            <x-heroicon-s-check-circle style="width: 18px; height: 18px; color: currentColor;" class="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span>Token Fonnte terkonfigurasi di env <code class="bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-rose-500 text-[10px]">WHATSAPP_API_TOKEN</code>.</span>
-                        </li>
-                        <li class="flex items-start gap-2.5">
-                            <x-heroicon-s-check-circle style="width: 18px; height: 18px; color: currentColor;" class="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span>Jalankan Queue worker: <code class="bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded font-mono text-blue-500 text-[10px]">php artisan queue:work</code>.</span>
-                        </li>
-                    </ul>
-
-                    <div class="pt-4 border-t border-gray-100 dark:border-zinc-800 text-[10px] text-gray-500 leading-relaxed">
-                        Sistem juga mengirim notifikasi otomatis real-time ke orang tua setiap kali siswa melakukan scan QR mandiri atau guru menginput kehadiran di kelas.
-                    </div>
+            <div class="wn-step">
+                <span class="wn-step-num">1</span>
+                <div class="wn-step-text">
+                    <strong>Pilih Periode Rekap</strong><br>
+                    Tentukan format rekapitulasi harian (tanggal) atau bulanan (bulan &amp; tahun).
                 </div>
-            </x-filament::section>
+            </div>
+
+            <div class="wn-step">
+                <span class="wn-step-num">2</span>
+                <div class="wn-step-text">
+                    <strong>Kirim Notifikasi</strong><br>
+                    Klik tombol kirim di atas. Konfirmasi jumlah penerima akan muncul sebelum pengiriman.
+                </div>
+            </div>
+
+            <div class="wn-step">
+                <span class="wn-step-num">3</span>
+                <div class="wn-step-text">
+                    <strong>Sistem Antrean (Queue)</strong><br>
+                    Pesan diproses satu persatu secara asinkron agar aman dari rate limiting WhatsApp.
+                </div>
+            </div>
+        </div>
+
+        {{-- Warning Box --}}
+        <div class="wn-info-box">
+            <div class="wn-info-title">
+                <x-heroicon-o-exclamation-triangle style="width:20px;height:20px;color:#d97706;" />
+                <span>Persyaratan &amp; Status</span>
+            </div>
+
+            <div class="wn-check-item">
+                <x-heroicon-s-check-circle style="width:16px;height:16px;color:#059669;flex-shrink:0;margin-top:1px;" />
+                <span>Token Fonnte terkonfigurasi di env <code>WHATSAPP_API_TOKEN</code>.</span>
+            </div>
+
+            <div class="wn-check-item">
+                <x-heroicon-s-check-circle style="width:16px;height:16px;color:#059669;flex-shrink:0;margin-top:1px;" />
+                <span>Jalankan Queue worker: <code>php artisan queue:work</code>.</span>
+            </div>
+
+            <div class="wn-warning-box">
+                <x-heroicon-s-bell-alert style="width:16px;height:16px;flex-shrink:0;margin-top:1px;" />
+                <span>Sistem juga mengirim notifikasi otomatis real-time ke orang tua setiap kali siswa melakukan scan QR mandiri atau guru menginput kehadiran di kelas.</span>
+            </div>
         </div>
 
     </div>
 
-    <x-filament-actions::modals />
+</div>
+
+<x-filament-actions::modals />
 </x-filament-panels::page>

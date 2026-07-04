@@ -17,25 +17,34 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
+        $schoolCount = School::count();
+        $activeTeacherCount = Teacher::where('status', 'active')->count();
+        $activeStudentCount = Student::where('status', 'active')->count();
+        $activeClassCount = StudentClass::where('status', 'active')->count();
+
         return [
-            Stat::make('Total Sekolah', School::count())
+            Stat::make('Total Sekolah', $schoolCount)
                 ->description('Sekolah terdaftar di sistem')
                 ->descriptionIcon('heroicon-m-building-office')
+                ->chart(array_fill(0, 7, $schoolCount))
                 ->color('primary'),
 
-            Stat::make('Total Guru', Teacher::count())
-                ->description('Guru pengajar aktif')
+            Stat::make('Guru Aktif', $activeTeacherCount)
+                ->description('Guru dengan status aktif')
                 ->descriptionIcon('heroicon-m-user-group')
+                ->chart(array_fill(0, 7, $activeTeacherCount))
                 ->color('success'),
 
-            Stat::make('Total Siswa', Student::count())
-                ->description('Siswa terdaftar aktif')
+            Stat::make('Siswa Aktif', $activeStudentCount)
+                ->description('Siswa dengan status aktif')
                 ->descriptionIcon('heroicon-m-academic-cap')
+                ->chart(array_fill(0, 7, $activeStudentCount))
                 ->color('warning'),
 
-            Stat::make('Total Kelas', StudentClass::count())
-                ->description('Kelas aktif berjalan')
+            Stat::make('Kelas Aktif', $activeClassCount)
+                ->description('Kelas yang sedang berjalan')
                 ->descriptionIcon('heroicon-m-rectangle-stack')
+                ->chart(array_fill(0, 7, $activeClassCount))
                 ->color('danger'),
         ];
     }

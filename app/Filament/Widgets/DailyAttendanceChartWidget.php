@@ -9,13 +9,18 @@ use Illuminate\Support\Facades\DB;
 
 class DailyAttendanceChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Grafik Status Kehadiran Hari Ini';
+    protected ?string $heading = 'Status Presensi Hari Ini';
 
-    protected static ?int $sort = 1;
+    protected ?string $description = 'Distribusi status presensi siswa berdasarkan data hari ini.';
+
+    protected ?string $maxHeight = '300px';
+
+    protected static ?int $sort = 2;
 
     protected int | string | array $columnSpan = [
-        'default' => 12,
-        'md' => 4,
+        'default' => 1,
+        'md' => 6,
+        'xl' => 4,
     ];
 
     protected function getData(): array
@@ -44,16 +49,12 @@ class DailyAttendanceChartWidget extends ChartWidget
             $data[] = $counts[$key] ?? 0;
         }
 
-        // Fallback dummy data jika belum ada presensi hari ini
-        if (array_sum($data) === 0) {
-            $data = [45, 8, 3, 4, 2]; // Dummy data realistis
-        }
-
         return [
             'datasets' => [
                 [
                     'label' => 'Status Kehadiran',
                     'data' => $data,
+                    'borderWidth' => 0,
                     'backgroundColor' => [
                         'rgba(16, 185, 129, 0.85)', // Hadir (Emerald)
                         'rgba(245, 158, 11, 0.85)', // Terlambat (Amber)
@@ -69,6 +70,19 @@ class DailyAttendanceChartWidget extends ChartWidget
 
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                ],
+            ],
+            'cutout' => '62%',
+            'maintainAspectRatio' => false,
+        ];
     }
 }

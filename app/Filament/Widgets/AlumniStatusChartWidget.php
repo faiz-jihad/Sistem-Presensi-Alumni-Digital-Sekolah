@@ -8,13 +8,17 @@ use Illuminate\Support\Facades\DB;
 
 class AlumniStatusChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Grafik Status Alumni Saat Ini';
+    protected ?string $heading = 'Status Alumni Saat Ini';
 
-    protected static ?int $sort = 2;
+    protected ?string $description = 'Komposisi status alumni berdasarkan profil yang sudah tercatat.';
+
+    protected ?string $maxHeight = '320px';
+
+    protected static ?int $sort = 4;
 
     protected int | string | array $columnSpan = [
-        'default' => 12,
-        'md' => 6,
+        'default' => 1,
+        'xl' => 12,
     ];
 
     protected function getData(): array
@@ -41,17 +45,12 @@ class AlumniStatusChartWidget extends ChartWidget
             $data[] = $statusCounts[$key] ?? 0;
         }
 
-        // Cek jika seluruh data kosong (misal seeder belum dijalankan)
-        if (array_sum($data) === 0) {
-            // Gunakan dummy data penyeimbang agar chart tidak kosong saat pertama load
-            $data = [35, 25, 15, 10, 15];
-        }
-
         return [
             'datasets' => [
                 [
                     'label' => 'Jumlah Alumni',
                     'data' => $data,
+                    'borderWidth' => 0,
                     'backgroundColor' => [
                         'rgba(16, 185, 129, 0.8)', // Bekerja (Emerald)
                         'rgba(59, 130, 246, 0.8)', // Kuliah (Blue)
@@ -68,5 +67,18 @@ class AlumniStatusChartWidget extends ChartWidget
     protected function getType(): string
     {
         return 'doughnut';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                ],
+            ],
+            'cutout' => '58%',
+            'maintainAspectRatio' => false,
+        ];
     }
 }

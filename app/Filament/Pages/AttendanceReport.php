@@ -16,6 +16,7 @@ use Filament\Notifications\Notification;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceReport extends Page
 {
@@ -23,11 +24,11 @@ class AttendanceReport extends Page
 
     protected static ?string $navigationLabel = 'Rekap Laporan';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Presensi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan & Monitoring';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 1;
 
     public ?array $data = [];
 
@@ -46,7 +47,11 @@ class AttendanceReport extends Page
     {
         return $schema
             ->schema([
-                Grid::make(5)
+                Grid::make([
+                    'default' => 1,
+                    'md' => 2,
+                    'xl' => 5,
+                ])
                     ->schema([
                         Select::make('type')
                             ->label('Jenis Laporan')
@@ -54,6 +59,7 @@ class AttendanceReport extends Page
                                 'daily' => 'Harian',
                                 'monthly' => 'Bulanan',
                             ])
+                            ->native(false)
                             ->live()
                             ->required(),
 
@@ -61,6 +67,8 @@ class AttendanceReport extends Page
                             ->label('Kelas')
                             ->options(StudentClass::orderBy('name')->pluck('name', 'id'))
                             ->placeholder('Pilih Kelas')
+                            ->searchable()
+                            ->native(false)
                             ->live()
                             ->required(),
 
@@ -68,25 +76,36 @@ class AttendanceReport extends Page
                             ->label('Tanggal')
                             ->required()
                             ->live()
-                            ->visible(fn (callable $get) => $get('type') === 'daily'),
+                            ->visible(fn(callable $get) => $get('type') === 'daily'),
 
                         Select::make('month')
                             ->label('Bulan')
                             ->options([
-                                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-                                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-                                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                                1 => 'Januari',
+                                2 => 'Februari',
+                                3 => 'Maret',
+                                4 => 'April',
+                                5 => 'Mei',
+                                6 => 'Juni',
+                                7 => 'Juli',
+                                8 => 'Agustus',
+                                9 => 'September',
+                                10 => 'Oktober',
+                                11 => 'November',
+                                12 => 'Desember'
                             ])
+                            ->native(false)
                             ->required()
                             ->live()
-                            ->visible(fn (callable $get) => $get('type') === 'monthly'),
+                            ->visible(fn(callable $get) => $get('type') === 'monthly'),
 
                         Select::make('year')
                             ->label('Tahun')
                             ->options(array_combine(range(2020, 2030), range(2020, 2030)))
+                            ->native(false)
                             ->required()
                             ->live()
-                            ->visible(fn (callable $get) => $get('type') === 'monthly'),
+                            ->visible(fn(callable $get) => $get('type') === 'monthly'),
                     ])
             ])
             ->statePath('data');
@@ -100,7 +119,7 @@ class AttendanceReport extends Page
         }
 
         $service = app(ReportService::class);
-        $schoolId = \DB::table('classes')->where('id', $classId)->value('school_id');
+        $schoolId = DB::table('classes')->where('id', $classId)->value('school_id');
 
         if (! $schoolId) {
             return null;
@@ -161,7 +180,7 @@ class AttendanceReport extends Page
             $date = $report['date'];
             $pdf = Pdf::loadView('pdf.daily-attendance', $report);
             return response()->streamDownload(
-                fn () => print($pdf->output()),
+                fn() => print($pdf->output()),
                 "rekap_harian_{$className}_{$date}.pdf"
             );
         } else {
@@ -169,7 +188,7 @@ class AttendanceReport extends Page
             $year = $this->data['year'];
             $pdf = Pdf::loadView('pdf.monthly-attendance', $report);
             return response()->streamDownload(
-                fn () => print($pdf->output()),
+                fn() => print($pdf->output()),
                 "rekap_bulanan_{$className}_{$month}_{$year}.pdf"
             );
         }
