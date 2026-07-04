@@ -8,10 +8,8 @@ use App\Filament\Resources\StudentClasses\Pages\ListStudentClasses;
 use App\Filament\Resources\StudentClasses\Schemas\StudentClassForm;
 use App\Filament\Resources\StudentClasses\Tables\StudentClassesTable;
 use App\Models\StudentClass;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,10 +17,33 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class StudentClassResource extends Resource
 {
     protected static ?string $model = StudentClass::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-academic-cap';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Kelas Siswa';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Manajemen Akademik';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 3;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'grade', 'major'];
+    }
 
     public static function form(Schema $schema): Schema
     {

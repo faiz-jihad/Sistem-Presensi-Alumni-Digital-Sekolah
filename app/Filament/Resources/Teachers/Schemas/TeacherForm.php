@@ -16,44 +16,79 @@ class TeacherForm
         return $schema
             ->components([
                 Select::make('school_id')
+                    ->label('Sekolah')
                     ->relationship('school', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Select::make('user_id')
-                    ->relationship('user', 'name'),
+                    ->label('Akun Pengguna (User)')
+                    ->relationship('user', 'name', fn ($query) => $query->where('role', 'teacher'))
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('nip')
+                    ->label('NIP')
                     ->required()
                     ->maxLength(18)
-                    ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true)
+                    ->placeholder('Contoh: 199001012015011001'),
                 TextInput::make('name')
+                    ->label('Nama Guru')
+                    ->placeholder('Contoh: Budi Santoso, S.Pd.')
                     ->required(),
                 Select::make('gender')
-                    ->options(['male' => 'Male', 'female' => 'Female']),
+                    ->label('Jenis Kelamin')
+                    ->options(['male' => 'Laki-laki', 'female' => 'Perempuan'])
+                    ->native(false),
                 TextInput::make('phone')
+                    ->label('Nomor Telepon')
                     ->tel()
-                    ->maxLength(20),
+                    ->maxLength(20)
+                    ->placeholder('Contoh: 081234567890'),
                 Textarea::make('address')
+                    ->label('Alamat Lengkap')
+                    ->rows(3)
                     ->columnSpanFull(),
                 FileUpload::make('photo')
+                    ->label('Foto Guru')
                     ->image()
-                    ->directory('teachers/photos'),
+                    ->maxSize(1024)
+                    ->directory('teachers/photos')
+                    ->visibility('public')
+                    ->helperText('Upload foto guru (maksimal 1MB)'),
                 Select::make('employment_status')
+                    ->label('Status Kepegawaian')
                     ->options([
-            'pns' => 'Pns',
-            'pppk' => 'Pppk',
-            'honorer' => 'Honorer',
-            'gtt' => 'Gtt',
-            'ptt' => 'Ptt',
-            'kontrak' => 'Kontrak',
-        ])
+                        'pns' => 'PNS',
+                        'pppk' => 'PPPK',
+                        'honorer' => 'Honorer',
+                        'gtt' => 'Guru Tidak Tetap (GTT)',
+                        'ptt' => 'Pegawai Tidak Tetap (PTT)',
+                        'kontrak' => 'Kontrak',
+                    ])
                     ->default('honorer')
+                    ->native(false)
                     ->required(),
-                TextInput::make('field_of_study'),
-                TextInput::make('education_level'),
-                TextInput::make('university'),
-                DatePicker::make('join_date'),
+                TextInput::make('field_of_study')
+                    ->label('Mata Pelajaran / Bidang Studi')
+                    ->placeholder('Contoh: Matematika, Fisika'),
+                TextInput::make('education_level')
+                    ->label('Tingkat Pendidikan')
+                    ->placeholder('Contoh: S1 Pendidikan Matematika'),
+                TextInput::make('university')
+                    ->label('Universitas / Perguruan Tinggi')
+                    ->placeholder('Contoh: Universitas Negeri Jakarta'),
+                DatePicker::make('join_date')
+                    ->label('Tanggal Bergabung'),
                 Select::make('status')
-                    ->options(['active' => 'Active', 'inactive' => 'Inactive', 'retired' => 'Retired'])
+                    ->label('Status Aktif')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'retired' => 'Pensiun',
+                    ])
                     ->default('active')
+                    ->native(false)
                     ->required(),
             ]);
     }

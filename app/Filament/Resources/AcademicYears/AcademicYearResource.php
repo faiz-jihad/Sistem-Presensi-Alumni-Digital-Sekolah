@@ -8,10 +8,8 @@ use App\Filament\Resources\AcademicYears\Pages\ListAcademicYears;
 use App\Filament\Resources\AcademicYears\Schemas\AcademicYearForm;
 use App\Filament\Resources\AcademicYears\Tables\AcademicYearsTable;
 use App\Models\AcademicYear;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,10 +17,34 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class AcademicYearResource extends Resource
 {
     protected static ?string $model = AcademicYear::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    
     protected static ?string $recordTitleAttribute = 'name';
+
+    // Gunakan method
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-rectangle-stack';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Tahun Akademik';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Manajemen Akademik';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name'];
+    }
 
     public static function form(Schema $schema): Schema
     {

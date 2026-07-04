@@ -3,12 +3,10 @@
 namespace App\Filament\Resources\Schools\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class SchoolsTable
@@ -18,51 +16,96 @@ class SchoolsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+                    
                 TextColumn::make('npsn')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
-                TextColumn::make('website')
-                    ->searchable(),
-                TextColumn::make('logo')
-                    ->searchable(),
-                TextColumn::make('principal_name')
-                    ->searchable(),
+                    ->label('NPSN')
+                    ->searchable()
+                    ->sortable(),
+                    
                 TextColumn::make('level')
-                    ->badge(),
-                TextColumn::make('accreditation')
-                    ->badge(),
+                    ->label('Jenjang')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'sd' => 'info',
+                        'smp' => 'success',
+                        'sma' => 'warning',
+                        'smk' => 'primary',
+                        'ma' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'sd' => 'SD',
+                        'smp' => 'SMP',
+                        'sma' => 'SMA',
+                        'smk' => 'SMK',
+                        'ma' => 'MA',
+                        default => $state,
+                    }),
+                    
                 TextColumn::make('status')
-                    ->badge(),
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        default => $state,
+                    }),
+                    
+                TextColumn::make('principal_name')
+                    ->label('Kepala Sekolah')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
+                TextColumn::make('phone')
+                    ->label('Telepon')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
+                TextColumn::make('email')
+                    ->label('Email')
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                TrashedFilter::make(),
+            ->actions([
+                EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color('warning')
+                    ->slideOver(),
+                    
+                DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Hapus Sekolah?')
+                    ->modalDescription('Apakah Anda yakin ingin menghapus sekolah ini?'),
             ])
-            ->recordActions([
-                EditAction::make(),
-            ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label('Hapus Terpilih')
+                        ->requiresConfirmation()
+                        ->modalHeading('Hapus Data Terpilih?'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name')
+            ->emptyStateHeading('Belum ada data sekolah')
+            ->emptyStateDescription('Tambahkan sekolah pertama Anda untuk memulai.')
+            ->emptyStateIcon('heroicon-o-building-office');
     }
 }

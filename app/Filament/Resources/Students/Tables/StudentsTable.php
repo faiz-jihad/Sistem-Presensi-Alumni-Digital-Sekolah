@@ -3,12 +3,11 @@
 namespace App\Filament\Resources\Students\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class StudentsTable
@@ -17,64 +16,76 @@ class StudentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('school_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('class_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('parent_user_id')
-                    ->numeric()
-                    ->sortable(),
+                \Filament\Tables\Columns\ImageColumn::make('photo')
+                    ->label('Foto')
+                    ->circular(),
                 TextColumn::make('nis')
-                    ->searchable(),
+                    ->label('NIS')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('nisn')
-                    ->searchable(),
+                    ->label('NISN')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nama Lengkap')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->sortable(),
+                TextColumn::make('class.name')
+                    ->label('Kelas')
+                    ->sortable(),
                 TextColumn::make('gender')
-                    ->badge(),
-                TextColumn::make('birth_date')
-                    ->date()
+                    ->label('JK')
+                    ->formatStateUsing(fn ($state) => $state === 'male' ? 'L' : 'P')
+                    ->badge()
                     ->sortable(),
-                TextColumn::make('birth_place')
-                    ->searchable(),
-                TextColumn::make('photo')
-                    ->searchable(),
                 TextColumn::make('parent_name')
-                    ->searchable(),
-                TextColumn::make('parent_phone')
-                    ->searchable(),
-                TextColumn::make('enrollment_year')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Orang Tua')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
-                    ->badge(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                        'graduated' => 'warning',
+                        'dropout' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'graduated' => 'Lulus',
+                        'transferred' => 'Pindah',
+                        'dropout' => 'Drop Out',
+                        default => $state,
+                    })
+                    ->sortable(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name'),
+                SelectFilter::make('status')
+                    ->options([
+                        'active' => 'Aktif',
+                        'graduated' => 'Lulus',
+                    ]),
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name');
     }
 }

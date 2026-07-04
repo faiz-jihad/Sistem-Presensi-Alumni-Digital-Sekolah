@@ -18,21 +18,32 @@ class AcademicYearsTable
     {
         return $table
             ->columns([
-                TextColumn::make('school_id')
-                    ->numeric()
+                TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('start_year'),
-                TextColumn::make('end_year'),
+                    ->label('Tahun Akademik')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('start_year')
+                    ->label('Tahun Mulai')
+                    ->sortable(),
+                TextColumn::make('end_year')
+                    ->label('Tahun Selesai')
+                    ->sortable(),
                 TextColumn::make('start_date')
-                    ->date()
+                    ->label('Tanggal Mulai')
+                    ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('end_date')
-                    ->date()
+                    ->label('Tanggal Selesai')
+                    ->date('d M Y')
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->boolean(),
+                    ->label('Aktif')
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

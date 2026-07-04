@@ -17,38 +17,65 @@ class StudentClassesTable
     {
         return $table
             ->columns([
-                TextColumn::make('school_id')
-                    ->numeric()
+                TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('academic_year_id')
-                    ->numeric()
+                TextColumn::make('academicYear.name')
+                    ->label('Tahun Akademik')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nama Kelas')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('grade')
-                    ->badge(),
+                    ->label('Tingkat')
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('major')
-                    ->searchable(),
-                TextColumn::make('homeroom_teacher_id')
-                    ->numeric()
+                    ->label('Jurusan')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('homeroomTeacher.name')
+                    ->label('Wali Kelas')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('capacity')
+                    ->label('Kapasitas')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('room_number')
-                    ->searchable(),
+                    ->label('Nomor Ruangan')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('status')
-                    ->badge(),
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        default => $state,
+                    })
+                    ->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Diubah')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->dateTime()
+                    ->label('Dihapus')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
