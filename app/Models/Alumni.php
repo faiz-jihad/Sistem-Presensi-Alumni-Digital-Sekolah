@@ -19,17 +19,10 @@ class Alumni extends Model
         'user_id',
         'nisn',
         'name',
-        'gender',
         'graduation_year',
         'class_name',
         'major',
-        'photo',
-        'email',
-        'phone',
         'verification_status',
-        'verified_by',
-        'verified_at',
-        'verification_notes',
     ];
 
     public function school(): BelongsTo
@@ -45,10 +38,5 @@ class Alumni extends Model
     public function profile(): HasOne
     {
         return $this->hasOne(AlumniProfile::class, 'alumni_id');
-    }
-
-    public function verifier(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'verified_by');
     }
 }

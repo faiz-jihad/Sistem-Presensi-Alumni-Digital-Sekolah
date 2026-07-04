@@ -48,19 +48,28 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Role yang dikelola oleh Spatie Permission (hanya untuk akses Filament panel)
+     */
+    private const SPATIE_ROLES = ['super_admin', 'admin', 'teacher'];
+
+    /**
      * Auto sync role dari kolom 'role' ke Spatie Permission
+     * Hanya untuk role Filament: super_admin, admin, teacher
      */
     protected static function booted()
     {
         static::created(function ($user) {
-            if ($user->role) {
+            if ($user->role && in_array($user->role, self::SPATIE_ROLES)) {
                 $user->assignRole($user->role);
             }
         });
 
         static::updated(function ($user) {
-            if ($user->isDirty('role')) {
+            if ($user->isDirty('role') && in_array($user->role, self::SPATIE_ROLES)) {
                 $user->syncRoles([$user->role]);
+            } elseif ($user->isDirty('role') && !in_array($user->role, self::SPATIE_ROLES)) {
+                // Hapus spatie role jika role berubah ke non-Filament
+                $user->syncRoles([]);
             }
         });
     }
@@ -72,7 +81,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         // Hanya user dengan role tertentu yang bisa akses Filament
-        $allowedRoles = ['super_admin', 'admin'];
+        $allowedRoles = ['super_admin', 'admin', 'teacher'];
         return in_array($this->role, $allowedRoles);
     }
 

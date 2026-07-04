@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
@@ -17,51 +18,37 @@ class StudentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('school.name')
-                    ->label('Sekolah')
+                TextColumn::make('nis')
+                    ->label('NIS')
+                    ->searchable()
+                    ->copyable()
+                    ->fontFamily('mono'),
+                TextColumn::make('name')
+                    ->label('Nama Siswa')
+                    ->searchable()
                     ->sortable()
-                    ->searchable(),
+                    ->weight('semibold'),
                 TextColumn::make('class.name')
                     ->label('Kelas')
                     ->sortable()
-                    ->searchable(),
-                TextColumn::make('parent.name')
-                    ->label('Orang Tua/Wali')
-                    ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('nis')
-                    ->label('NIS')
-                    ->searchable(),
-                TextColumn::make('nisn')
-                    ->label('NISN')
-                    ->searchable(),
-                TextColumn::make('name')
-                    ->label('Nama Siswa')
-                    ->searchable(),
+                    ->badge()
+                    ->color('primary'),
                 TextColumn::make('gender')
                     ->label('L/P')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state === 'male' ? 'Laki-laki' : 'Perempuan'),
-                TextColumn::make('birth_date')
-                    ->label('Tanggal Lahir')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('birth_place')
-                    ->label('Tempat Lahir')
+                    ->color(fn ($state) => $state === 'male' ? 'info' : 'danger')
+                    ->formatStateUsing(fn ($state) => $state === 'male' ? 'L' : 'P'),
+                TextColumn::make('parent.name')
+                    ->label('Orang Tua / Wali')
+                    ->searchable(),
+                TextColumn::make('parent.phone')
+                    ->label('No. WA Orang Tua')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('parent_name')
-                    ->label('Nama Orang Tua')
-                    ->searchable(),
-                TextColumn::make('parent_phone')
-                    ->label('No. WA Ortu')
-                    ->searchable(),
-                TextColumn::make('enrollment_year')
-                    ->label('Tahun Masuk')
-                    ->numeric()
-                    ->sortable(),
+                    ->copyable()
+                    ->placeholder('— Belum diisi —')
+                    ->icon('heroicon-o-phone')
+                    ->iconColor(fn ($state) => $state ? 'success' : 'gray'),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -81,23 +68,32 @@ class StudentsTable
                         'dropout' => 'Keluar',
                         default => $state,
                     }),
+                TextColumn::make('birth_date')
+                    ->label('Tanggal Lahir')
+                    ->date('d M Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Dibuat Pada')
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label('Diperbarui Pada')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->label('Dihapus Pada')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('status')
+                    ->label('Filter Status')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'graduated' => 'Lulus',
+                        'transferred' => 'Pindahan',
+                        'dropout' => 'Keluar',
+                    ]),
                 TrashedFilter::make()->label('Keranjang Sampah'),
             ])
             ->recordActions([

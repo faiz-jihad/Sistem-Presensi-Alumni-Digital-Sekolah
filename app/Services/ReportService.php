@@ -56,9 +56,7 @@ class ReportService
                 'nis' => $student->nis,
                 'status' => $status,
                 'check_in_time' => $att ? $att->check_in_time : null,
-                'check_out_time' => $att ? $att->check_out_time : null,
                 'note' => $att ? $att->note : null,
-                'verification_status' => $att ? $att->verification_status : null,
             ];
         }
 
@@ -163,7 +161,7 @@ class ReportService
 
         foreach ($students as $student) {
             // Ambil nomor telp ortu
-            $phone = $student->parent_phone ?? optional($student->parent)->phone;
+            $phone = optional($student->parent)->phone;
             if (!$phone) {
                 continue;
             }
@@ -175,7 +173,6 @@ class ReportService
 
             $statusLabel = 'Alpha';
             $checkIn = '-';
-            $checkOut = '-';
             $note = '-';
 
             if ($attendance) {
@@ -188,7 +185,6 @@ class ReportService
                     default      => $attendance->status,
                 };
                 $checkIn = $attendance->check_in_time ? Carbon::parse($attendance->check_in_time)->format('H:i') : '-';
-                $checkOut = $attendance->check_out_time ? Carbon::parse($attendance->check_out_time)->format('H:i') : '-';
                 $note = $attendance->note ?? '-';
             }
 
@@ -201,7 +197,6 @@ class ReportService
                 . "Tanggal: {$formattedDate}\n"
                 . "Status: *{$statusLabel}*\n"
                 . "Jam Masuk: {$checkIn}\n"
-                . "Jam Pulang: {$checkOut}\n"
                 . "Catatan: {$note}\n\n"
                 . "Terima kasih.\n"
                 . "SIMPAD";
@@ -228,7 +223,7 @@ class ReportService
         $sentCount = 0;
 
         foreach ($students as $student) {
-            $phone = $student->parent_phone ?? optional($student->parent)->phone;
+            $phone = optional($student->parent)->phone;
             if (!$phone) {
                 continue;
             }
@@ -279,4 +274,3 @@ class ReportService
         return $sentCount;
     }
 }
-

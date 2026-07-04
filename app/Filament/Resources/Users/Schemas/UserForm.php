@@ -26,13 +26,13 @@ class UserForm
                     ->required(),
                 Select::make('role')
                     ->options([
-            'super_admin' => 'Super admin',
-            'admin' => 'Admin',
-            'teacher' => 'Teacher',
-            'student' => 'Student',
-            'parent' => 'Parent',
-            'alumni' => 'Alumni',
-        ])
+                        'super_admin' => 'Super Admin',
+                        'admin' => 'Admin',
+                        'teacher' => 'Guru',
+                        'student' => 'Siswa',
+                        'parent' => 'Orang Tua / Wali',
+                        'alumni' => 'Alumni',
+                    ])
                     ->default('student')
                     ->required(),
                 TextInput::make('school_id')
