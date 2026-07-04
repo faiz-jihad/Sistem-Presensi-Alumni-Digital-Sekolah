@@ -15,42 +15,78 @@ class TeachersTable
         return $table
             ->columns([
                 TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('user.name')
-                    ->searchable(),
+                    ->label('Akun Pengguna')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('nip')
+                    ->label('NIP')
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label('Nama Guru')
                     ->searchable(),
                 TextColumn::make('gender')
-                    ->badge(),
+                    ->label('L/P')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state === 'male' ? 'Laki-laki' : 'Perempuan'),
                 TextColumn::make('phone')
+                    ->label('No. Telepon')
                     ->searchable(),
                 TextColumn::make('photo')
-                    ->searchable(),
+                    ->label('Foto')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('employment_status')
-                    ->badge(),
+                    ->label('Status Kepegawaian')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => strtoupper($state)),
                 TextColumn::make('field_of_study')
+                    ->label('Mata Pelajaran')
                     ->searchable(),
                 TextColumn::make('education_level')
-                    ->searchable(),
+                    ->label('Pendidikan')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('university')
-                    ->searchable(),
+                    ->label('Universitas')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('join_date')
-                    ->date()
+                    ->label('Tanggal Bergabung')
+                    ->date('d M Y')
                     ->sortable(),
                 TextColumn::make('status')
-                    ->badge(),
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'danger',
+                        'retired' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'retired' => 'Pensiun',
+                        default => $state,
+                    }),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Dibuat Pada')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Diperbarui Pada')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->dateTime()
+                    ->label('Dihapus Pada')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

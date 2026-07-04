@@ -1,101 +1,318 @@
 ## 📄 **README.md - Sistem Presensi & Alumni Digital Sekolah**
 
 ```markdown
-# 🎓 SISTEM PRESENSI & ALUMNI DIGITAL SEKOLAH
+Sistem Presensi & Alumni Digital Sekolah
+Sistem Manajemen Presensi dan Alumni berbasis Laravel + Filament (Backend) dan Flutter (Frontend)
 
-> **Versi:** 1.0.0  
-> **Dibuat:** Juli 2026  
-> **Total Task:** 390 Atomic Tasks (16 Epics)  
-> **Metodologi:** Agile Scrum  
-> **Tim Ideal:** 4-6 Developer
+📋 Deskripsi
+Sistem ini adalah aplikasi manajemen sekolah yang mencakup presensi siswa, manajemen alumni, dan tracer study. Dibangun dengan arsitektur REST API menggunakan Laravel dan dilengkapi dengan admin panel Filament. Aplikasi mobile dikembangkan dengan Flutter untuk guru, orang tua, dan alumni.
 
----
+Status Pengembangan: 🚧 MVP (Minimum Viable Product) - Fase 1
 
-## 📖 DAFTAR ISI
+🎯 Fitur MVP
+No	Fitur	Status
+1	Login Multi-Role (Admin, Guru, Orang Tua, Alumni)	✅
+2	Master Data (Siswa, Guru, Kelas, Tahun Ajaran)	✅
+3	Presensi Manual oleh Guru	✅
+4	Rekap Presensi Harian & Bulanan	✅
+5	Notifikasi WhatsApp untuk Orang Tua	✅
+6	Registrasi Alumni	✅
+7	Profil Alumni & Tracer Study	✅
+8	Statistik Tracer Study	✅
+9	Export Excel (Presensi & Alumni)	✅
+🏗️ Arsitektur
+text
+┌─────────────────────────────────────────────────────────────┐
+│                        FRONTEND                             │
+├─────────────────────────────────────────────────────────────┤
+│  Flutter App (Android/iOS/Web)                             │
+│  - Aplikasi Guru (Input Presensi)                          │
+│  - Aplikasi Orang Tua (Monitoring Anak)                    │
+│  - Aplikasi Alumni (Profil & Tracer Study)                │
+└────────────────┬────────────────────────────────────────────┘
+                 │ REST API + Sanctum Token
+┌────────────────▼────────────────────────────────────────────┐
+│                        BACKEND                              │
+├─────────────────────────────────────────────────────────────┤
+│  Laravel 10/11 + API + Filament Admin Panel                │
+│  - Authentication (Sanctum)                                │
+│  - Role Management (Spatie Permission)                     │
+│  - Export Excel/PDF                                        │
+│  - WhatsApp Notification Gateway                            │
+└────────────────┬────────────────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────────────────┐
+│                        DATABASE                             │
+├─────────────────────────────────────────────────────────────┤
+│  MySQL (Relational Database)                               │
+└─────────────────────────────────────────────────────────────┘
+📁 Struktur Database
+Core Tables
+users - User authentication & roles
 
-- [Deskripsi Proyek](#-deskripsi-proyek)
-- [Fitur Utama](#-fitur-utama)
-- [Tech Stack](#-tech-stack)
-- [Arsitektur Sistem](#-arsitektur-sistem)
-- [Struktur Database](#-struktur-database)
-- [Struktur Folder](#-struktur-folder)
-- [Panduan Instalasi](#-panduan-instalasi)
-- [Konfigurasi Environment](#-konfigurasi-environment)
-- [Daftar Endpoint API](#-daftar-endpoint-api)
-- [Role & Permission](#-role--permission)
-- [Workflow Presensi](#-workflow-presensi)
-- [Konvensi Kode](#-konvensi-kode)
-- [Testing](#-testing)
-- [Deployment](#-deployment)
-- [Task Management](#-task-management)
-- [FAQ](#-faq)
-- [Tim Pengembang](#-tim-pengembang)
+schools - Data sekolah
 
----
+classes - Data kelas
 
-## 📘 DESKRIPSI PROYEK
+students - Data siswa
 
-**Sistem Presensi & Alumni Digital Sekolah** adalah aplikasi berbasis web dan mobile untuk mengelola presensi siswa secara real-time, manajemen data alumni, serta notifikasi WhatsApp ke orang tua. Sistem ini menggunakan arsitektur **REST API** dengan **Laravel 13** sebagai backend dan siap dikonsumsi oleh aplikasi mobile (Flutter).
+teachers - Data guru
 
-### Tujuan Proyek:
-- Menggantikan presensi manual dengan sistem digital
-- Memudahkan guru mengelola kehadiran siswa
-- Memberikan notifikasi real-time ke orang tua
-- Mendata alumni dan tracer study
-- Menyediakan laporan akademik yang komprehensif
+Presensi Tables
+student_attendances - Log presensi siswa
 
----
+Alumni Tables
+alumni - Data alumni terverifikasi
 
-## ✨ FITUR UTAMA
+alumni_profiles - Profil lengkap & tracer study
 
-| Fitur | Deskripsi |
-|---|---|
-| 🔐 **Autentikasi** | Login multi-role (Super Admin, Admin, Guru, Siswa, Orang Tua, Alumni) dengan Laravel Sanctum |
-| 🛡️ **Role & Permission** | Hak akses berbasis role menggunakan Spatie Permission |
-| 👥 **Manajemen User** | CRUD user lengkap dengan soft delete |
-| 🏫 **Manajemen Sekolah** | Multi-sekolah dalam satu sistem |
-| 👨‍🏫 **Manajemen Guru** | Data guru, NIP, bidang studi, jadwal mengajar |
-| 🧑‍🎓 **Manajemen Siswa** | Data siswa, NISN, kelas, orang tua |
-| 🏠 **Manajemen Kelas** | Kelas, jurusan, wali kelas, tahun ajaran |
-| 📋 **Presensi Digital** | Input presensi via mobile/web, rekap harian/bulanan/semester |
-| 💬 **Notifikasi WhatsApp** | Kirim notifikasi otomatis ke orang tua (alpha, izin, sakit) |
-| 🎓 **Manajemen Alumni** | Data alumni, tracer study, statistik kelulusan |
-| 📊 **Laporan** | Laporan presensi, akademik, alumni (Excel/PDF) |
-| 📈 **Dashboard** | Dashboard interaktif dengan grafik |
-| 🔌 **REST API** | API lengkap dengan dokumentasi |
+System Tables
+exports - Log export file
 
----
+🔐 Role & Hak Akses
+Role	Hak Akses Utama
+Super Admin	Kelola seluruh sekolah, paket, user, konfigurasi sistem
+Admin Sekolah	Kelola master data, presensi, alumni, laporan, export
+Guru	Input presensi, lihat kelas diampu, rekap kelas
+Orang Tua	Lihat kehadiran anak, terima notifikasi
+Siswa	Lihat riwayat presensi pribadi
+Alumni	Registrasi, update profil, isi tracer study
+🛠️ Tech Stack
+Backend
+Framework: Laravel 10/11
 
-## 🛠️ TECH STACK
+Authentication: Laravel Sanctum
 
-### Backend
-| Teknologi | Versi | Kegunaan |
-|---|---|---|
-| PHP | 8.2+ | Bahasa pemrograman |
-| Laravel | 11.x | Framework backend |
-| MySQL | 8.0+ | Database |
-| Laravel Sanctum | 4.x | Autentikasi API token |
-| Spatie Permission | 6.x | Role & permission |
-| Filament | 3.x | Admin panel |
-| Maatwebsite Excel | 4.x | Export/Import Excel |
-| DomPDF | 3.x | Export PDF |
-| Redis | 7.x | Cache & queue |
+Authorization: Spatie Laravel Permission
 
-### Mobile App (Opsional)
-| Teknologi | Kegunaan |
-|---|---|
-| Flutter 3.x | Mobile app (Siswa & Guru) |
+Admin Panel: Filament PHP v3
 
-### DevOps
-| Teknologi | Kegunaan |
-|---|---|
-| Nginx | Web server |
-| Supervisor | Queue worker |
-| GitHub Actions | CI/CD |
+Database: MySQL
 
----
+Export: Laravel Excel (Maatwebsite)
 
-## 🏗️ ARSITEKTUR SISTEM
+Notifications: WhatsApp Gateway API
+
+Frontend (Mobile)
+Framework: Flutter
+
+State Management: Provider / Riverpod / GetX (sesuai kebutuhan)
+
+HTTP Client: Dio
+
+Local Storage: Shared Preferences
+
+📡 API Endpoints (MVP)
+Authentication
+Method	Endpoint	Fungsi
+POST	/api/login	Login & generate token
+POST	/api/logout	Logout & revoke token
+GET	/api/me	Ambil data user login
+Master Data
+Method	Endpoint	Fungsi
+GET	/api/classes	Daftar kelas
+GET	/api/classes/{id}/students	Daftar siswa per kelas
+Presensi
+Method	Endpoint	Fungsi
+POST	/api/attendance/submit	Simpan presensi siswa
+GET	/api/attendance/daily	Rekap presensi harian
+GET	/api/attendance/monthly	Rekap presensi bulanan
+Alumni
+Method	Endpoint	Fungsi
+POST	/api/alumni/register	Registrasi alumni
+GET	/api/alumni/profile	Ambil profil alumni
+PUT	/api/alumni/profile	Update profil alumni
+GET	/api/admin/alumni/tracer-study	Statistik tracer study
+Export
+Method	Endpoint	Fungsi
+GET	/api/export/attendance	Export presensi Excel
+GET	/api/export/alumni	Export alumni Excel
+📋 Checklist Pengembangan
+Backend Laravel
+Setup Laravel + Sanctum
+
+Setup Spatie Permission
+
+Setup Filament
+
+Migrasi database
+
+CRUD master data
+
+API presensi
+
+API alumni
+
+Export Excel
+
+Frontend Flutter
+Halaman login
+
+Routing per role
+
+Dashboard guru
+
+Form presensi
+
+Riwayat presensi
+
+Register alumni
+
+Profil alumni
+
+Tracer study form
+
+Integrasi & Testing
+Bearer token
+
+Validasi response API
+
+Loading & error state
+
+WhatsApp gateway
+
+Export file
+
+Testing role
+
+Testing data sekolah
+
+Deploy staging
+
+🚀 Quick Start (Local Development)
+Backend (Laravel)
+bash
+# Clone repository
+git clone https://github.com/your-repo/sistem-presensi-alumni.git
+cd sistem-presensi-alumni
+
+# Install dependencies
+composer install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate key
+php artisan key:generate
+
+# Setup database (sesuaikan di .env)
+php artisan migrate --seed
+
+# Create storage link
+php artisan storage:link
+
+# Start development server
+php artisan serve
+
+# Start filament (optional, di terminal terpisah)
+php artisan filament:serve
+Frontend (Flutter)
+bash
+# Masuk ke direktori flutter app
+cd flutter-app
+
+# Install dependencies
+flutter pub get
+
+# Run aplikasi
+flutter run
+Testing API dengan Postman
+Import collection Postman dari folder docs/postman-collection.json
+
+📁 Folder Structure Backend
+text
+app/
+├── Filament/
+│   ├── Resources/
+│   │   ├── Schools/
+│   │   ├── Students/
+│   │   ├── Teachers/
+│   │   ├── Classes/
+│   │   └── Alumni/
+│   └── Widgets/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Api/
+│   │   │   ├── AuthController.php
+│   │   │   ├── AttendanceController.php
+│   │   │   └── AlumniController.php
+│   │   └── Admin/
+│   └── Middleware/
+├── Models/
+│   ├── User.php
+│   ├── School.php
+│   ├── Student.php
+│   ├── Teacher.php
+│   ├── Class.php
+│   ├── StudentAttendance.php
+│   └── Alumni.php
+└── Providers/
+    └── Filament/
+        └── AdminPanelProvider.php
+
+database/
+├── migrations/
+└── seeders/
+
+routes/
+├── api.php      # API routes
+└── web.php      # Filament routes
+📊 Fitur Fase Selanjutnya
+Setelah MVP stabil, fitur berikut akan dikembangkan:
+
+QR Code Presensi
+
+Kartu Alumni Digital
+
+Event Alumni
+
+Lowongan Kerja Alumni
+
+Dashboard Grafik Interaktif
+
+Export PDF
+
+Notifikasi Push
+
+Multi-Sekolah Support
+
+🤝 Kontribusi
+Untuk kontribusi dalam pengembangan, silakan:
+
+Fork repository
+
+Buat branch fitur (git checkout -b feature/AmazingFeature)
+
+Commit perubahan (git commit -m 'Add some AmazingFeature')
+
+Push ke branch (git push origin feature/AmazingFeature)
+
+Buat Pull Request
+
+📝 Lisensi
+Proyek ini untuk keperluan magang internal dan pengembangan sistem sekolah.
+
+👥 Tim Pengembang
+Project Lead: [Nama]
+
+Backend Developer: [Nama]
+
+Frontend Developer: [Nama]
+
+UI/UX Designer: [Nama]
+
+📞 Kontak & Support
+Email: support@sekolahdigital.com
+
+Documentation: [Link Dokumentasi Lengkap]
+
+Issue Tracker: [Link Project Management]
+
+Dibuat untuk keperluan magang internal - MVP Fase 1
+
+Last Updated: 2026
+
+
 ```
 
 ┌──────────────────────────────────────────────────────────┐

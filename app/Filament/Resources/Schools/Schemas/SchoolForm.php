@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Schools\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -14,28 +15,57 @@ class SchoolForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama Sekolah')
                     ->required(),
                 TextInput::make('npsn')
-                    ->required(),
+                    ->label('NPSN')
+                    ->required()
+                    ->maxLength(8)
+                    ->unique(ignoreRecord: true),
                 Textarea::make('address')
+                    ->label('Alamat')
                     ->columnSpanFull(),
                 TextInput::make('phone')
-                    ->tel(),
+                    ->label('No. Telepon')
+                    ->tel()
+                    ->maxLength(20),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Alamat Email')
                     ->email(),
                 TextInput::make('website')
+                    ->label('Website')
                     ->url(),
-                TextInput::make('logo'),
-                TextInput::make('principal_name'),
+                FileUpload::make('logo')
+                    ->label('Logo Sekolah')
+                    ->image()
+                    ->directory('schools/logos'),
+                TextInput::make('principal_name')
+                    ->label('Nama Kepala Sekolah'),
                 Select::make('level')
-                    ->options(['sd' => 'Sd', 'smp' => 'Smp', 'sma' => 'Sma', 'smk' => 'Smk', 'ma' => 'Ma'])
+                    ->label('Jenjang')
+                    ->options([
+                        'sd' => 'SD',
+                        'smp' => 'SMP',
+                        'sma' => 'SMA',
+                        'smk' => 'SMK',
+                        'ma' => 'MA'
+                    ])
                     ->default('smk')
                     ->required(),
                 Select::make('accreditation')
-                    ->options(['a' => 'A', 'b' => 'B', 'c' => 'C', 'not_accredited' => 'Not accredited']),
+                    ->label('Akreditasi')
+                    ->options([
+                        'a' => 'A',
+                        'b' => 'B',
+                        'c' => 'C',
+                        'not_accredited' => 'Tidak Terakreditasi'
+                    ]),
                 Select::make('status')
-                    ->options(['active' => 'Active', 'inactive' => 'Inactive'])
+                    ->label('Status')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif'
+                    ])
                     ->default('active')
                     ->required(),
             ]);

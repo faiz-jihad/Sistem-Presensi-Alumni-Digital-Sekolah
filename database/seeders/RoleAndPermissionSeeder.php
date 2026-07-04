@@ -120,9 +120,6 @@ class RoleAndPermissionSeeder extends Seeder
             $role = Role::firstOrCreate([
                 'name' => $roleName,
                 'guard_name' => 'web'
-            ], [
-                'display_name' => ucwords(str_replace('_', ' ', $roleName)),
-                'description' => "Role: " . ucwords(str_replace('_', ' ', $roleName))
             ]);
 
             $role->syncPermissions($permissionsList);
