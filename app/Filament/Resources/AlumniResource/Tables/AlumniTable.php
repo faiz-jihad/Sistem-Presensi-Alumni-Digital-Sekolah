@@ -14,6 +14,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class AlumniTable
 {
@@ -21,33 +22,32 @@ class AlumniTable
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('photo')
-                    ->label('Foto')
-                    ->circular()
-                    ->size(40)
-                    ->defaultImageUrl(asset('images/default-avatar.png')),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama')
-                    ->searchable()
+                    ->searchable() // Sudah benar
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nisn')
                     ->label('NISN')
-                    ->searchable(),
+                    ->searchable() // Sudah benar
+                    ->sortable(), // Tambahkan sortable untuk NISN
                 Tables\Columns\TextColumn::make('school.name')
                     ->label('Sekolah')
-                    ->searchable()
+                    ->searchable() // Sudah benar
                     ->sortable(),
                 Tables\Columns\TextColumn::make('class_name')
                     ->label('Kelas Lulus')
-                    ->searchable(),
+                    ->searchable() // Sudah benar
+                    ->sortable(), // Tambahkan sortable
                 Tables\Columns\TextColumn::make('graduation_year')
                     ->label('Tahun Lulus')
                     ->sortable(),
+                    // ->searchable(), // Bisa ditambahkan jika ingin searchable
                 Tables\Columns\TextColumn::make('gender')
                     ->label('Jenis Kelamin')
                     ->formatStateUsing(fn (string $state): string => $state === 'male' ? 'Laki-laki' : 'Perempuan')
                     ->badge()
-                    ->color(fn (string $state): string => $state === 'male' ? 'primary' : 'success'),
+                    ->color(fn (string $state): string => $state === 'male' ? 'primary' : 'success')
+                    ->searchable(), // Tambahkan searchable untuk gender
                 Tables\Columns\TextColumn::make('verification_status')
                     ->label('Status Verifikasi')
                     ->badge()
@@ -62,7 +62,8 @@ class AlumniTable
                         'verified' => 'success',
                         'rejected' => 'danger',
                         default => 'gray',
-                    }),
+                    })
+                    ->searchable(), // Tambahkan searchable untuk status
                 Tables\Columns\TextColumn::make('verified_at')
                     ->label('Terverifikasi Tgl')
                     ->dateTime('d/m/Y H:i')
@@ -73,6 +74,7 @@ class AlumniTable
                     ->sortable()
                     ->toggleable(),
             ])
+            // TAMBAHKAN: Konfigurasi search secara global
             ->filters([
                 Tables\Filters\SelectFilter::make('school_id')
                     ->label('Sekolah')
@@ -107,8 +109,10 @@ class AlumniTable
                         }
                     }),
             ])
+            ->searchable()
+            ->searchPlaceholder('Cari alumni...')
+            ->searchDebounce(300)
             ->actions([
-                // Gunakan Filament\Actions
                 Action::make('edit')
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')

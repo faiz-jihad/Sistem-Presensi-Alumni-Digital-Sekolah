@@ -64,14 +64,7 @@ class AlumniForm
 
                         TextInput::make('major')
                             ->label('Jurusan'),
-
-                        FileUpload::make('photo')
-                            ->label('Foto Alumni')
-                            ->directory('alumni')
-                            ->image()
-                            ->imageEditor()
-                            ->disk('public'),
-
+                            
                         TextInput::make('email')
                             ->email(),
 
