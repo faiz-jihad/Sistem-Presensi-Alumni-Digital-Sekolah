@@ -16,18 +16,9 @@ class StudentAttendance extends Model
         'student_id',
         'teacher_id',
         'date',
-        'check_in_time',
-        'check_out_time',
         'status',
+        'check_in_time',
         'note',
-        'attachment',
-        'verification_status',
-        'verified_by',
-        'verified_at',
-    ];
-
-    protected $casts = [
-        'verified_at' => 'datetime',
     ];
 
     /**
@@ -60,13 +51,5 @@ class StudentAttendance extends Model
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
-    }
-
-    /**
-     * Relasi ke User yang memverifikasi izin/sakit
-     */
-    public function verifiedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'verified_by');
     }
 }

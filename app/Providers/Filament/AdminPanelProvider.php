@@ -21,6 +21,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -51,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\RecentSchools::class,
                 \App\Filament\Widgets\RecentStudents::class,
                 \App\Filament\Widgets\RecentTeachers::class,
+                \App\Filament\Widgets\AlumniStatsWidget::class,
                 Widgets\AccountWidget::class,
             ])
             ->middleware([

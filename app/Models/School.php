@@ -25,7 +25,7 @@ class School extends Model
     ];
 
     protected $casts = [
-        'status' => 'string',
+        'status' => 'boolean',
     ];
 
     /**

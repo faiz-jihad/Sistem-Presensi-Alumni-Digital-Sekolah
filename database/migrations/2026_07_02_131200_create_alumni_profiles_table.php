@@ -22,41 +22,21 @@ return new class extends Migration
                 'studying_working'  // Kuliah sambil bekerja
             ])->nullable();
 
-            // Pendidikan/Kuliah
             $table->string('university_name')->nullable();
             $table->string('study_program')->nullable();
-            $table->year('entry_year')->nullable();
-            $table->year('graduation_year_university')->nullable();
 
-            // Pekerjaan
             $table->string('company_name')->nullable();
             $table->string('job_position')->nullable();
-            $table->string('industry')->nullable();
-            $table->integer('salary_range_min')->nullable();
-            $table->integer('salary_range_max')->nullable();
 
-            // Wirausaha
             $table->string('business_name')->nullable();
-            $table->string('business_field')->nullable();
-            $table->year('business_start_year')->nullable();
 
-            // Kontak & Lokasi
             $table->string('city')->nullable();
             $table->string('province')->nullable();
             $table->string('whatsapp', 20)->nullable();
             $table->string('linkedin_url')->nullable();
-            $table->string('instagram')->nullable();
-
-            // Lainnya
-            $table->text('achievements')->nullable();
-            $table->text('testimonial')->nullable();
-            $table->boolean('is_willing_to_be_contacted')->default(false);
-            $table->timestamp('last_updated_at')->nullable();
             $table->timestamps();
 
             $table->index('current_status');
-            $table->index('city');
-            $table->index('province');
         });
     }
 

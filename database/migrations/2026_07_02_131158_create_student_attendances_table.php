@@ -4,25 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('student_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_id')
-                  ->constrained('schools')
-                  ->cascadeOnDelete();
+                ->constrained('schools')
+                ->cascadeOnDelete();
             $table->foreignId('class_id')
-                  ->constrained('classes')
-                  ->cascadeOnDelete();
+                ->constrained('classes')
+                ->cascadeOnDelete();
             $table->foreignId('student_id')
-                  ->constrained('students')
-                  ->cascadeOnDelete();
+                ->constrained('students')
+                ->cascadeOnDelete();
             $table->foreignId('teacher_id')
-                  ->nullable()
-                  ->constrained('teachers')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('teachers')
+                ->nullOnDelete();
             $table->date('date');
             $table->time('check_in_time')->nullable();
             $table->time('check_out_time')->nullable();
@@ -36,11 +35,11 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->string('attachment')->nullable()->comment('File bukti');
             $table->enum('verification_status', ['pending', 'approved', 'rejected'])
-                  ->nullable();
+                ->nullable();
             $table->foreignId('verified_by')
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
 

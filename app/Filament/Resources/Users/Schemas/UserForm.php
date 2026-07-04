@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Hash;
 
 class UserForm
 {
@@ -14,43 +14,34 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Nama')
-                    ->required()
-                    ->maxLength(255),
+                    ->required(),
                 TextInput::make('email')
-                    ->label('Email')
+                    ->label('Email address')
                     ->email()
-                    ->required()
-                    ->unique(ignoreRecord: true),
+                    ->required(),
                 TextInput::make('phone')
-                    ->label('Telepon')
                     ->tel(),
                 TextInput::make('password')
-                    ->label('Password')
                     ->password()
-                    ->dehydrateStateUsing(fn ($state) => !empty($state) ? Hash::make($state) : null)
-                    ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord),
+                    ->required(),
                 Select::make('role')
-                    ->label('Role')
                     ->options([
                         'super_admin' => 'Super Admin',
                         'admin' => 'Admin',
                         'teacher' => 'Guru',
                         'student' => 'Siswa',
-                        'parent' => 'Orang Tua',
+                        'parent' => 'Orang Tua / Wali',
                         'alumni' => 'Alumni',
                     ])
+                    ->default('student')
                     ->required(),
+                TextInput::make('school_id')
+                    ->numeric(),
                 Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'active' => 'Aktif',
-                        'inactive' => 'Tidak Aktif',
-                        'suspended' => 'Ditangguhkan',
-                    ])
+                    ->options(['active' => 'Active', 'inactive' => 'Inactive', 'suspended' => 'Suspended'])
                     ->default('active')
                     ->required(),
+                DateTimePicker::make('email_verified_at'),
             ]);
     }
 }

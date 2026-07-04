@@ -333,7 +333,6 @@
                                 @if($isDaily)
                                     <th style="width: 150px;">Status</th>
                                     <th style="width: 110px; text-align: center;">Jam Masuk</th>
-                                    <th style="width: 110px; text-align: center;">Jam Pulang</th>
                                     <th>Catatan</th>
                                 @else
                                     <th style="width: 110px; text-align: center;">Hari Direkap</th>
@@ -381,7 +380,6 @@
                                             </span>
                                         </td>
                                         <td style="text-align: center; font-family: monospace;">{{ $student['check_in_time'] ?: '-' }}</td>
-                                        <td style="text-align: center; font-family: monospace;">{{ $student['check_out_time'] ?: '-' }}</td>
                                         <td style="font-size: 12px; font-style: italic; color: #64748b;">
                                             {{ $student['note'] ?: '-' }}
                                         </td>

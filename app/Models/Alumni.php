@@ -32,6 +32,11 @@ class Alumni extends Model
         'verification_notes',
     ];
 
+    protected $casts = [
+        'graduation_year' => 'integer',
+        'verified_at' => 'datetime',
+    ];
+
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
@@ -42,13 +47,23 @@ class Alumni extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function profile(): HasOne
-    {
-        return $this->hasOne(AlumniProfile::class, 'alumni_id');
-    }
-
-    public function verifier(): BelongsTo
+    public function verifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('verification_status', 'pending');
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->where('verification_status', 'verified');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('verification_status', 'rejected');
     }
 }

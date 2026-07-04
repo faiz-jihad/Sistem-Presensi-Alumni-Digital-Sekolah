@@ -27,12 +27,6 @@ class Student extends Model
         'name',
         'gender',
         'birth_date',
-        'birth_place',
-        'address',
-        'photo',
-        'parent_name',
-        'parent_phone',
-        'enrollment_year',
         'status',
     ];
 

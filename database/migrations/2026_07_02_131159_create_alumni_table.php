@@ -4,19 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('alumni', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_id')
-                  ->constrained('schools')
-                  ->cascadeOnDelete();
+                ->constrained('schools')
+                ->cascadeOnDelete();
             $table->foreignId('user_id')
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->string('nisn', 10)->unique();
             $table->string('name');
             $table->enum('gender', ['male', 'female']);
@@ -27,11 +26,11 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone', 20)->nullable();
             $table->enum('verification_status', ['pending', 'verified', 'rejected'])
-                  ->default('pending');
+                ->default('pending');
             $table->foreignId('verified_by')
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
             $table->timestamp('verified_at')->nullable();
             $table->text('verification_notes')->nullable();
             $table->timestamps();
