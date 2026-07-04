@@ -7,16 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Teacher extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'school_id',
         'user_id',
         'nip',
         'name',
+        'gender',
         'phone',
+        'address',
+        'photo',
+        'employment_status',
+        'field_of_study',
+        'education_level',
+        'university',
+        'join_date',
+        'status',
     ];
 
     /**

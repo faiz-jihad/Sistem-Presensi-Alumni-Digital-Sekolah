@@ -8,10 +8,8 @@ use App\Filament\Resources\Students\Pages\ListStudents;
 use App\Filament\Resources\Students\Schemas\StudentForm;
 use App\Filament\Resources\Students\Tables\StudentsTable;
 use App\Models\Student;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,18 +17,33 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
-
-    protected static ?string $navigationLabel = 'Siswa';
-
-    protected static ?string $modelLabel = 'Siswa';
-
-    protected static ?string $pluralModelLabel = 'Siswa';
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-user-group';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Siswa';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Manajemen Akademik';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 4;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'nis', 'nisn', 'parent_name'];
+    }
 
     public static function form(Schema $schema): Schema
     {

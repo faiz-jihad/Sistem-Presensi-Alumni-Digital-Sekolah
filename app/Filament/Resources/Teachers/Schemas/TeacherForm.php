@@ -18,69 +18,77 @@ class TeacherForm
                 Select::make('school_id')
                     ->label('Sekolah')
                     ->relationship('school', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Select::make('user_id')
-                    ->label('Akun Pengguna')
-                    ->relationship('user', 'name'),
+                    ->label('Akun Pengguna (User)')
+                    ->relationship('user', 'name', fn ($query) => $query->where('role', 'teacher'))
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('nip')
                     ->label('NIP')
-                    ->placeholder('Nomor Induk Pegawai')
                     ->required()
                     ->maxLength(18)
-                    ->unique(ignoreRecord: true),
+                    ->unique(ignoreRecord: true)
+                    ->placeholder('Contoh: 199001012015011001'),
                 TextInput::make('name')
-                    ->label('Nama Lengkap')
-                    ->placeholder('Nama Lengkap Guru')
+                    ->label('Nama Guru')
+                    ->placeholder('Contoh: Budi Santoso, S.Pd.')
                     ->required(),
                 Select::make('gender')
                     ->label('Jenis Kelamin')
-                    ->options([
-                        'male' => 'Laki-laki',
-                        'female' => 'Perempuan'
-                    ]),
+                    ->options(['male' => 'Laki-laki', 'female' => 'Perempuan'])
+                    ->native(false),
                 TextInput::make('phone')
-                    ->label('No. Telepon')
+                    ->label('Nomor Telepon')
                     ->tel()
-                    ->placeholder('Contoh: 628123456789')
-                    ->maxLength(20),
+                    ->maxLength(20)
+                    ->placeholder('Contoh: 081234567890'),
                 Textarea::make('address')
-                    ->label('Alamat')
+                    ->label('Alamat Lengkap')
+                    ->rows(3)
                     ->columnSpanFull(),
                 FileUpload::make('photo')
                     ->label('Foto Guru')
                     ->image()
-                    ->directory('teachers/photos'),
+                    ->maxSize(1024)
+                    ->directory('teachers/photos')
+                    ->visibility('public')
+                    ->helperText('Upload foto guru (maksimal 1MB)'),
                 Select::make('employment_status')
                     ->label('Status Kepegawaian')
                     ->options([
                         'pns' => 'PNS',
                         'pppk' => 'PPPK',
                         'honorer' => 'Honorer',
-                        'gtt' => 'GTT (Guru Tidak Tetap)',
-                        'ptt' => 'PTT (Pegawai Tidak Tetap)',
+                        'gtt' => 'Guru Tidak Tetap (GTT)',
+                        'ptt' => 'Pegawai Tidak Tetap (PTT)',
                         'kontrak' => 'Kontrak',
                     ])
                     ->default('honorer')
+                    ->native(false)
                     ->required(),
                 TextInput::make('field_of_study')
-                    ->label('Mata Pelajaran yang Diampu')
-                    ->placeholder('Contoh: Matematika, Pemrograman Web'),
+                    ->label('Mata Pelajaran / Bidang Studi')
+                    ->placeholder('Contoh: Matematika, Fisika'),
                 TextInput::make('education_level')
-                    ->label('Pendidikan Terakhir')
-                    ->placeholder('Contoh: S1 Pendidikan Komputer'),
+                    ->label('Tingkat Pendidikan')
+                    ->placeholder('Contoh: S1 Pendidikan Matematika'),
                 TextInput::make('university')
-                    ->label('Universitas/Instansi')
+                    ->label('Universitas / Perguruan Tinggi')
                     ->placeholder('Contoh: Universitas Negeri Jakarta'),
                 DatePicker::make('join_date')
-                    ->label('Tanggal Mulai Tugas'),
+                    ->label('Tanggal Bergabung'),
                 Select::make('status')
-                    ->label('Status')
+                    ->label('Status Aktif')
                     ->options([
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',
-                        'retired' => 'Pensiun'
+                        'retired' => 'Pensiun',
                     ])
                     ->default('active')
+                    ->native(false)
                     ->required(),
             ]);
     }

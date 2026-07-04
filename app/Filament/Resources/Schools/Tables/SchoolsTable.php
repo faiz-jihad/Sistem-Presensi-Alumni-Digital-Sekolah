@@ -3,12 +3,10 @@
 namespace App\Filament\Resources\Schools\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class SchoolsTable
@@ -18,35 +16,36 @@ class SchoolsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama Sekolah')
-                    ->searchable(),
+                    ->label('Nama')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+                    
                 TextColumn::make('npsn')
                     ->label('NPSN')
-                    ->searchable(),
-                TextColumn::make('phone')
-                    ->label('No. Telepon')
-                    ->searchable(),
-                TextColumn::make('email')
-                    ->label('Alamat Email')
-                    ->searchable(),
-                TextColumn::make('website')
-                    ->label('Website')
-                    ->searchable(),
-                TextColumn::make('logo')
-                    ->label('Logo')
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('principal_name')
-                    ->label('Kepala Sekolah')
-                    ->searchable(),
+                    ->sortable(),
+                    
                 TextColumn::make('level')
                     ->label('Jenjang')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => strtoupper($state)),
-                TextColumn::make('accreditation')
-                    ->label('Akreditasi')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state === 'not_accredited' ? 'Tidak Terakreditasi' : strtoupper($state)),
+                    ->color(fn (string $state): string => match ($state) {
+                        'sd' => 'info',
+                        'smp' => 'success',
+                        'sma' => 'warning',
+                        'smk' => 'primary',
+                        'ma' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'sd' => 'SD',
+                        'smp' => 'SMP',
+                        'sma' => 'SMA',
+                        'smk' => 'SMK',
+                        'ma' => 'MA',
+                        default => $state,
+                    }),
+                    
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -55,35 +54,58 @@ class SchoolsTable
                         'inactive' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => $state === 'active' ? 'Aktif' : 'Tidak Aktif'),
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        default => $state,
+                    }),
+                    
+                TextColumn::make('principal_name')
+                    ->label('Kepala Sekolah')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
+                TextColumn::make('phone')
+                    ->label('Telepon')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
+                TextColumn::make('email')
+                    ->label('Email')
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
                 TextColumn::make('created_at')
-                    ->label('Dibuat Pada')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label('Diperbarui Pada')
-                    ->dateTime('d M Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->label('Dihapus Pada')
-                    ->dateTime('d M Y H:i')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                TrashedFilter::make()->label('Keranjang Sampah'),
+            ->actions([
+                EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color('warning')
+                    ->slideOver(),
+                    
+                DeleteAction::make()
+                    ->label('Hapus')
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Hapus Sekolah?')
+                    ->modalDescription('Apakah Anda yakin ingin menghapus sekolah ini?'),
             ])
-            ->recordActions([
-                EditAction::make(),
-            ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label('Hapus Terpilih')
+                        ->requiresConfirmation()
+                        ->modalHeading('Hapus Data Terpilih?'),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name')
+            ->emptyStateHeading('Belum ada data sekolah')
+            ->emptyStateDescription('Tambahkan sekolah pertama Anda untuk memulai.')
+            ->emptyStateIcon('heroicon-o-building-office');
     }
 }

@@ -23,12 +23,15 @@ class AcademicYearsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label('Tahun Pelajaran')
-                    ->searchable(),
+                    ->label('Tahun Akademik')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('start_year')
-                    ->label('Tahun Mulai'),
+                    ->label('Tahun Mulai')
+                    ->sortable(),
                 TextColumn::make('end_year')
-                    ->label('Tahun Selesai'),
+                    ->label('Tahun Selesai')
+                    ->sortable(),
                 TextColumn::make('start_date')
                     ->label('Tanggal Mulai')
                     ->date('d M Y')
@@ -39,25 +42,23 @@ class AcademicYearsTable
                     ->sortable(),
                 IconColumn::make('is_active')
                     ->label('Aktif')
-                    ->boolean(),
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Dibuat Pada')
-                    ->dateTime('d M Y H:i')
+                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Diperbarui Pada')
-                    ->dateTime('d M Y H:i')
+                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->label('Dihapus Pada')
-                    ->dateTime('d M Y H:i')
+                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make()->label('Keranjang Sampah'),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 EditAction::make(),

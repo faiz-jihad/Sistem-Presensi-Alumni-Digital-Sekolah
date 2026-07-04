@@ -8,27 +8,42 @@ use App\Filament\Resources\Teachers\Pages\ListTeachers;
 use App\Filament\Resources\Teachers\Schemas\TeacherForm;
 use App\Filament\Resources\Teachers\Tables\TeachersTable;
 use App\Models\Teacher;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TeacherResource extends Resource
 {
     protected static ?string $model = Teacher::class;
-
-    protected static ?string $navigationLabel = 'Guru';
-
-    protected static ?string $modelLabel = 'Guru';
-
-    protected static ?string $pluralModelLabel = 'Guru';
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-user';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Guru';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Manajemen Akademik';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 5;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'nip', 'phone', 'field_of_study'];
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -54,5 +69,13 @@ class TeacherResource extends Resource
             'create' => CreateTeacher::route('/create'),
             'edit' => EditTeacher::route('/{record}/edit'),
         ];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }

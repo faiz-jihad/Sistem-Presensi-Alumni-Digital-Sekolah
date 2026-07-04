@@ -18,10 +18,12 @@ class AcademicYearForm
                 Select::make('school_id')
                     ->label('Sekolah')
                     ->relationship('school', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 TextInput::make('name')
-                    ->label('Tahun Pelajaran')
-                    ->placeholder('Contoh: 2023/2024')
+                    ->label('Tahun Akademik')
+                    ->placeholder('Contoh: 2026/2027')
                     ->required(),
                 TextInput::make('start_year')
                     ->label('Tahun Mulai')
@@ -38,8 +40,8 @@ class AcademicYearForm
                     ->label('Tanggal Selesai')
                     ->required(),
                 Toggle::make('is_active')
-                    ->label('Status Aktif')
-                    ->required(),
+                    ->label('Aktif')
+                    ->default(false),
                 Textarea::make('description')
                     ->label('Keterangan')
                     ->columnSpanFull(),

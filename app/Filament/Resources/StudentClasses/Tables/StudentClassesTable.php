@@ -19,32 +19,36 @@ class StudentClassesTable
             ->columns([
                 TextColumn::make('school.name')
                     ->label('Sekolah')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('academicYear.name')
-                    ->label('Tahun Pelajaran')
-                    ->sortable()
-                    ->searchable(),
+                    ->label('Tahun Akademik')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->label('Nama Kelas')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('grade')
                     ->label('Tingkat')
-                    ->badge(),
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('major')
                     ->label('Jurusan')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('homeroomTeacher.name')
                     ->label('Wali Kelas')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('capacity')
                     ->label('Kapasitas')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('room_number')
-                    ->label('Ruangan')
-                    ->searchable(),
+                    ->label('Nomor Ruangan')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -53,25 +57,30 @@ class StudentClassesTable
                         'inactive' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => $state === 'active' ? 'Aktif' : 'Tidak Aktif'),
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        default => $state,
+                    })
+                    ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Dibuat Pada')
-                    ->dateTime('d M Y H:i')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Diperbarui Pada')
-                    ->dateTime('d M Y H:i')
+                    ->label('Diubah')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->label('Dihapus Pada')
-                    ->dateTime('d M Y H:i')
+                    ->label('Dihapus')
+                    ->dateTime('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make()->label('Keranjang Sampah'),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 EditAction::make(),

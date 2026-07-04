@@ -8,10 +8,8 @@ use App\Filament\Resources\Schools\Pages\ListSchools;
 use App\Filament\Resources\Schools\Schemas\SchoolForm;
 use App\Filament\Resources\Schools\Tables\SchoolsTable;
 use App\Models\School;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -19,18 +17,33 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SchoolResource extends Resource
 {
     protected static ?string $model = School::class;
-
-    protected static ?string $navigationLabel = 'Data Sekolah';
-
-    protected static ?string $modelLabel = 'Sekolah';
-
-    protected static ?string $pluralModelLabel = 'Data Sekolah';
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
+    
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-building-office';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Sekolah';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Manajemen Akademik';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 2;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'npsn', 'address', 'email', 'phone'];
+    }
 
     public static function form(Schema $schema): Schema
     {

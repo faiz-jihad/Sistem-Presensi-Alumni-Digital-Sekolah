@@ -15,44 +15,44 @@ class StudentClassForm
                 Select::make('school_id')
                     ->label('Sekolah')
                     ->relationship('school', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Select::make('academic_year_id')
-                    ->label('Tahun Pelajaran')
-                    ->relationship('academicYear', 'name'),
+                    ->label('Tahun Akademik')
+                    ->relationship('academicYear', 'name')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('name')
                     ->label('Nama Kelas')
-                    ->placeholder('Contoh: X RPL 1')
+                    ->placeholder('Contoh: XII RPL 1')
                     ->required(),
                 Select::make('grade')
-                    ->label('Tingkat Kelas')
-                    ->options([
-                        '10' => '10',
-                        '11' => '11',
-                        '12' => '12',
-                        '13' => '13'
-                    ])
+                    ->label('Tingkat / Kelas')
+                    ->options(['10' => '10', '11' => '11', '12' => '12', '13' => '13'])
+                    ->native(false)
                     ->required(),
                 TextInput::make('major')
                     ->label('Jurusan')
-                    ->placeholder('Contoh: Rekayasa Perangkat Lunak'),
+                    ->placeholder('Contoh: RPL'),
                 Select::make('homeroom_teacher_id')
                     ->label('Wali Kelas')
-                    ->relationship('homeroomTeacher', 'name'),
+                    ->relationship('homeroomTeacher', 'name')
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('capacity')
-                    ->label('Kapasitas Kelas (Siswa)')
+                    ->label('Kapasitas')
                     ->required()
                     ->numeric()
                     ->default(30),
                 TextInput::make('room_number')
-                    ->label('Nomor Ruang Kelas')
-                    ->placeholder('Contoh: Lab RPL A'),
+                    ->label('Nomor Ruangan')
+                    ->placeholder('Contoh: Ruang 102'),
                 Select::make('status')
                     ->label('Status')
-                    ->options([
-                        'active' => 'Aktif',
-                        'inactive' => 'Tidak Aktif'
-                    ])
+                    ->options(['active' => 'Aktif', 'inactive' => 'Tidak Aktif'])
                     ->default('active')
+                    ->native(false)
                     ->required(),
             ]);
     }
