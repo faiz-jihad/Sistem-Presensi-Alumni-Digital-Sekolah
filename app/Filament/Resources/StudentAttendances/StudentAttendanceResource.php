@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Filament\Resources\StudentAttendances;
+
+use App\Filament\Resources\StudentAttendances\Pages\CreateStudentAttendance;
+use App\Filament\Resources\StudentAttendances\Pages\EditStudentAttendance;
+use App\Filament\Resources\StudentAttendances\Pages\ListStudentAttendances;
+use App\Filament\Resources\StudentAttendances\Schemas\StudentAttendanceForm;
+use App\Filament\Resources\StudentAttendances\Tables\StudentAttendancesTable;
+use App\Models\StudentAttendance;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
+
+class StudentAttendanceResource extends Resource
+{
+    protected static ?string $model = StudentAttendance::class;
+
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+
+    protected static ?string $navigationLabel = 'Presensi Siswa';
+
+    protected static ?string $modelLabel = 'Presensi Siswa';
+
+    protected static ?string $pluralModelLabel = 'Presensi Siswa';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Presensi';
+
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $recordTitleAttribute = 'date';
+
+    public static function form(Schema $schema): Schema
+    {
+        return StudentAttendanceForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return StudentAttendancesTable::configure($table);
+    }
+
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index'  => ListStudentAttendances::route('/'),
+            'create' => CreateStudentAttendance::route('/create'),
+            'edit'   => EditStudentAttendance::route('/{record}/edit'),
+        ];
+    }
+}

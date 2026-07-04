@@ -3,7 +3,7 @@
 namespace App\Providers\Filament;
 
 
-use Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboard;
 
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -38,11 +38,20 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
+                \App\Filament\Resources\StudentAttendances\Pages\ManualAttendance::class,
+                \App\Filament\Pages\WhatsappNotifPage::class,
+                \App\Filament\Pages\DashboardGrafik::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\StatsOverviewWidget::class,
+                \App\Filament\Widgets\StatsOverview::class,
+                \App\Filament\Widgets\DailyAttendanceChartWidget::class,
+                \App\Filament\Widgets\AttendanceChartWidget::class,
+                \App\Filament\Widgets\AlumniStatusChartWidget::class,
+                \App\Filament\Widgets\RecentSchools::class,
+                \App\Filament\Widgets\RecentStudents::class,
+                \App\Filament\Widgets\RecentTeachers::class,
                 Widgets\AccountWidget::class,
             ])
             ->middleware([
@@ -60,32 +69,6 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->sidebarCollapsibleOnDesktop()
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->pages([
-                Dashboard::class,
-            ])
-            ->discoverPages(
-                in: app_path('Filament/Pages'),
-                for: 'App\\Filament\\Pages'
-            )
-            ->discoverWidgets(
-                in: app_path('Filament/Widgets'),
-                for: 'App\\Filament\\Widgets'
-            )
-            ->middleware([
-                \Illuminate\Cookie\Middleware\EncryptCookies::class,
-                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-                \Illuminate\Session\Middleware\StartSession::class,
-                \Illuminate\Session\Middleware\AuthenticateSession::class,
-                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-                \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
-                \Illuminate\Routing\Middleware\SubstituteBindings::class,
-                \Filament\Http\Middleware\DisableBladeIconComponents::class,
-                \Filament\Http\Middleware\DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                \Filament\Http\Middleware\Authenticate::class,
-            ])
             ->profile();
     }
 }
