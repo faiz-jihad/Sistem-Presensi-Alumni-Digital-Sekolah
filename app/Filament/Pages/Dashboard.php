@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\AlumniStatsWidget;
 use App\Filament\Widgets\AttendanceChartWidget;
 use App\Filament\Widgets\AlumniStatusChartWidget;
 use App\Filament\Widgets\RecentSchools;
@@ -25,6 +26,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             StatsOverview::class,
+            AlumniStatsWidget::class,
             AttendanceChartWidget::class,
             AlumniStatusChartWidget::class,
             RecentSchools::class,
