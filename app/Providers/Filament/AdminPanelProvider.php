@@ -4,8 +4,9 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\DashboardGrafik;
-use App\Filament\Pages\WhatsappNotifPage;  // ✅ Import yang benar
+use App\Filament\Pages\WhatsappNotifPage;
 use App\Filament\Resources\StudentAttendances\Pages\ManualAttendance;
+use App\Filament\Pages\TracerStudy;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -40,8 +41,9 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
                 ManualAttendance::class,
-                WhatsappNotifPage::class,  // ✅ Perbaiki ini
+                WhatsappNotifPage::class,
                 DashboardGrafik::class,
+                TracerStudy::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
