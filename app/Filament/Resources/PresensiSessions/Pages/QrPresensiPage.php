@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PresensiSessions\Pages;
 
 use App\Models\PresensiSession;
+use App\Services\PresensiSessionService;
 use App\Filament\Resources\PresensiSessions\PresensiSessionResource;
 use Filament\Resources\Pages\Page;
 
@@ -38,5 +39,10 @@ class QrPresensiPage extends Page
     public function getQrData(): string
     {
         return "session_{$this->record->id}";
+    }
+
+    public function canShowQr(): bool
+    {
+        return app(PresensiSessionService::class)->canShowQr($this->record);
     }
 }

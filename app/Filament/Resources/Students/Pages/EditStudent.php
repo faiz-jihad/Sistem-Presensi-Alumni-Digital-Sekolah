@@ -24,7 +24,7 @@ class EditStudent extends EditRecord
         $studentUser = User::where('role', 'student')
             ->where(function ($q) use ($data) {
                 $q->where('email', $data['nis'] ?? '')
-                  ->orWhere('name', $data['name'] ?? '');
+                    ->orWhere('name', $data['name'] ?? '');
             })->first();
 
         $data['email'] = $studentUser?->email ?? ($data['nis'] ?? '');
@@ -71,7 +71,10 @@ class EditStudent extends EditRecord
                     ]
                 );
                 $parent->update(['name' => $parentName]);
-                $student->update(['parent_user_id' => $parent->id]);
+                $student->update([
+                    'parent_user_id' => $parent->id,
+                    'parent_phone' => $parentPhone,
+                ]);
             }
         }
 
@@ -79,7 +82,7 @@ class EditStudent extends EditRecord
         $studentUser = User::where('role', 'student')
             ->where(function ($q) use ($student) {
                 $q->where('email', $student->nis)
-                  ->orWhere('name', $student->name);
+                    ->orWhere('name', $student->name);
             })->first();
 
         $email    = $this->data['email'] ?? $student->nis;

@@ -3,98 +3,129 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\PresensiSession;
-use App\Models\Schedule;
 use App\Models\Teacher;
+use App\Services\PresensiSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class PresensiSessionController extends BaseController
 {
+    public function __construct(
+        private readonly PresensiSessionService $presensiSessionService
+    ) {}
+
     /**
      * Tampilkan list sesi presensi
      */
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $query = PresensiSession::with(['schedule.class', 'schedule.subject', 'teacher']);
+        try {
+            $sessions = $this->presensiSessionService->listForUser($request->user(), $request->only([
+                'date',
+                'status',
+                'schedule_id',
+            ]));
 
-        if ($user->role === 'teacher') {
-            $teacher = Teacher::where('user_id', $user->id)->first();
-            if (!$teacher) {
-                return $this->error("Data guru tidak ditemukan untuk akun ini.", 404);
-            }
-            $query->where('teacher_id', $teacher->id);
-        } elseif ($user->role === 'admin' || $user->role === 'super_admin') {
-            if ($user->school_id) {
-                $query->where('school_id', $user->school_id);
-            }
-        } else {
-            return $this->forbidden();
+            return $this->success($sessions, 'List sesi presensi berhasil dimuat');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
         }
-
-        if ($request->has('date')) {
-            $query->where('date', $request->date);
-        }
-
-        return $this->success($query->latest()->get(), "List sesi presensi berhasil dimuat");
     }
 
     /**
-     * Buka sesi presensi berdasarkan Schedule ID
+     * Detail sesi presensi
+     */
+    public function show(Request $request, int $id): JsonResponse
+    {
+        $session = PresensiSession::with([
+            'schedule.class',
+            'schedule.subject',
+            'schedule.classHour',
+            'teacher',
+            'studentAttendances.student',
+            'studentAttendances.class',
+        ])->findOrFail($id);
+
+        try {
+            $this->presensiSessionService->ensureUserCanManageSession($request->user(), $session);
+
+            return $this->success($session, 'Detail sesi presensi berhasil dimuat');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
+        }
+    }
+
+    /**
+     * Buat sesi presensi berdasarkan jadwal
      */
     public function store(Request $request): JsonResponse
     {
         $user = $request->user();
         $teacher = Teacher::where('user_id', $user->id)->first();
-        
-        if (!$teacher && !in_array($user->role, ['admin', 'super_admin'])) {
-            return $this->forbidden("Hanya guru atau admin yang dapat membuat sesi presensi.");
+
+        if (!$teacher && !in_array($user->role, ['admin', 'super_admin'], true)) {
+            return $this->forbidden('Hanya guru atau admin yang dapat membuat sesi presensi.');
         }
 
-        $validator = Validator::make($request->all(), [
-            'schedule_id' => 'required|exists:schedules,id',
-            'date' => 'nullable|date',
-            'material_topic' => 'nullable|string',
-            'notes' => 'nullable|string',
-        ]);
+        $validator = Validator::make($request->all(), $this->rules());
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
         }
 
-        $schedule = Schedule::findOrFail($request->schedule_id);
-        $date = $request->date ?? Carbon::today()->toDateString();
-        $teacherId = $teacher ? $teacher->id : $schedule->teacher_id;
+        try {
+            $session = $this->presensiSessionService->create($validator->validated(), $teacher?->id);
 
-        // Cek jika sesi sudah ada untuk jadwal dan tanggal tersebut
-        $session = PresensiSession::where('schedule_id', $schedule->id)
-            ->where('date', $date)
-            ->first();
+            return $this->success($session, 'Sesi presensi berhasil dibuat', 201);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
+        }
+    }
 
-        if ($session) {
-            // Jika sudah ada, ubah status ke open
-            $session->update([
-                'status' => 'open',
-                'material_topic' => $request->material_topic ?? $session->material_topic,
-                'notes' => $request->notes ?? $session->notes,
-            ]);
-            return $this->success($session, "Sesi presensi berhasil dibuka kembali");
+    /**
+     * Update sesi presensi
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $session = PresensiSession::findOrFail($id);
+
+        try {
+            $this->presensiSessionService->ensureUserCanManageSession($request->user(), $session);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
         }
 
-        $session = PresensiSession::create([
-            'school_id' => $schedule->school_id,
-            'schedule_id' => $schedule->id,
-            'teacher_id' => $teacherId,
-            'date' => $date,
-            'start_time' => Carbon::now()->toTimeString(),
-            'status' => 'open',
-            'material_topic' => $request->material_topic,
-            'notes' => $request->notes,
-        ]);
+        $validator = Validator::make($request->all(), $this->rules(requiredSchedule: false));
 
-        return $this->success($session, "Sesi presensi berhasil dibuka", 201);
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors());
+        }
+
+        try {
+            $session = $this->presensiSessionService->update($session, $validator->validated());
+
+            return $this->success($session, 'Sesi presensi berhasil diperbarui');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
+        }
+    }
+
+    /**
+     * Buka sesi presensi
+     */
+    public function open(Request $request, int $id): JsonResponse
+    {
+        $session = PresensiSession::findOrFail($id);
+
+        try {
+            $this->presensiSessionService->ensureUserCanManageSession($request->user(), $session);
+            $session = $this->presensiSessionService->open($session);
+
+            return $this->success($session, 'Sesi presensi berhasil dibuka');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
+        }
     }
 
     /**
@@ -103,24 +134,32 @@ class PresensiSessionController extends BaseController
     public function close(Request $request, int $id): JsonResponse
     {
         $session = PresensiSession::findOrFail($id);
-        $user = $request->user();
 
-        // Validasi hak akses tutup
-        if ($user->role === 'teacher') {
-            $teacher = Teacher::where('user_id', $user->id)->first();
-            if (!$teacher || $session->teacher_id !== $teacher->id) {
-                return $this->forbidden("Anda tidak berhak menutup sesi presensi ini.");
-            }
+        try {
+            $this->presensiSessionService->ensureUserCanManageSession($request->user(), $session);
+            $session = $this->presensiSessionService->close($session, $request->user()->id);
+
+            return $this->success($session, 'Sesi presensi berhasil ditutup');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
         }
+    }
 
-        $session->update([
-            'status' => 'closed',
-            'closed_by' => $user->id,
-            'closed_at' => Carbon::now(),
-            'end_time' => Carbon::now()->toTimeString(),
-        ]);
+    /**
+     * Hapus sesi presensi
+     */
+    public function destroy(Request $request, int $id): JsonResponse
+    {
+        $session = PresensiSession::findOrFail($id);
 
-        return $this->success($session, "Sesi presensi berhasil ditutup");
+        try {
+            $this->presensiSessionService->ensureUserCanManageSession($request->user(), $session);
+            $this->presensiSessionService->delete($session);
+
+            return $this->success(null, 'Sesi presensi berhasil dihapus');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
+        }
     }
 
     /**
@@ -128,15 +167,46 @@ class PresensiSessionController extends BaseController
      */
     public function showQr(Request $request, int $id): JsonResponse
     {
-        $session = PresensiSession::findOrFail($id);
-        
-        // QR Code string format: session_{id}
-        $qrCodeString = "session_" . $session->id;
+        $session = PresensiSession::with(['schedule.classHour'])->findOrFail($id);
 
-        return $this->success([
-            'session_id' => $session->id,
-            'qr_code' => $qrCodeString,
-            'status' => $session->status,
-        ], "Token QR Code berhasil digenerate");
+        try {
+            $this->presensiSessionService->ensureUserCanManageSession($request->user(), $session);
+
+            if (!$this->presensiSessionService->canShowQr($session)) {
+                return $this->error('QR Code hanya tersedia untuk sesi hari ini yang sedang dibuka dan belum berakhir.', 400);
+            }
+
+            $qrCodeString = 'session_' . $session->id;
+
+            return $this->success([
+                'session_id' => $session->id,
+                'qr_code' => $qrCodeString,
+                'status' => $session->status,
+                'date' => $session->date,
+                'start_time' => $session->start_time,
+                'end_time' => $session->end_time,
+            ], 'Token QR Code berhasil digenerate');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), $this->exceptionCode($e));
+        }
+    }
+
+    private function rules(bool $requiredSchedule = true): array
+    {
+        return [
+            'schedule_id' => [$requiredSchedule ? 'required' : 'sometimes', 'exists:schedules,id'],
+            'teacher_id' => ['sometimes', 'nullable', 'exists:teachers,id'],
+            'date' => ['sometimes', 'nullable', 'date'],
+            'start_time' => ['sometimes', 'nullable', 'regex:/^\\d{2}:\\d{2}(:\\d{2})?$/'],
+            'end_time' => ['sometimes', 'nullable', 'regex:/^\\d{2}:\\d{2}(:\\d{2})?$/'],
+            'status' => ['sometimes', 'in:scheduled,open,closed,cancelled'],
+            'material_topic' => ['sometimes', 'nullable', 'string'],
+            'notes' => ['sometimes', 'nullable', 'string'],
+        ];
+    }
+
+    private function exceptionCode(\Exception $e): int
+    {
+        return in_array($e->getCode(), [400, 403, 404, 422], true) ? $e->getCode() : 400;
     }
 }

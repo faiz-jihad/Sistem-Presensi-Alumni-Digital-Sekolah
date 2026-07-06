@@ -1,4 +1,5 @@
 <x-filament-panels::page>
+<<<<<<< Updated upstream
 <style>
     .ma-header {
         position: relative;
@@ -74,6 +75,35 @@
         background: linear-gradient(to right, #3b82f6, #6366f1, #a855f7);
     }
     .ma-card-body { padding: 1.75rem 2rem; }
+=======
+    <style>
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 640px) {
+            .summary-bar { grid-template-columns: repeat(3, 1fr); }
+        }
+        .summary-item {
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid transparent;
+        }
+        .summary-item-present  { background: #ecfdf5; border-color: #a7f3d0; }
+        .summary-item-late     { background: #fffbeb; border-color: #fde68a; }
+        .summary-item-sick     { background: #eff6ff; border-color: #bae6fd; }
+        .summary-item-izin     { background: #fffbeb; border-color: #fde68a; }
+        .summary-item-absent   { background: #fef2f2; border-color: #fca5a5; }
+
+        .dark .summary-item-present  { background: rgba(6,95,70,0.15);  border-color: rgba(6,95,70,0.4);  }
+        .dark .summary-item-late     { background: rgba(146,64,14,0.15); border-color: rgba(146,64,14,0.4); }
+        .dark .summary-item-sick     { background: rgba(7,89,133,0.15);  border-color: rgba(7,89,133,0.4);  }
+        .dark .summary-item-izin     { background: rgba(146,64,14,0.15); border-color: rgba(146,64,14,0.4); }
+        .dark .summary-item-absent   { background: rgba(153,27,27,0.15); border-color: rgba(153,27,27,0.4); }
+>>>>>>> Stashed changes
 
     .ma-form-wrap {
         background: #f8fafc;
@@ -83,6 +113,7 @@
     }
     .dark .ma-form-wrap { background: rgba(39,39,42,0.4); border-color: rgba(63,63,70,0.5); }
 
+<<<<<<< Updated upstream
     .ma-divider {
         border: none; border-top: 1px solid #f1f5f9;
         margin: 1.5rem 0 0;
@@ -110,6 +141,20 @@
         font-size: 0.7rem; font-weight: 600;
     }
     .dark .ma-summary-badge { background: rgba(79,70,229,0.25); color: #a5b4fc; }
+=======
+        .summary-item-present .summary-number  { color: #065f46; }
+        .summary-item-late .summary-number     { color: #92400e; }
+        .summary-item-sick .summary-number     { color: #075985; }
+        .summary-item-izin .summary-number     { color: #92400e; }
+        .summary-item-absent .summary-number   { color: #991b1b; }
+
+        .dark .summary-item-present .summary-number  { color: #34d399; }
+        .dark .summary-item-late .summary-number     { color: #fbbf24; }
+        .dark .summary-item-sick .summary-number     { color: #38bdf8; }
+        .dark .summary-item-izin .summary-number     { color: #fbbf24; }
+        .dark .summary-item-absent .summary-number   { color: #f87171; }
+    </style>
+>>>>>>> Stashed changes
 
     .ma-grid-5 {
         display: grid;
@@ -195,9 +240,20 @@
             </div>
         </div>
 
+<<<<<<< Updated upstream
         <div class="ma-header-badge">
             <span class="ma-badge-dot"></span>
             Status Sakit/Izin butuh verifikasi
+=======
+        {{-- Info Box --}}
+        <div style="background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px;" class="dark:border-blue-900">
+            <p class="text-sm font-semibold text-blue-900 dark:text-blue-300">Informasi Otomatis</p>
+            <ul class="mt-1 text-sm text-blue-700 dark:text-blue-400 space-y-1 list-disc list-inside">
+                <li>Notifikasi WhatsApp dikirim otomatis ke orang tua saat presensi disimpan</li>
+                <li>Status <strong>Izin</strong> dan <strong>Sakit</strong> memerlukan verifikasi wali kelas/admin</li>
+                <li>Data presensi yang sudah tersimpan dapat dilihat di menu <strong>Presensi Siswa</strong></li>
+            </ul>
+>>>>>>> Stashed changes
         </div>
     </div>
 

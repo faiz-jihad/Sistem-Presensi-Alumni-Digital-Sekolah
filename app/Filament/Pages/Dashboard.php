@@ -6,9 +6,9 @@ use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\AlumniStatsWidget;
 use App\Filament\Widgets\AttendanceChartWidget;
 use App\Filament\Widgets\AlumniStatusChartWidget;
-use App\Filament\Widgets\RecentSchools;
-use App\Filament\Widgets\RecentStudents;
-use App\Filament\Widgets\RecentTeachers;
+use App\Filament\Widgets\WeeklyAttendanceBarChart;
+use App\Filament\Widgets\RealtimeAttendanceOverviewWidget;
+use App\Filament\Widgets\DashboardHeroWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -25,6 +25,7 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
+<<<<<<< Updated upstream
             StatsOverview::class,
             AlumniStatsWidget::class,
             AttendanceChartWidget::class,
@@ -32,6 +33,14 @@ class Dashboard extends BaseDashboard
             RecentSchools::class,
             RecentStudents::class,
             RecentTeachers::class,
+=======
+            DashboardHeroWidget::class,         // sort -1 – Hero banner + quick actions
+            StatsOverview::class,               // sort  1 – Stat cards w/ sparklines
+            RealtimeAttendanceOverviewWidget::class, // sort 2 – Live KBM cards
+            AttendanceChartWidget::class,       // sort  3 – 30-day line chart
+            AlumniStatusChartWidget::class,     // sort  3 – Doughnut alumni
+            WeeklyAttendanceBarChart::class,    // sort  4 – 7-day bar chart
+>>>>>>> Stashed changes
         ];
     }
 

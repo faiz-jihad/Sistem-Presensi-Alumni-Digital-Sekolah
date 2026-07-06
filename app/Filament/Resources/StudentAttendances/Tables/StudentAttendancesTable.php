@@ -23,10 +23,14 @@ class StudentAttendancesTable
             ->columns([
                 TextColumn::make('student.name')
                     ->label('Nama Siswa')
+                    ->description(fn ($record) => "NIS: " . ($record->student?->nis ?? '-') . " | NISN: " . ($record->student?->nisn ?? '-'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
                 TextColumn::make('class.name')
                     ->label('Kelas')
+                    ->badge()
+                    ->color('primary')
                     ->sortable(),
                 TextColumn::make('date')
                     ->label('Tanggal')
@@ -35,7 +39,7 @@ class StudentAttendancesTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state instanceof \App\Enums\AttendanceStatus ? $state->value : $state) {
                         'present'    => 'success',
                         'late'       => 'warning',
                         'permission' => 'info',
@@ -43,20 +47,26 @@ class StudentAttendancesTable
                         'absent'     => 'danger',
                         default      => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn ($state): string => $state instanceof \App\Enums\AttendanceStatus ? $state->label() : match ($state) {
                         'present'    => 'Hadir',
                         'late'       => 'Terlambat',
                         'permission' => 'Izin',
                         'sick'       => 'Sakit',
                         'absent'     => 'Alpha',
-                        default      => $state,
+                        default      => (string) $state,
                     }),
                 TextColumn::make('check_in_time')
                     ->label('Jam Masuk')
-                    ->time('H:i'),
+                    ->icon('heroicon-m-arrow-right-on-rectangle')
+                    ->color('success')
+                    ->time('H:i')
+                    ->placeholder('-'),
                 TextColumn::make('check_out_time')
                     ->label('Jam Pulang')
-                    ->time('H:i'),
+                    ->icon('heroicon-m-arrow-left-on-rectangle')
+                    ->color('danger')
+                    ->time('H:i')
+                    ->placeholder('-'),
                 TextColumn::make('verification_status')
                     ->label('Verifikasi')
                     ->badge()
@@ -84,6 +94,11 @@ class StudentAttendancesTable
             ])
             ->defaultSort('date', 'desc')
             ->filters([
+                SelectFilter::make('class_id')
+                    ->label('Filter Kelas')
+                    ->relationship('class', 'name')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('status')
                     ->label('Status Kehadiran')
                     ->options([
@@ -103,6 +118,64 @@ class StudentAttendancesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('send_whatsapp_notif')
+                    ->label('Kirim WA Orang Tua')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Kirim Notifikasi WhatsApp')
+                    ->modalDescription('Kirim ulang rincian kehadiran siswa ini ke WhatsApp orang tua?')
+                    ->modalSubmitActionLabel('Ya, Kirim')
+                    ->action(function ($record) {
+                        $student = Student::with(['parent'])->find($record->student_id);
+                        if (!$student) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Gagal Mengirim')
+                                ->body('Data siswa tidak ditemukan.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $phone = $student->parent_phone ?? optional($student->parent)->phone;
+                        if (empty($phone)) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Gagal Mengirim')
+                                ->body('Nomor telepon orang tua tidak ditemukan.')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
+                        $dateFormatted = Carbon::parse($record->date)->translatedFormat('d F Y');
+                        $statusIndonesian = match ($record->status) {
+                            'present' => 'Hadir',
+                            'late' => 'Terlambat',
+                            'permission' => 'Izin',
+                            'sick' => 'Sakit',
+                            'absent' => 'Alpha / Tidak Hadir',
+                            default => 'Tidak Diketahui',
+                        };
+
+                        $message = "SIMPAD Info:\n\nYth. Orang Tua/Wali dari {$student->name},\n\nDiberitahukan bahwa putra/putri Anda tercatat *{$statusIndonesian}* pada tanggal {$dateFormatted}.\n";
+
+                        if ($record->check_in_time) {
+                            $message .= "Jam Masuk: {$record->check_in_time}\n";
+                        }
+                        if ($record->note) {
+                            $message .= "Catatan: {$record->note}\n";
+                        }
+
+                        $message .= "\nTerima kasih.\nSistem Presensi Sekolah SIMPAD";
+
+                        dispatch(new SendWhatsAppNotification($phone, $message));
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('WhatsApp Terkirim')
+                            ->body("Pemberitahuan kehadiran {$student->name} berhasil dikirim ke orang tua.")
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('approve')
                     ->label('Setujui')
                     ->icon('heroicon-o-check-circle')

@@ -76,7 +76,11 @@ class ClassController extends BaseController
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 // Untuk guru, cek apakah dia wali kelas ini
                 if ($user->role === 'teacher') {
+<<<<<<< Updated upstream
                     $teacherId = Teacher::where('user_id', $user->id)->value('id');
+=======
+                    $teacherId = $user->teacher?->id;
+>>>>>>> Stashed changes
                     if ($class->homeroom_teacher_id !== $teacherId) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
@@ -110,7 +114,11 @@ class ClassController extends BaseController
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 if ($user->role === 'teacher') {
+<<<<<<< Updated upstream
                     $teacherId = Teacher::where('user_id', $user->id)->value('id');
+=======
+                    $teacherId = $user->teacher?->id;
+>>>>>>> Stashed changes
                     if ($class->homeroom_teacher_id !== $teacherId) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
@@ -119,6 +127,7 @@ class ClassController extends BaseController
                 }
             }
 
+<<<<<<< Updated upstream
             $students = $class->students()
                 ->select('id', 'class_id', 'parent_user_id', 'nis', 'nisn', 'name', 'gender', 'birth_date', 'status')
                 ->with(['parent' => function ($query) {
@@ -126,9 +135,37 @@ class ClassController extends BaseController
                 }])
                 ->orderBy('name')
                 ->get();
+=======
+            $date = $request->query('date');
+            
+            $studentsQuery = $class->students()
+                ->select('id', 'class_id', 'nis', 'nisn', 'name', 'gender', 'status')
+                ->orderBy('name');
+
+            if ($date) {
+                $studentsQuery->with(['attendances' => function ($q) use ($date) {
+                    $q->where('date', $date);
+                }]);
+            }
+
+            $students = $studentsQuery->get()->map(function ($student) use ($date) {
+                $att = $date ? $student->attendances->first() : null;
+                return [
+                    'id' => $student->id,
+                    'nis' => $student->nis,
+                    'nisn' => $student->nisn,
+                    'name' => $student->name,
+                    'gender' => $student->gender,
+                    'status' => $student->status,
+                    'attendance_status' => $att ? $att->status : null,
+                    'attendance_note' => $att ? $att->note : null,
+                ];
+            });
+>>>>>>> Stashed changes
 
             return $this->success([
                 'class' => $class->only(['id', 'name', 'grade', 'major']),
+                'date' => $date,
                 'students' => $students
             ], 'Daftar siswa berhasil diambil');
 

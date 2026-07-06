@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PresensiSessions\Schemas;
 
+use App\Models\Schedule;
 use App\Models\School;
 use App\Models\Teacher;
 use Filament\Forms\Components\DatePicker;
@@ -30,6 +31,24 @@ class PresensiSessionForm
                                 ->searchable()
                                 ->preload(),
 
+                            Select::make('schedule_id')
+                                ->label('Jadwal Pelajaran')
+                                ->options(function () {
+                                    return Schedule::query()
+                                        ->with(['class', 'subject', 'teacher'])
+                                        ->orderBy('day')
+                                        ->get()
+                                        ->mapWithKeys(fn($schedule) => [
+                                            $schedule->id => trim(sprintf('%s - %s - %s', $schedule->class?->name ?? '-', $schedule->subject?->name ?? '-', $schedule->teacher?->name ?? '-')),
+                                        ])
+                                        ->toArray();
+                                })
+                                ->required()
+                                ->searchable()
+                                ->preload(),
+                        ]),
+
+                        Grid::make(2)->schema([
                             Select::make('teacher_id')
                                 ->label('Guru Pengampu')
                                 ->relationship('teacher', 'name')
@@ -46,12 +65,7 @@ class PresensiSessionForm
 
                             Select::make('status')
                                 ->label('Status Sesi')
-                                ->options([
-                                    'scheduled' => 'Terjadwal',
-                                    'open'      => 'Dibuka',
-                                    'closed'    => 'Ditutup',
-                                    'cancelled' => 'Dibatalkan',
-                                ])
+                                ->options(\App\Enums\SessionStatus::options())
                                 ->required()
                                 ->default('scheduled'),
                         ]),

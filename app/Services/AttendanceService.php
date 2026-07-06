@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\PresensiSession;
 use App\Models\Student;
 use App\Models\StudentAttendance;
-use App\Models\StudentClass;
-use App\Models\Schedule;
 use App\Jobs\SendWhatsAppNotification;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -16,20 +14,49 @@ class AttendanceService
     /**
      * Guru/Admin melakukan input presensi kelas manual atau bulk.
      */
+<<<<<<< Updated upstream
     public function recordClassAttendance(?int $teacherId, int $classId, string $date, array $attendances): array
+=======
+    public function recordClassAttendance(?int $teacherId, int $classId, string $date, array $attendances, ?int $presensiSessionId = null): array
+>>>>>>> Stashed changes
     {
+        if (empty($attendances)) {
+            throw new \Exception('Daftar kehadiran kosong.');
+        }
+
         $schoolId = DB::table('classes')->where('id', $classId)->value('school_id');
         if (!$schoolId) {
-            throw new \Exception("Kelas tidak ditemukan.");
+            throw new \Exception('Kelas tidak ditemukan.');
+        }
+
+        // Jika sesi diberikan, validasi sesi tersebut ada dan statusnya valid
+        if ($presensiSessionId) {
+            $sessionExists = PresensiSession::where('id', $presensiSessionId)->exists();
+            if (!$sessionExists) {
+                throw new \Exception('Sesi presensi tidak ditemukan.');
+            }
         }
 
         $recordedCount = 0;
+        $seenStudentIds = [];
 
-        DB::transaction(function () use ($schoolId, $classId, $teacherId, $date, $attendances, &$recordedCount) {
+        DB::transaction(function () use ($schoolId, $classId, $teacherId, $date, $attendances, $presensiSessionId, &$recordedCount, &$seenStudentIds) {
             foreach ($attendances as $att) {
-                $studentId = $att['student_id'];
-                $status = $att['status']; // present, late, permission, sick, absent
+                $studentId = $att['student_id'] ?? null;
+                $status = $att['status'] ?? null;
                 $note = $att['note'] ?? null;
+                // Prioritas: session_id per-item > session_id global
+                $sessionId = $att['presensi_session_id'] ?? $presensiSessionId;
+
+                if (empty($studentId) || !in_array($status, ['present', 'late', 'permission', 'sick', 'absent'], true)) {
+                    continue;
+                }
+
+                if (in_array($studentId, $seenStudentIds, true)) {
+                    continue;
+                }
+
+                $seenStudentIds[] = $studentId;
 
                 // Verifikasi siswa berada di kelas tersebut
                 $student = Student::where('id', $studentId)->where('class_id', $classId)->first();
@@ -37,32 +64,35 @@ class AttendanceService
                     continue;
                 }
 
-                // Simpan atau update kehadiran
+                // Gunakan updateOrCreate dengan kunci (student_id, date).
+                // Unique constraint DB adalah (student_id, date) — satu record per siswa per hari.
+                // presensi_session_id pada record ini selalu diperbarui ke sesi terbaru.
                 $attendance = StudentAttendance::updateOrCreate(
                     [
                         'student_id' => $studentId,
-                        'date' => $date,
+                        'date'       => $date,
                     ],
                     [
-                        'school_id' => $schoolId,
-                        'class_id' => $classId,
-                        'teacher_id' => $teacherId,
-                        'status' => $status,
-                        'note' => $note,
-                        'check_in_time' => $status === 'present' || $status === 'late' ? ($att['check_in_time'] ?? Carbon::now()->toTimeString()) : null,
+                        'school_id'          => $schoolId,
+                        'class_id'           => $classId,
+                        'teacher_id'         => $teacherId,
+                        'presensi_session_id' => $sessionId,
+                        'status'             => $status,
+                        'note'               => $note,
+                        'check_in_time'      => in_array($status, ['present', 'late'], true)
+                            ? ($att['check_in_time'] ?? Carbon::now()->toTimeString())
+                            : null,
                     ]
                 );
 
                 $recordedCount++;
-
-                // Trigger notifikasi WhatsApp ke Orang Tua
                 $this->triggerWhatsAppNotification($student, $attendance);
             }
         });
 
         return [
             'success' => true,
-            'count' => $recordedCount,
+            'count'   => $recordedCount,
         ];
     }
 
@@ -73,62 +103,109 @@ class AttendanceService
     {
         $student = Student::findOrFail($studentId);
 
-        // Contoh format QR Code: "session_{id}"
+        // Format QR Code yang valid: "session_{id}"
         if (!str_starts_with($qrCode, 'session_')) {
-            throw new \Exception("Format QR Code tidak valid.");
+            throw new \Exception('Format QR Code tidak valid.');
         }
 
         $sessionId = (int) str_replace('session_', '', $qrCode);
+
+        if ($sessionId <= 0) {
+            throw new \Exception('Format QR Code tidak valid.');
+        }
+
         $session = PresensiSession::with(['schedule.classHour'])->findOrFail($sessionId);
 
         if ($session->status !== 'open') {
-            throw new \Exception("Sesi presensi ini sedang tidak dibuka.");
+            throw new \Exception('Sesi presensi ini sedang tidak dibuka.');
         }
 
         // Cek kecocokan kelas siswa dengan kelas jadwal sesi presensi
         if ($session->schedule && $student->class_id !== $session->schedule->class_id) {
-            throw new \Exception("Anda tidak terdaftar di kelas untuk sesi presensi ini.");
+            throw new \Exception('Anda tidak terdaftar di kelas untuk sesi presensi ini.');
         }
 
         $today = Carbon::today()->toDateString();
         if ($session->date !== $today) {
-            throw new \Exception("Sesi presensi ini bukan untuk hari ini.");
+            throw new \Exception('Sesi presensi ini bukan untuk hari ini.');
         }
 
-        // Cari data presensi siswa hari ini
+        // Null-safe: ambil end_time dari sesi atau dari classHour
+        $endTime  = $session->end_time ?? $session->schedule?->classHour?->end_time;
+        $startTime = $session->start_time ?? $session->schedule?->classHour?->start_time;
+
+        $sessionEndTime = $this->resolveSessionDateTime($session->date, $endTime, $startTime);
+
+        if ($sessionEndTime && Carbon::now()->greaterThan($sessionEndTime)) {
+            throw new \Exception('Sesi presensi ini sudah berakhir.');
+        }
+
+        $now = Carbon::now();
+
+        // Jika sudah ada record presensi hari ini untuk siswa ini:
+        // update presensi_session_id supaya terhubung ke sesi ini
         $attendance = StudentAttendance::where('student_id', $studentId)
             ->where('date', $today)
             ->first();
 
         if ($attendance) {
-            throw new \Exception("Anda sudah melakukan presensi masuk hari ini.");
+            // Tautkan ke sesi ini jika belum ada atau sesi berubah
+            if (empty($attendance->presensi_session_id) || $attendance->presensi_session_id !== $session->id) {
+                $attendance->presensi_session_id = $session->id;
+                $attendance->save();
+            }
+
+            $this->triggerWhatsAppNotification($student, $attendance);
+
+            return $attendance;
         }
 
-        // Presensi Masuk Baru
-        $now = Carbon::now();
-        $startTime = Carbon::parse($session->start_time ?? $session->schedule->classHour->start_time ?? '07:00:00');
-        $diffInMinutes = $startTime->diffInMinutes($now, false);
+        // Hitung keterlambatan (null-safe terhadap classHour)
+        $startTimeRaw = $session->start_time ?? $session->schedule?->classHour?->start_time ?? '07:00:00';
+        $startCarbon  = Carbon::parse($startTimeRaw);
+        $diffInMinutes = $startCarbon->diffInMinutes($now, false);
 
-        $status = 'present';
-        if ($diffInMinutes > 15) {
-            $status = 'late';
-        }
+        $status = $diffInMinutes > 15 ? 'late' : 'present';
+        $note   = $status === 'late'
+            ? 'Terlambat scan QR (' . $diffInMinutes . ' menit)'
+            : 'Scan QR tepat waktu';
 
-        $attendance = StudentAttendance::create([
-            'school_id' => $student->school_id,
-            'class_id' => $student->class_id,
-            'student_id' => $studentId,
-            'teacher_id' => $session->teacher_id,
-            'date' => $today,
-            'check_in_time' => $now->toTimeString(),
-            'status' => $status,
-            'note' => $status === 'late' ? 'Terlambat scan QR (' . $diffInMinutes . ' menit)' : 'Scan QR tepat waktu',
-        ]);
+        // Gunakan updateOrCreate agar aman dari race condition / double submit
+        $attendance = StudentAttendance::updateOrCreate(
+            [
+                'student_id' => $studentId,
+                'date'       => $today,
+            ],
+            [
+                'school_id'           => $student->school_id,
+                'class_id'            => $student->class_id,
+                'teacher_id'          => $session->teacher_id,
+                'presensi_session_id' => $session->id,
+                'check_in_time'       => $now->toTimeString(),
+                'status'              => $status,
+                'note'                => $note,
+            ]
+        );
 
         // Kirim notifikasi masuk ke orang tua
         $this->triggerWhatsAppNotification($student, $attendance);
 
         return $attendance;
+    }
+
+    private function resolveSessionDateTime(string $date, ?string $time, ?string $startTime = null): ?Carbon
+    {
+        if (empty($time)) {
+            return null;
+        }
+
+        $dateTime = Carbon::parse($date . ' ' . $time);
+
+        if (!empty($startTime) && $dateTime->lessThanOrEqualTo(Carbon::parse($date . ' ' . $startTime))) {
+            $dateTime->addDay();
+        }
+
+        return $dateTime;
     }
 
     /**
@@ -161,11 +238,22 @@ class AttendanceService
     public function verifyLeave(int $attendanceId, int $verifierUserId, string $verificationStatus): StudentAttendance
     {
         $attendance = StudentAttendance::findOrFail($attendanceId);
-        $student = Student::findOrFail($attendance->student_id);
+        $student    = Student::findOrFail($attendance->student_id);
 
+        // Hanya bisa verifikasi jika status attendance adalah izin atau sakit
+        if (!in_array($attendance->status, ['permission', 'sick'], true)) {
+            throw new \Exception('Hanya pengajuan izin atau sakit yang dapat diverifikasi.');
+        }
+
+        // Update status attendance jika ditolak → alpha
         if ($verificationStatus === 'rejected') {
             $attendance->status = 'absent';
         }
+
+        // Simpan status verifikasi, verifier, dan waktu verifikasi
+        $attendance->verification_status = $verificationStatus;
+        $attendance->verified_by         = $verifierUserId;
+        $attendance->verified_at         = Carbon::now();
         $attendance->save();
 
         // Kirim update notifikasi WhatsApp ke orang tua
@@ -179,10 +267,9 @@ class AttendanceService
      */
     private function triggerWhatsAppNotification(Student $student, StudentAttendance $attendance): void
     {
-        $phone = null;
-        if ($student->parent) {
-            $phone = $student->parent->phone;
-        }
+        $phone = $student->parent_phone
+            ?? optional($student->parent)->phone
+            ?? null;
 
         if (empty($phone)) {
             return;
@@ -199,14 +286,14 @@ class AttendanceService
         };
 
         $message = "SIMPAD Info:\n\nYth. Orang Tua/Wali dari {$student->name},\n\nDiberitahukan bahwa putra/putri Anda tercatat *{$statusIndonesian}* pada tanggal {$dateFormatted}.\n";
-        
+
         if ($attendance->check_in_time) {
             $message .= "Jam Masuk: {$attendance->check_in_time}\n";
         }
         if ($attendance->note) {
             $message .= "Catatan: {$attendance->note}\n";
         }
-        
+
         $message .= "\nTerima kasih.\nSistem Presensi Sekolah SIMPAD";
 
         dispatch(new SendWhatsAppNotification($phone, $message));

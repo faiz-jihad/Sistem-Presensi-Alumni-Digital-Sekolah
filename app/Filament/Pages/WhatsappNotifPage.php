@@ -28,11 +28,20 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
 
     protected string $view = 'filament.pages.whatsapp-notif';
 
-    protected static ?string $navigationLabel = 'Notifikasi WA Orang Tua';
+    protected static ?string $navigationLabel = 'Kirim WA Orang Tua';
 
+<<<<<<< Updated upstream
     protected static \UnitEnum|string|null $navigationGroup = 'Laporan & Monitoring';
+=======
+    protected static \UnitEnum|string|null $navigationGroup = 'Presensi & Kehadiran';
+>>>>>>> Stashed changes
 
     protected static ?int $navigationSort = 5;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public ?array $data = [];
 

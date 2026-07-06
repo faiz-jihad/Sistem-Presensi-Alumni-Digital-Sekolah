@@ -39,14 +39,24 @@ class TeacherResource extends Resource
         return 'Guru';
     }
 
+    public static function getModelLabel(): string
+    {
+        return 'Guru';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Guru';
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Manajemen Akademik';
+        return 'Master Data';
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 5;
+        return 4;
     }
 
     public static function getGloballySearchableAttributes(): array

@@ -28,7 +28,7 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        description: 'validation.email validation.max.'
         required: true
         example: gbailey@example.net
         type: string
@@ -39,7 +39,7 @@ endpoints:
       password:
         custom: []
         name: password
-        description: 'Must be at least 6 characters. Must not be greater than 100 characters.'
+        description: 'validation.min validation.max.'
         required: true
         example: '+-0pBNvYgxwmi/#iw'
         type: string
@@ -50,7 +50,7 @@ endpoints:
       device_name:
         custom: []
         name: device_name
-        description: 'Must not be greater than 255 characters.'
+        description: validation.max.
         required: false
         example: u
         type: string
@@ -75,43 +75,8 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - POST
-    uri: api/v1/auth/logout
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
       - GET
-    uri: api/v1/auth/me
+    uri: api/v1/alumni/me
     metadata:
       custom: []
       groupName: Endpoints
@@ -187,6 +152,224 @@ endpoints:
           content-type: application/json
           access-control-allow-origin: '*'
         description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/teacher/today
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/teacher/attendance/today
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: "Get teacher's schedules and attendance sessions for today"
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/teacher/attendance/check-in
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Check-in / Presensi Masuk (One-click)'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: multipart/form-data
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      latitude:
+        custom: []
+        name: latitude
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      longitude:
+        custom: []
+        name: longitude
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      photo:
+        custom: []
+        name: photo
+        description: 'validation.image validation.max.'
+        required: false
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      latitude: 4326.41688
+      longitude: 4326.41688
+    fileParameters:
+      photo: null
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/teacher/attendance/check-out
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Check-out / Presensi Keluar (One-click)'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      latitude:
+        custom: []
+        name: latitude
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      longitude:
+        custom: []
+        name: longitude
+        description: ''
+        required: true
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      latitude: 4326.41688
+      longitude: 4326.41688
+    fileParameters: []
+    responses: []
     responseFields: []
     auth:
       - headers
@@ -878,7 +1061,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: validation.max.
         required: true
         example: b
         type: string
@@ -911,7 +1094,7 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address.'
+        description: validation.email.
         required: false
         example: zbailey@example.net
         type: string
@@ -1042,7 +1225,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: validation.max.
         required: true
         example: b
         type: string
@@ -1075,7 +1258,7 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address.'
+        description: validation.email.
         required: false
         example: zbailey@example.net
         type: string
@@ -1239,7 +1422,7 @@ endpoints:
       nis:
         custom: []
         name: nis
-        description: 'Must not be greater than 20 characters.'
+        description: validation.max.
         required: true
         example: ngzmiyvdljnikhwa
         type: string
@@ -1250,7 +1433,7 @@ endpoints:
       nisn:
         custom: []
         name: nisn
-        description: 'Must be 10 characters.'
+        description: validation.size.
         required: true
         example: ykcmyuwpwl
         type: string
@@ -1261,7 +1444,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: validation.max.
         required: true
         example: v
         type: string
@@ -1285,9 +1468,9 @@ endpoints:
       birth_date:
         custom: []
         name: birth_date
-        description: 'Must be a valid date.'
+        description: validation.date.
         required: true
-        example: '2026-07-04T01:52:17'
+        example: '2026-07-05T19:14:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1296,7 +1479,7 @@ endpoints:
       parent_name:
         custom: []
         name: parent_name
-        description: 'Must not be greater than 255 characters.'
+        description: validation.max.
         required: false
         example: q
         type: string
@@ -1307,7 +1490,7 @@ endpoints:
       parent_phone:
         custom: []
         name: parent_phone
-        description: 'Must not be greater than 20 characters.'
+        description: validation.max.
         required: false
         example: wrsitcpscqldzsnr
         type: string
@@ -1321,7 +1504,7 @@ endpoints:
       nisn: ykcmyuwpwl
       name: v
       gender: male
-      birth_date: '2026-07-04T01:52:17'
+      birth_date: '2026-07-05T19:14:06'
       parent_name: q
       parent_phone: wrsitcpscqldzsnr
     fileParameters: []
@@ -1463,7 +1646,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: validation.max.
         required: true
         example: 'n'
         type: string
@@ -1476,7 +1659,7 @@ endpoints:
         name: gender
         description: ''
         required: true
-        example: male
+        example: female
         type: string
         enumValues:
           - male
@@ -1487,9 +1670,9 @@ endpoints:
       birth_date:
         custom: []
         name: birth_date
-        description: 'Must be a valid date.'
+        description: validation.date.
         required: true
-        example: '2026-07-04T01:52:17'
+        example: '2026-07-05T19:14:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1500,7 +1683,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: transferred
+        example: inactive
         type: string
         enumValues:
           - active
@@ -1514,9 +1697,9 @@ endpoints:
     cleanBodyParameters:
       school_id: architecto
       name: 'n'
-      gender: male
-      birth_date: '2026-07-04T01:52:17'
-      status: transferred
+      gender: female
+      birth_date: '2026-07-05T19:14:06'
+      status: inactive
     fileParameters: []
     responses: []
     responseFields: []
@@ -1968,18 +2151,29 @@ endpoints:
       date:
         custom: []
         name: date
-        description: 'Must be a valid date.'
+        description: validation.date.
         required: true
-        example: '2026-07-04T01:52:18'
+        example: '2026-07-05T19:14:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      presensi_session_id:
+        custom: []
+        name: presensi_session_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       attendances:
         custom: []
         name: attendances
-        description: ''
+        description: validation.min.
         required: true
         example:
           - []
@@ -2004,7 +2198,7 @@ endpoints:
         name: 'attendances[].status'
         description: ''
         required: true
-        example: late
+        example: present
         type: string
         enumValues:
           - present
@@ -2018,9 +2212,9 @@ endpoints:
       'attendances[].note':
         custom: []
         name: 'attendances[].note'
-        description: ''
+        description: validation.max.
         required: false
-        example: architecto
+        example: 'n'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2028,11 +2222,11 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       class_id: architecto
-      date: '2026-07-04T01:52:18'
+      date: '2026-07-05T19:14:06'
       attendances:
         - student_id: architecto
-          status: late
-          note: architecto
+          status: present
+          note: 'n'
     fileParameters: []
     responses: []
     responseFields: []
@@ -2152,9 +2346,9 @@ endpoints:
       date:
         custom: []
         name: date
-        description: 'Must be a valid date.'
+        description: validation.date.
         required: true
-        example: '2026-07-04T01:52:18'
+        example: '2026-07-05T19:14:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2187,7 +2381,7 @@ endpoints:
       attachment:
         custom: []
         name: attachment
-        description: 'Must be a file. Must not be greater than 2048 kilobytes.'
+        description: 'Must be a file. validation.max.'
         required: false
         example: null
         type: file
@@ -2196,7 +2390,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      date: '2026-07-04T01:52:18'
+      date: '2026-07-05T19:14:06'
       status: sick
       note: architecto
     fileParameters:
@@ -2309,9 +2503,9 @@ endpoints:
       date:
         custom: []
         name: date
-        description: 'Must be a valid date.'
+        description: validation.date.
         required: false
-        example: '2026-07-04T01:52:18'
+        example: '2026-07-05T19:14:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2319,7 +2513,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       class_id: architecto
-      date: '2026-07-04T01:52:18'
+      date: '2026-07-05T19:14:06'
     fileParameters: []
     responses:
       -
@@ -2377,7 +2571,7 @@ endpoints:
       month:
         custom: []
         name: month
-        description: 'Must be between 1 and 12.'
+        description: validation.between.
         required: true
         example: 2
         type: integer
@@ -2388,7 +2582,7 @@ endpoints:
       year:
         custom: []
         name: year
-        description: 'Must be at least 2020. Must not be greater than 2050.'
+        description: 'validation.min validation.max.'
         required: true
         example: 7
         type: integer
@@ -2481,7 +2675,7 @@ endpoints:
       month:
         custom: []
         name: month
-        description: 'Must be between 1 and 12.'
+        description: validation.between.
         required: true
         example: 2
         type: integer
@@ -2492,7 +2686,7 @@ endpoints:
       year:
         custom: []
         name: year
-        description: 'Must be at least 2020. Must not be greater than 2050.'
+        description: 'validation.min validation.max.'
         required: true
         example: 22
         type: integer
@@ -2503,6 +2697,407 @@ endpoints:
     cleanBodyParameters:
       month: 2
       year: 22
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/attendance/open
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      schedule_id:
+        custom: []
+        name: schedule_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      schedule_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/attendance/manual
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      session_id:
+        custom: []
+        name: session_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      attendances:
+        custom: []
+        name: attendances
+        description: validation.min.
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'attendances[].student_id':
+        custom: []
+        name: 'attendances[].student_id'
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'attendances[].status':
+        custom: []
+        name: 'attendances[].status'
+        description: ''
+        required: true
+        example: absent
+        type: string
+        enumValues:
+          - present
+          - late
+          - permission
+          - sick
+          - absent
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'attendances[].note':
+        custom: []
+        name: 'attendances[].note'
+        description: validation.max.
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'attendances[].check_in_time':
+        custom: []
+        name: 'attendances[].check_in_time'
+        description: 'Must be a valid date in the format <code>H:i:s</code>.'
+        required: false
+        example: '19:14:06'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      session_id: 16
+      attendances:
+        - student_id: 16
+          status: absent
+          note: 'n'
+          check_in_time: '19:14:06'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/attendance/generate-qr
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      session_id:
+        custom: []
+        name: session_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      session_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/attendance/close
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      session_id:
+        custom: []
+        name: session_id
+        description: 'Must match an existing stored value.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      session_id: 16
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/attendance/session/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the session.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/attendance/history
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/attendance/scan
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      token:
+        custom: []
+        name: token
+        description: validation.min.
+        required: true
+        example: bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      token: bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs
     fileParameters: []
     responses: []
     responseFields: []
@@ -2568,7 +3163,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Buka sesi presensi berdasarkan Schedule ID'
+      title: 'Buat sesi presensi berdasarkan jadwal'
       description: ''
       authenticated: true
       deprecated: false
@@ -2580,11 +3175,42 @@ endpoints:
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      schedule_id:
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/presensi-sessions/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Detail sesi presensi'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
         custom: []
-        name: schedule_id
-        description: 'Must match an existing stored value.'
+        name: id
+        description: 'The ID of the presensi session.'
         required: true
         example: architecto
         type: string
@@ -2592,44 +3218,209 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      date:
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
         custom: []
-        name: date
-        description: 'Must be a valid date.'
-        required: false
-        example: '2026-07-04T01:52:18'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      material_topic:
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/v1/presensi-sessions/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update sesi presensi'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
         custom: []
-        name: material_topic
-        description: ''
-        required: false
+        name: id
+        description: 'The ID of the presensi session.'
+        required: true
         example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
-      notes:
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/presensi-sessions/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update sesi presensi'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
         custom: []
-        name: notes
-        description: ''
-        required: false
+        name: id
+        description: 'The ID of the presensi session.'
+        required: true
         example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
-    cleanBodyParameters:
-      schedule_id: architecto
-      date: '2026-07-04T01:52:18'
-      material_topic: architecto
-      notes: architecto
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/presensi-sessions/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Hapus sesi presensi'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the presensi session.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/presensi-sessions/{id}/open'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Buka sesi presensi'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the presensi session.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses: []
     responseFields: []

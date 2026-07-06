@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\DayOfWeek;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Schedule extends Model
 {
@@ -22,57 +24,49 @@ class Schedule extends Model
         'effective_start_date',
         'effective_end_date',
         'is_active',
+        'allow_early_open',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'is_active'        => 'boolean',
+        'allow_early_open' => 'boolean',
+        'day'              => DayOfWeek::class,
     ];
 
-    /**
-     * Relasi ke School
-     */
+    /* ─── Relationships ─────────────────────────── */
+
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
-    /**
-     * Relasi ke Kelas (StudentClass)
-     */
     public function class(): BelongsTo
     {
         return $this->belongsTo(StudentClass::class, 'class_id');
     }
 
-    /**
-     * Relasi ke Mata Pelajaran (Subject)
-     */
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
     }
 
-    /**
-     * Relasi ke Guru (Teacher)
-     */
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(Teacher::class);
     }
 
-    /**
-     * Relasi ke Jam Pelajaran (ClassHour)
-     */
     public function classHour(): BelongsTo
     {
         return $this->belongsTo(ClassHour::class);
     }
 
-    /**
-     * Relasi ke Semester
-     */
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
+    }
+
+    public function presensiSessions(): HasMany
+    {
+        return $this->hasMany(PresensiSession::class);
     }
 }

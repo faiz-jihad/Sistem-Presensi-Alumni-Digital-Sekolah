@@ -130,6 +130,82 @@ class DashboardController extends BaseController
             ->withCount('students')
             ->get(['id', 'name', 'grade', 'major', 'status']);
 
+        // Ambil jadwal hari ini untuk guru
+        $todayDay = strtolower(\Carbon\Carbon::now()->format('l'));
+        $todayDate = \Carbon\Carbon::today()->toDateString();
+        $now = \Carbon\Carbon::now();
+
+        $schedules = \App\Models\Schedule::with(['class', 'subject', 'classHour'])
+            ->where('teacher_id', $teacher->id)
+            ->where('day', $todayDay)
+            ->where('is_active', true)
+            ->get();
+
+        $todaySchedules = [];
+        $activeSchedule = null;
+        $activeSession = null;
+        $buttonState = 'none'; // 'check_in', 'check_out', 'none'
+
+        // Cari session aktif (open) hari ini
+        $openSession = \App\Models\PresensiSession::where('teacher_id', $teacher->id)
+            ->where('date', $todayDate)
+            ->where('status', 'open')
+            ->first();
+
+        if ($openSession) {
+            $activeSession = $openSession;
+            $buttonState = 'check_out';
+            $activeSchedule = \App\Models\Schedule::with(['class', 'subject', 'classHour'])->find($openSession->schedule_id);
+        }
+
+        foreach ($schedules as $schedule) {
+            $session = \App\Models\PresensiSession::where('schedule_id', $schedule->id)
+                ->where('date', $todayDate)
+                ->first();
+
+            $startTime = \Carbon\Carbon::parse($todayDate . ' ' . ($schedule->classHour?->start_time ?? '00:00:00'));
+            $endTime = \Carbon\Carbon::parse($todayDate . ' ' . ($schedule->classHour?->end_time ?? '00:00:00'));
+            $allowedStartTime = $startTime->copy()->subMinutes(15);
+            $isWithinTeachingWindow = $now->greaterThanOrEqualTo($allowedStartTime) && $now->lessThanOrEqualTo($endTime);
+
+            $status = 'upcoming';
+            if ($session) {
+                if ($session->status === 'open') {
+                    $status = 'teaching';
+                } elseif ($session->status === 'closed') {
+                    $status = 'completed';
+                } elseif ($session->status === 'cancelled') {
+                    $status = 'cancelled';
+                }
+            } else {
+                if ($now->greaterThan($endTime)) {
+                    $status = 'missed';
+                } elseif ($isWithinTeachingWindow) {
+                    $status = 'eligible';
+                    if (!$openSession) {
+                        $activeSchedule = $schedule;
+                        $buttonState = 'check_in';
+                    }
+                }
+            }
+
+            $todaySchedules[] = [
+                'schedule_id' => $schedule->id,
+                'class' => $schedule->class?->name,
+                'subject' => $schedule->subject?->name,
+                'start_time' => $schedule->classHour?->start_time,
+                'end_time' => $schedule->classHour?->end_time,
+                'room' => $schedule->room,
+                'status' => $status,
+                'session' => $session ? [
+                    'id' => $session->id,
+                    'status' => $session->status,
+                    'check_in_time' => $session->start_time,
+                    'check_out_time' => $session->end_time,
+                ] : null,
+            ];
+        }
+
         return $this->success([
             'role'    => 'teacher',
             'profile' => [
@@ -144,6 +220,25 @@ class DashboardController extends BaseController
                 'total_homeroom_classes' => $classes->count(),
                 'total_students'         => $classes->sum('students_count'),
             ],
+            'today_attendance' => [
+                'date' => \Carbon\Carbon::now()->translatedFormat('l, d F Y'),
+                'schedules' => $todaySchedules,
+                'active_schedule' => $activeSchedule ? [
+                    'id' => $activeSchedule->id,
+                    'class' => $activeSchedule->class?->name,
+                    'subject' => $activeSchedule->subject?->name,
+                    'start_time' => $activeSchedule->classHour?->start_time,
+                    'end_time' => $activeSchedule->classHour?->end_time,
+                    'room' => $activeSchedule->room,
+                ] : null,
+                'active_session' => $activeSession ? [
+                    'id' => $activeSession->id,
+                    'status' => $activeSession->status,
+                    'check_in_time' => $activeSession->start_time,
+                    'is_late' => (bool) $activeSession->is_late,
+                ] : null,
+                'button_state' => $buttonState,
+            ]
         ], 'Dashboard Guru berhasil dimuat');
     }
 

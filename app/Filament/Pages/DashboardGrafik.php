@@ -25,6 +25,11 @@ class DashboardGrafik extends Page
 
     protected static ?int $navigationSort = 2;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     protected string $view = 'filament.pages.dashboard-grafik';
 
     protected function getHeaderWidgets(): array

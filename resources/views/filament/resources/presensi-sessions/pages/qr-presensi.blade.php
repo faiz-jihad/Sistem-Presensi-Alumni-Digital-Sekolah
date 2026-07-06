@@ -146,7 +146,7 @@
         <div class="qr-card">
             {{-- Header --}}
             <div class="qr-header">
-                @if($this->record->status === 'open')
+                @if($this->canShowQr())
                     <span class="qr-badge-open">
                         <span class="pulse-dot"></span>
                         SESI AKTIF
@@ -171,7 +171,7 @@
             </div>
 
             {{-- QR Image --}}
-            @if($this->record->status === 'open')
+            @if($this->canShowQr())
                 <img
                     src="{{ $this->getQrUrl() }}"
                     alt="QR Code Presensi Sesi {{ $this->record->id }}"
@@ -188,7 +188,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 48px; height: 48px; color: #94a3b8;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
-                    <p style="font-size: 14px; font-weight: 600; color: #64748b; text-align: center;">QR Code tidak tersedia<br><span style="font-weight: 400;">Buka sesi terlebih dahulu</span></p>
+                    <p style="font-size: 14px; font-weight: 600; color: #64748b; text-align: center;">QR Code tidak tersedia<br><span style="font-weight: 400;">Buka sesi terlebih dahulu atau pastikan sesi belum berakhir</span></p>
                 </div>
             @endif
 
@@ -213,7 +213,7 @@
             </div>
 
             {{-- Action Buttons --}}
-            @if($this->record->status === 'open')
+            @if($this->canShowQr())
                 <div class="flex gap-3">
                     <x-filament::button
                         tag="a"
@@ -246,7 +246,7 @@
         </div>
 
         {{-- Instruction Box --}}
-        @if($this->record->status === 'open')
+        @if($this->canShowQr())
         <div class="instruction-box">
             <h4 class="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 18px; height: 18px; color: #3b82f6;">
