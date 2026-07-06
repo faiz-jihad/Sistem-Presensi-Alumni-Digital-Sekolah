@@ -22,4 +22,34 @@ class EditAlumni extends EditRecord
                 ->color('gray'),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $alumni = $this->getRecord();
+        if ($alumni->user) {
+            $data['email'] = $alumni->user->email ?? $data['email'];
+            $data['phone'] = $alumni->profile?->whatsapp ?? $alumni->user->phone ?? $data['phone'];
+        }
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $alumni = $this->getRecord();
+        
+        if ($alumni->user) {
+            $alumni->user->update([
+                'email' => $data['email'] ?? $alumni->user->email,
+                'phone' => $data['phone'] ?? $alumni->user->phone,
+            ]);
+        }
+        
+        if ($alumni->profile && isset($data['phone'])) {
+            $alumni->profile->update([
+                'whatsapp' => $data['phone']
+            ]);
+        }
+
+        return $data;
+    }
 }

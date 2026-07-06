@@ -21,7 +21,7 @@ class AlumniProfileController extends BaseController
             return $this->forbidden('Hanya alumni yang memiliki data profil alumni.');
         }
 
-        $alumni = Alumni::with('profile')->where('user_id', $user->id)->first();
+        $alumni = Alumni::with(['profile', 'user', 'school'])->where('user_id', $user->id)->first();
 
         if (!$alumni) {
             return $this->error('Profil alumni tidak ditemukan.', 404);
@@ -51,11 +51,11 @@ class AlumniProfileController extends BaseController
         }
 
         $validator = Validator::make($request->all(), [
-            'current_status' => 'required|in:working,studying,entrepreneur,unemployed',
-            'university_name' => 'nullable|required_if:current_status,studying|string|max:255',
-            'study_program' => 'nullable|required_if:current_status,studying|string|max:255',
-            'company_name' => 'nullable|required_if:current_status,working|string|max:255',
-            'job_position' => 'nullable|required_if:current_status,working|string|max:255',
+            'current_status' => 'required|in:working,studying,entrepreneur,unemployed,studying_working',
+            'university_name' => 'nullable|required_if:current_status,studying,studying_working|string|max:255',
+            'study_program' => 'nullable|required_if:current_status,studying,studying_working|string|max:255',
+            'company_name' => 'nullable|required_if:current_status,working,studying_working|string|max:255',
+            'job_position' => 'nullable|required_if:current_status,working,studying_working|string|max:255',
             'business_name' => 'nullable|required_if:current_status,entrepreneur|string|max:255',
             'city' => 'nullable|string|max:100',
             'province' => 'nullable|string|max:100',

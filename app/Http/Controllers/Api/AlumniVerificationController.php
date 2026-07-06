@@ -19,7 +19,7 @@ class AlumniVerificationController extends BaseController
     {
         $user = $request->user();
 
-        $query = Alumni::with(['school:id,name', 'user:id,email'])
+        $query = Alumni::with(['school:id,name', 'user:id,email', 'profile'])
             ->where('verification_status', 'pending')
             ->orderBy('created_at', 'asc');
 
@@ -48,7 +48,7 @@ class AlumniVerificationController extends BaseController
     public function list(Request $request): JsonResponse
     {
         $user  = $request->user();
-        $query = Alumni::with(['school:id,name', 'user:id,email'])
+        $query = Alumni::with(['school:id,name', 'user:id,email', 'profile'])
             ->orderBy('created_at', 'desc');
 
         // Filter berdasarkan status verifikasi
@@ -85,7 +85,7 @@ class AlumniVerificationController extends BaseController
     public function show(Request $request, int $id): JsonResponse
     {
         $user  = $request->user();
-        $alumni = Alumni::with(['school:id,name', 'user:id,name,email', 'verifiedBy:id,name'])->find($id);
+        $alumni = Alumni::with(['school:id,name', 'user:id,name,email', 'verifiedBy:id,name', 'profile'])->find($id);
 
         if (!$alumni) {
             return $this->notFound('Data alumni tidak ditemukan.');

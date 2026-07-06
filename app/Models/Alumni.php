@@ -47,6 +47,11 @@ class Alumni extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function profile(): HasOne
+    {
+        return $this->hasOne(AlumniProfile::class);
+    }
+
     public function verifiedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');

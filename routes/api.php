@@ -26,6 +26,12 @@ Route::prefix('v1')->group(function () {
 // ─── Public routes ──────────────────────────────────────────────────────
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
+    Route::get('/schools/public', function () {
+        return response()->json([
+            'status' => 'success', 
+            'data' => \App\Models\School::select('id', 'name')->get()
+        ]);
+    });
 
 // ─── Protected routes (memerlukan token Sanctum) ─────────────────────────
 Route::middleware('auth:sanctum')->group(function () {

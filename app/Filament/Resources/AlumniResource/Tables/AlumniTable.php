@@ -48,6 +48,27 @@ class AlumniTable
                     ->badge()
                     ->color(fn (string $state): string => $state === 'male' ? 'primary' : 'success')
                     ->searchable(), // Tambahkan searchable untuk gender
+                Tables\Columns\TextColumn::make('profile.current_status')
+                    ->label('Status Saat Ini')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'studying' => 'Kuliah',
+                        'working' => 'Bekerja',
+                        'entrepreneur' => 'Wirausaha',
+                        'studying_working' => 'Kuliah & Kerja',
+                        'unemployed' => 'Belum Bekerja',
+                        default => '-',
+                    })
+                    ->color(fn (?string $state): string => match ($state) {
+                        'studying' => 'info',
+                        'working' => 'success',
+                        'entrepreneur' => 'warning',
+                        'studying_working' => 'primary',
+                        'unemployed' => 'danger',
+                        default => 'gray',
+                    })
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('verification_status')
                     ->label('Status Verifikasi')
                     ->badge()
@@ -106,6 +127,22 @@ class AlumniTable
                     ->query(function ($query, $data) {
                         if (!empty($data['year'])) {
                             $query->where('graduation_year', $data['year']);
+                        }
+                    }),
+                Tables\Filters\SelectFilter::make('profile.current_status')
+                    ->label('Status Saat Ini')
+                    ->options([
+                        'studying' => 'Kuliah',
+                        'working' => 'Bekerja',
+                        'entrepreneur' => 'Wirausaha',
+                        'studying_working' => 'Kuliah & Kerja',
+                        'unemployed' => 'Belum Bekerja',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['value'])) {
+                            $query->whereHas('profile', function (Builder $query) use ($data) {
+                                $query->where('current_status', $data['value']);
+                            });
                         }
                     }),
             ])
