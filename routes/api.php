@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\AlumniController;
 use App\Http\Controllers\Api\AlumniProfileController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\AlumniEventController;
+use App\Http\Controllers\Api\AlumniJobController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -33,6 +34,9 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:alumni')->group(function () {
             Route::get('/alumni/profile', [AlumniProfileController::class, 'show']);
             Route::put('/alumni/profile', [AlumniProfileController::class, 'update']);
+            
+            // Alumni Jobs
+            Route::get('/alumni/jobs', [AlumniJobController::class, 'index']);
         });
 
         // Dashboard — semua role yang sudah login bisa akses
