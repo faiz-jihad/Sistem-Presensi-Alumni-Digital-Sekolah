@@ -18,6 +18,11 @@ class AcademicYearResource extends Resource
 {
     protected static ?string $model = AcademicYear::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
+
     protected static ?string $modelLabel = 'Tahun Akademik';
 
     protected static ?string $pluralModelLabel = 'Tahun Akademik';

@@ -14,6 +14,12 @@ class CreateAlumniEvent extends CreateRecord
     {
         $data['posted_by'] = auth()->id();
 
+        if (auth()->user()->role === 'alumni') {
+            $data['approval_status'] = 'pending';
+        } else {
+            $data['approval_status'] = 'approved';
+        }
+
         if (auth()->user()->role !== 'super_admin') {
             $data['school_id'] = auth()->user()->school_id;
         }

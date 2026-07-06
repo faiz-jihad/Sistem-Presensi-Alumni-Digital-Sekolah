@@ -19,6 +19,11 @@ class PresensiSessionResource extends Resource
 {
     protected static ?string $model = PresensiSession::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
 
     protected static ?string $navigationLabel = 'Sesi Presensi';

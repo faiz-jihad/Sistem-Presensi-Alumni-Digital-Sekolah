@@ -18,6 +18,11 @@ class TeacherResource extends Resource
 {
     protected static ?string $model = Teacher::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
+
     protected static ?string $modelLabel = 'Guru';
 
     protected static ?string $pluralModelLabel = 'Guru';

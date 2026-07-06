@@ -20,6 +20,11 @@ class JobVacancyResource extends Resource
 {
     protected static ?string $model = JobVacancy::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
+
     protected static ?string $modelLabel = 'Lowongan Kerja';
 
     protected static ?string $pluralModelLabel = 'Lowongan Kerja';

@@ -81,7 +81,7 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         // Hanya user dengan role tertentu yang bisa akses Filament
-        $allowedRoles = ['super_admin', 'admin', 'teacher'];
+        $allowedRoles = ['super_admin', 'admin', 'teacher', 'alumni'];
         return in_array($this->role, $allowedRoles);
     }
 

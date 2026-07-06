@@ -49,6 +49,16 @@ class AlumniEventForm
                     ->label('Deskripsi Kegiatan')
                     ->columnSpanFull()
                     ->required(),
+                Select::make('approval_status')
+                    ->label('Status Persetujuan')
+                    ->options([
+                        'pending' => 'Menunggu Persetujuan',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                    ])
+                    ->required()
+                    ->default('approved')
+                    ->visible(fn () => in_array(auth()->user()->role, ['super_admin', 'admin'])),
                 Toggle::make('is_active')
                     ->label('Aktif')
                     ->required()

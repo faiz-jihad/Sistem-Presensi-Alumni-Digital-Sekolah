@@ -21,6 +21,7 @@ class AlumniEvent extends Model
         'location',
         'banner_image',
         'is_active',
+        'approval_status',
     ];
 
     protected $casts = [

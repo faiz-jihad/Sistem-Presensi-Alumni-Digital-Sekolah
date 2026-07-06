@@ -45,6 +45,21 @@ class AlumniEventsTable
                     ->label('Aktif')
                     ->boolean()
                     ->sortable(),
+                TextColumn::make('approval_status')
+                    ->label('Status Persetujuan')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'pending' => 'Menunggu Persetujuan',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        default => $state,
+                    }),
                 TextColumn::make('created_at')
                     ->label('Dibuat Pada')
                     ->dateTime('d M Y H:i')
@@ -60,6 +75,26 @@ class AlumniEventsTable
                     ]),
             ])
             ->recordActions([
+                Action::make('approve_event')
+                    ->label('Setujui')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => in_array(auth()->user()->role, ['super_admin', 'admin']) && $record->approval_status === 'pending')
+                    ->action(function ($record) {
+                        $record->update(['approval_status' => 'approved']);
+                        Notification::make()->title('Event disetujui')->success()->send();
+                    }),
+                Action::make('reject_event')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => in_array(auth()->user()->role, ['super_admin', 'admin']) && $record->approval_status === 'pending')
+                    ->action(function ($record) {
+                        $record->update(['approval_status' => 'rejected']);
+                        Notification::make()->title('Event ditolak')->danger()->send();
+                    }),
                 Action::make('toggle')
                     ->label(fn($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
                     ->icon('heroicon-o-check-circle')

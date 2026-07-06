@@ -22,6 +22,11 @@ class AlumniEventResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Event Alumni';
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher', 'alumni']);
+    }
+
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function getNavigationIcon(): string
@@ -80,9 +85,17 @@ class AlumniEventResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
+        $user = auth()->user();
 
-        if (auth()->user()->role !== 'super_admin') {
-            $query->where('school_id', auth()->user()->school_id);
+        if ($user->role === 'alumni') {
+            return $query->where(function ($q) use ($user) {
+                $q->where('approval_status', 'approved')
+                  ->orWhere('posted_by', $user->id);
+            });
+        }
+
+        if ($user->role !== 'super_admin') {
+            $query->where('school_id', $user->school_id);
         }
 
         return $query;
@@ -90,6 +103,22 @@ class AlumniEventResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('is_active', true)->count();
+        $user = auth()->user();
+
+        if ($user->role === 'alumni') {
+            return static::getModel()::where('is_active', true)
+                ->where('approval_status', 'approved')
+                ->count();
+        }
+
+        if (in_array($user->role, ['super_admin', 'admin'])) {
+            $query = static::getModel()::where('approval_status', 'pending');
+            if ($user->role !== 'super_admin') {
+                $query->where('school_id', $user->school_id);
+            }
+            return $query->count() ?: null;
+        }
+
+        return null;
     }
 }
