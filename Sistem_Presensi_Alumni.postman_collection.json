@@ -869,6 +869,269 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "7. Verifikasi Alumni (Admin & Super Admin)",
+			"item": [
+				{
+					"name": "Daftar Alumni Pending (Menunggu Verifikasi)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification", "pending"]
+						},
+						"description": "Daftar semua alumni dengan status PENDING yang menunggu verifikasi admin. Admin hanya melihat sekolahnya sendiri, super_admin melihat semua."
+					},
+					"response": []
+				},
+				{
+					"name": "Daftar Semua Alumni (Semua Status)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification?status=pending",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification"],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "Filter: pending | verified | rejected (kosongkan untuk semua)"
+								}
+							]
+						},
+						"description": "Daftar semua alumni dengan filter opsional status verifikasi. Ganti query ?status=pending|verified|rejected atau hilangkan untuk semua."
+					},
+					"response": []
+				},
+				{
+					"name": "Detail Alumni",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification", "1"]
+						},
+						"description": "Ambil detail lengkap satu data alumni berdasarkan ID. Ganti angka 1 dengan ID alumni yang sesuai."
+					},
+					"response": []
+				},
+				{
+					"name": "Statistik Verifikasi Alumni",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/stats/summary",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification", "stats", "summary"]
+						},
+						"description": "Statistik ringkasan: total, pending, verified, rejected. Admin hanya melihat sekolahnya sendiri."
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Setujui (Approve) Alumni",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification", "1", "approve"]
+						},
+						"description": "Setujui (verifikasi) akun alumni dengan ID 1. Alumni akan mendapatkan notifikasi database bahwa akunnya telah disetujui. Hanya alumni dengan status PENDING yang bisa disetujui."
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Tolak (Reject) Alumni",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Data NISN tidak valid atau tidak sesuai dengan arsip sekolah. Mohon periksa kembali dan hubungi admin.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1/reject",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification", "1", "reject"]
+						},
+						"description": "Tolak pendaftaran alumni dengan menyertakan alasan penolakan. Alumni akan mendapatkan notifikasi database dengan alasan penolakannya. Field 'reason' opsional, default: 'Tidak ada alasan yang diberikan.'"
+					},
+					"response": []
+				},
+				{
+					"name": "🔄 Reset Alumni ke Pending",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1/reset",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "verification", "1", "reset"]
+						},
+						"description": "Reset status alumni yang sebelumnya DITOLAK kembali ke PENDING. Berguna jika admin ingin memberi kesempatan alumni memperbaiki data. Hanya bisa dilakukan pada alumni berstatus 'rejected'."
+					},
+					"response": []
+				},
+				{
+					"name": "📝 Registrasi Alumni Baru",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Budi Santoso\",\n    \"email\": \"budi.santoso@gmail.com\",\n    \"password\": \"password123\",\n    \"phone\": \"08123456789\",\n    \"school_id\": 1,\n    \"nisn\": \"0012345678\",\n    \"graduation_year\": 2023,\n    \"class_name\": \"XII RPL 1\",\n    \"major\": \"Rekayasa Perangkat Lunak\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "alumni", "register"]
+						},
+						"description": "Endpoint publik (tanpa token) untuk registrasi akun alumni baru. Setelah registrasi, status akan 'pending' dan admin akan menerima notifikasi di panel Filament. Uji alur: 1) Register → 2) Login sebagai admin → 3) Approve/Reject."
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

@@ -130,13 +130,26 @@ class AlumniTable
                     ->icon('heroicon-o-check-badge')
                     ->color('success')
                     ->visible(fn (Alumni $record) => $record->verification_status === 'pending')
+                    ->requiresConfirmation()
+                    ->modalHeading('Verifikasi Alumni?')
+                    ->modalDescription('Alumni ini akan diverifikasi dan mendapatkan notifikasi persetujuan.')
                     ->action(function (Alumni $record) {
                         $record->update([
                             'verification_status' => 'verified',
-                            'verified_by' => Auth::id(),
-                            'verified_at' => now(),
+                            'verified_by'         => Auth::id(),
+                            'verified_at'         => now(),
+                            'verification_notes'  => null,
                         ]);
-                        
+
+                        // Notifikasi ke user alumni di panel
+                        if ($record->user) {
+                            Notification::make()
+                                ->title('Akun Anda Telah Diverifikasi ✅')
+                                ->body("Selamat! Data alumni Anda telah disetujui. Anda kini dapat mengakses semua fitur alumni.")
+                                ->success()
+                                ->sendToDatabase($record->user);
+                        }
+
                         Notification::make()
                             ->title('Alumni berhasil diverifikasi')
                             ->success()
@@ -149,6 +162,8 @@ class AlumniTable
                     ->color('danger')
                     ->visible(fn (Alumni $record) => $record->verification_status === 'pending')
                     ->requiresConfirmation()
+                    ->modalHeading('Tolak Pendaftaran Alumni?')
+                    ->modalDescription('Alumni akan menerima notifikasi penolakan beserta alasannya.')
                     ->form([
                         Textarea::make('verification_notes')
                             ->label('Alasan Penolakan')
@@ -158,13 +173,22 @@ class AlumniTable
                     ->action(function (Alumni $record, array $data) {
                         $record->update([
                             'verification_status' => 'rejected',
-                            'verified_by' => Auth::id(),
-                            'verified_at' => now(),
-                            'verification_notes' => $data['verification_notes'],
+                            'verified_by'         => Auth::id(),
+                            'verified_at'         => now(),
+                            'verification_notes'  => $data['verification_notes'],
                         ]);
-                        
+
+                        // Notifikasi ke user alumni di panel
+                        if ($record->user) {
+                            Notification::make()
+                                ->title('Pendaftaran Alumni Ditolak ❌')
+                                ->body("Maaf, data Anda ditolak. Alasan: {$data['verification_notes']}. Silakan hubungi admin sekolah.")
+                                ->danger()
+                                ->sendToDatabase($record->user);
+                        }
+
                         Notification::make()
-                            ->title('Data alumni ditolak')
+                            ->title('Data alumni berhasil ditolak')
                             ->danger()
                             ->send();
                     }),

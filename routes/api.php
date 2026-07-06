@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\AlumniEventController;
 use App\Http\Controllers\Api\AlumniJobController;
 use App\Http\Controllers\Api\TeacherAttendanceController;
+use App\Http\Controllers\Api\AlumniVerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -171,6 +172,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])
             ->middleware('role:admin,super_admin');
     });
+
+        // ─── Verifikasi Alumni (admin & super_admin) ─────────────────────────────
+        Route::prefix('alumni/verification')->middleware('role:admin,super_admin')->group(function () {
+            // Daftar alumni menunggu verifikasi (pending)
+            Route::get('/pending', [AlumniVerificationController::class, 'index']);
+
+            // Daftar semua alumni (filter: ?status=pending|verified|rejected)
+            Route::get('/', [AlumniVerificationController::class, 'list']);
+
+            // Detail satu alumni
+            Route::get('/{id}', [AlumniVerificationController::class, 'show']);
+
+            // Statistik ringkasan verifikasi
+            Route::get('/stats/summary', [AlumniVerificationController::class, 'stats']);
+
+            // Setujui (verifikasi) alumni
+            Route::post('/{id}/approve', [AlumniVerificationController::class, 'approve']);
+
+            // Tolak alumni (dengan alasan opsional di body: { "reason": "..." })
+            Route::post('/{id}/reject', [AlumniVerificationController::class, 'reject']);
+
+            // Reset alumni yang ditolak kembali ke pending
+            Route::post('/{id}/reset', [AlumniVerificationController::class, 'resetToPending']);
+        });
 });
 });
 
