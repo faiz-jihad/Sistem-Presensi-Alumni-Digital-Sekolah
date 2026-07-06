@@ -201,7 +201,8 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
                 ->title('Notifikasi WhatsApp Berhasil Dikirim!')
                 ->body($message)
                 ->success()
-                ->send();
+                ->send()
+                ->sendToDatabase(auth()->user());
 
         } catch (\Exception $e) {
             Notification::make()

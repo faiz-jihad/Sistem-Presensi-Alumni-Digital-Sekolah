@@ -81,9 +81,6 @@ class StudentAttendanceForm
                     ->label('Jam Masuk')
                     ->nullable()
                     ->default(now()->format('H:i')),
-                TimePicker::make('check_out_time')
-                    ->label('Jam Pulang')
-                    ->nullable(),
                 Textarea::make('note')
                     ->label('Catatan')
                     ->nullable()

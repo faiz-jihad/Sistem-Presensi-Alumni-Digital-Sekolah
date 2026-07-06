@@ -79,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
+            ->databaseNotificationsPolling('15s')
             ->profile(\App\Filament\Pages\Auth\CustomEditProfile::class);
     }
 }

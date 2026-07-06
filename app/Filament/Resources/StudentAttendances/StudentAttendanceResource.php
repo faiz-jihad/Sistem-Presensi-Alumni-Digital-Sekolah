@@ -23,7 +23,7 @@ class StudentAttendanceResource extends Resource
         return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
     }
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
+    protected static string|BackedEnum|null $navigationIcon = null;
 
     protected static ?string $navigationLabel = 'Rekap Harian';
 
@@ -45,6 +45,11 @@ class StudentAttendanceResource extends Resource
     public static function table(Table $table): Table
     {
         return StudentAttendancesTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->whereDate('date', \Carbon\Carbon::today());
     }
 
     public static function getRelations(): array

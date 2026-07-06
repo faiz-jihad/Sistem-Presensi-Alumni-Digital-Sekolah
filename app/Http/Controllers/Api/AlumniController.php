@@ -60,6 +60,15 @@ class AlumniController extends BaseController
                 'current_status' => 'unemployed', // default status
             ]);
 
+            $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+            if ($admins->isNotEmpty()) {
+                \Filament\Notifications\Notification::make()
+                    ->title('Registrasi Alumni Baru')
+                    ->body("Alumni **{$request->name}** (Lulusan {$request->graduation_year}) baru saja mendaftar. Menunggu verifikasi admin!")
+                    ->info()
+                    ->sendToDatabase($admins);
+            }
+
             return $this->success([
                 'user' => $user,
                 'alumni' => $alumni,

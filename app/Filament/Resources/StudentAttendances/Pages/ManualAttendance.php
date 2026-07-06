@@ -130,8 +130,8 @@ class ManualAttendance extends Page
                             ->label('Nama Siswa')
                             ->searchable()
                             ->preload()
-                            ->options(function (callable $get) {
-                                $classId = $get('../../class_id');
+                            ->options(function () {
+                                $classId = $this->data['class_id'] ?? null;
                                 if (! $classId) {
                                     return [];
                                 }

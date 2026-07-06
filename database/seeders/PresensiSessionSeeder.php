@@ -244,6 +244,47 @@ class PresensiSessionSeeder extends Seeder
             }
         }
 
+        // ─── 4. SEEDING DATABASE NOTIFICATIONS UNTUK NAVBAR FILAMENT ────────
+        $this->command->info('🔔 Membuat notifikasi database untuk navbar admin...');
+        $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+        if ($admins->isNotEmpty()) {
+            \Filament\Notifications\Notification::make()
+                ->title('Pengajuan Izin Siswa')
+                ->body('Siswa **Citra Izin** (X RPL 1) mengajukan izin untuk hari ini. Menunggu verifikasi!')
+                ->warning()
+                ->sendToDatabase($admins);
+
+            \Filament\Notifications\Notification::make()
+                ->title('Sesi Kelas Dibuka')
+                ->body('Guru **Ahmad Fauzi, S.Pd.** telah membuka sesi presensi untuk kelas **X RPL 1 - Matematika**.')
+                ->success()
+                ->sendToDatabase($admins);
+
+            \Filament\Notifications\Notification::make()
+                ->title('Notifikasi WhatsApp Terkirim!')
+                ->body('Rekap presensi harian telah berhasil dikirim ke **32 nomor WhatsApp** Orang Tua siswa.')
+                ->info()
+                ->sendToDatabase($admins);
+
+            \Filament\Notifications\Notification::make()
+                ->title('Registrasi Alumni Baru')
+                ->body('Alumni **Budi Santoso** (Lulusan 2024) mendaftar ke portal alumni. Menunggu verifikasi.')
+                ->info()
+                ->sendToDatabase($admins);
+
+            \Filament\Notifications\Notification::make()
+                ->title('Lowongan Kerja Baru')
+                ->body('PT Telkom Indonesia memposting lowongan kerja **Software Engineer Intern** untuk alumni.')
+                ->success()
+                ->sendToDatabase($admins);
+
+            \Filament\Notifications\Notification::make()
+                ->title('Sesi Kelas Ditutup')
+                ->body('Sesi presensi **XII TKJ 1** telah selesai dan ditutup dengan total **28 Hadir, 2 Terlambat**.')
+                ->info()
+                ->sendToDatabase($admins);
+        }
+
         $this->command->info("⚡ Hari Ini: {$liveOpenCount} Sesi LIVE (OPEN), {$todayClosedCount} Sesi Selesai (CLOSED), sisanya siap dibuka.");
         $this->command->info('🎉 Seeding Presensi Real-Time Selesai Sempurna!');
     }

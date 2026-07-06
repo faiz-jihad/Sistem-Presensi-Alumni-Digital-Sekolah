@@ -16,4 +16,12 @@ class ListStudentAttendances extends ListRecords
             CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\StatsOverview::class,
+            \App\Filament\Widgets\AttendanceChartWidget::class,
+        ];
+    }
 }

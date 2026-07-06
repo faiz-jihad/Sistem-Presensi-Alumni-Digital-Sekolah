@@ -52,24 +52,20 @@ class StatsOverview extends BaseWidget
                 ->description($presentDiff >= 0
                     ? "↑ {$presentDiff} dari kemarin"
                     : "↓ " . abs($presentDiff) . " dari kemarin")
-                ->descriptionIcon($presentDiff >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($presentDiff >= 0 ? 'success' : 'warning')
                 ->chart($hadirTrend),
 
             Stat::make('Tidak Hadir / Alpha', $absentToday)
                 ->description('Alpha hari ini')
-                ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger')
                 ->chart($alphaTrend),
 
             Stat::make('Izin / Sakit', $permissionToday)
                 ->description('Mengajukan izin/sakit')
-                ->descriptionIcon('heroicon-m-document-text')
                 ->color('warning'),
 
             Stat::make('Total Siswa Terdaftar', $totalStudents)
                 ->description("{$totalTeachers} guru aktif")
-                ->descriptionIcon('heroicon-m-academic-cap')
                 ->color('primary'),
         ];
     }

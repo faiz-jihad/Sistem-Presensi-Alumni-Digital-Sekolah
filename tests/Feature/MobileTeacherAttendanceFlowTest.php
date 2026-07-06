@@ -119,13 +119,13 @@ class MobileTeacherAttendanceFlowTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonStructure([
                 'data' => [
-                    'access_token',
+                    'token',
                     'token_type',
                     'user' => ['id', 'name', 'email', 'role'],
                 ],
             ]);
 
-        $token = $loginResponse->json('data.access_token');
+        $token = $loginResponse->json('data.token');
         $this->assertNotEmpty($token);
 
         // ─── Step 2: Pilih Kelas ─────────────────────────────────────────────
@@ -220,6 +220,6 @@ class MobileTeacherAttendanceFlowTest extends TestCase
 
         // ─── Step 5: Verifikasi Notifikasi WA Orang Tua Dispatched ───────────
         // Karena 5 siswa memiliki parent dengan nomor telepon (081234567890), harus ada 5 job terkirim
-        Queue::assertDispatched(SendWhatsAppNotification::class, 5);
+        Queue::assertPushed(SendWhatsAppNotification::class, 5);
     }
 }

@@ -196,6 +196,17 @@ class StudentAttendanceController extends BaseController
 
         try {
             $attendance = $this->attendanceService->applyLeave($student->id, $request->all());
+
+            $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+            if ($admins->isNotEmpty()) {
+                $statusLabel = $request->status === 'sick' ? 'Sakit' : 'Izin';
+                \Filament\Notifications\Notification::make()
+                    ->title("Pengajuan {$statusLabel} Siswa")
+                    ->body("Siswa **{$student->name}** mengajukan **{$statusLabel}** untuk tanggal **" . \Carbon\Carbon::parse($request->date)->translatedFormat('d F Y') . "**. Catatan: {$request->note}")
+                    ->warning()
+                    ->sendToDatabase($admins);
+            }
+
             return $this->success(
                 new StudentAttendanceResource($attendance),
                 "Pengajuan izin/sakit berhasil dikirim dan menunggu verifikasi."
