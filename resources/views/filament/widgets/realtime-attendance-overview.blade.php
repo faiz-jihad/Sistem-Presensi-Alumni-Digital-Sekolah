@@ -49,17 +49,46 @@
             </div>
         </div>
 
+        <style>
+            .kbm-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .kbm-table th {
+                padding: 12px 18px !important;
+                font-weight: 700 !important;
+                font-size: 11px !important;
+                text-transform: uppercase !important;
+                color: #6b7280 !important;
+                background: #f9fafb !important;
+                border-bottom: 1px solid #e5e7eb !important;
+            }
+            .dark .kbm-table th {
+                color: #9ca3af !important;
+                background: #111827 !important;
+                border-bottom: 1px solid #1f2937 !important;
+            }
+            .kbm-table td {
+                padding: 14px 18px !important;
+                font-size: 13px !important;
+                border-bottom: 1px solid #f3f4f6 !important;
+            }
+            .dark .kbm-table td {
+                border-bottom: 1px solid #1f2937 !important;
+            }
+        </style>
+
         <!-- Real-time Table List -->
         <div class="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-2xl bg-white dark:bg-gray-900/50 shadow-sm">
-            <table class="w-full text-left border-collapse text-sm">
+            <table class="kbm-table">
                 <thead>
-                    <tr class="bg-gray-50/70 dark:bg-gray-850 border-b border-gray-250 dark:border-gray-850">
-                        <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Kelas</th>
-                        <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Mata Pelajaran</th>
-                        <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Guru Pengampu</th>
-                        <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Jam KBM</th>
-                        <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">Status</th>
-                        <th class="px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">Log Waktu</th>
+                    <tr>
+                        <th>Kelas</th>
+                        <th>Mata Pelajaran</th>
+                        <th>Guru Pengampu</th>
+                        <th>Jam KBM</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center;">Log Waktu</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300">

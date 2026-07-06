@@ -11,7 +11,12 @@ class AttendanceChartWidget extends ChartWidget
     protected ?string $heading = '📈 Tren Kehadiran (30 Hari Terakhir)';
     protected ?string $description = 'Persentase siswa hadir per hari';
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 5;
+
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
 
     protected int | string | array $columnSpan = [
         'default' => 12,
@@ -68,19 +73,11 @@ class AttendanceChartWidget extends ChartWidget
         return [
             'plugins' => [
                 'legend' => ['display' => false],
-                'tooltip' => ['callbacks' => []],
             ],
             'scales' => [
                 'y' => [
-                    'beginAtZero' => false,
                     'min' => 0,
                     'max' => 100,
-                    'grid' => ['color' => 'rgba(156,163,175,0.1)'],
-                    'ticks' => ['callback' => null],
-                ],
-                'x' => [
-                    'grid' => ['display' => false],
-                    'ticks' => ['maxTicksLimit' => 10],
                 ],
             ],
         ];

@@ -11,7 +11,12 @@ class AlumniStatusChartWidget extends ChartWidget
     protected ?string $heading = '🎓 Status Alumni';
     protected ?string $description = 'Distribusi status alumni terkini';
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 7;
+
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
 
     protected int | string | array $columnSpan = [
         'default' => 12,

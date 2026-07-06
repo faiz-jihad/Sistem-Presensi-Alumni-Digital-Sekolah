@@ -13,7 +13,12 @@ class RealtimeAttendanceOverviewWidget extends Widget
 {
     protected string $view = 'filament.widgets.realtime-attendance-overview';
 
-    protected static ?int $sort = 2; // Renders right below stats
+    protected static ?int $sort = 4;
+
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
 
     protected int | string | array $columnSpan = 'full';
 
