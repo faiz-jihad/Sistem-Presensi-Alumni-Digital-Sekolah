@@ -13,7 +13,7 @@ class SchoolPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isSuperAdmin();
     }
 
     /**
@@ -21,7 +21,7 @@ class SchoolPolicy
      */
     public function view(User $user, School $school): bool
     {
-        return true;
+        return $user->isSuperAdmin() || $user->school_id === $school->id;
     }
 
     /**
@@ -29,7 +29,7 @@ class SchoolPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isSuperAdmin();
     }
 
     /**
@@ -37,7 +37,7 @@ class SchoolPolicy
      */
     public function update(User $user, School $school): bool
     {
-        return true;
+        return $user->isSuperAdmin();
     }
 
     /**
@@ -45,7 +45,7 @@ class SchoolPolicy
      */
     public function delete(User $user, School $school): bool
     {
-        return true;
+        return $user->isSuperAdmin();
     }
 
     /**
@@ -53,7 +53,7 @@ class SchoolPolicy
      */
     public function restore(User $user, School $school): bool
     {
-        return true;
+        return $user->isSuperAdmin();
     }
 
     /**
@@ -61,6 +61,6 @@ class SchoolPolicy
      */
     public function forceDelete(User $user, School $school): bool
     {
-        return true;
+        return $user->isSuperAdmin();
     }
 }

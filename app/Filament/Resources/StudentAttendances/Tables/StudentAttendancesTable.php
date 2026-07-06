@@ -23,10 +23,14 @@ class StudentAttendancesTable
             ->columns([
                 TextColumn::make('student.name')
                     ->label('Nama Siswa')
+                    ->description(fn ($record) => "NIS: " . ($record->student?->nis ?? '-') . " | NISN: " . ($record->student?->nisn ?? '-'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold'),
                 TextColumn::make('class.name')
                     ->label('Kelas')
+                    ->badge()
+                    ->color('primary')
                     ->sortable(),
                 TextColumn::make('date')
                     ->label('Tanggal')
@@ -35,7 +39,7 @@ class StudentAttendancesTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state): string => match ($state instanceof \App\Enums\AttendanceStatus ? $state->value : $state) {
                         'present'    => 'success',
                         'late'       => 'warning',
                         'permission' => 'info',
@@ -43,20 +47,20 @@ class StudentAttendancesTable
                         'absent'     => 'danger',
                         default      => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn ($state): string => $state instanceof \App\Enums\AttendanceStatus ? $state->label() : match ($state) {
                         'present'    => 'Hadir',
                         'late'       => 'Terlambat',
                         'permission' => 'Izin',
                         'sick'       => 'Sakit',
                         'absent'     => 'Alpha',
-                        default      => $state,
+                        default      => (string) $state,
                     }),
-                TextColumn::make('check_in_time')
-                    ->label('Jam Masuk')
-                    ->time('H:i'),
-                TextColumn::make('check_out_time')
-                    ->label('Jam Pulang')
-                    ->time('H:i'),
+                 TextColumn::make('check_in_time')
+                    ->label('🚪 Jam Masuk')
+                    ->color('success')
+                    ->time('H:i')
+                    ->placeholder('-'),
+
                 TextColumn::make('verification_status')
                     ->label('Verifikasi')
                     ->badge()
@@ -84,6 +88,11 @@ class StudentAttendancesTable
             ])
             ->defaultSort('date', 'desc')
             ->filters([
+                SelectFilter::make('class_id')
+                    ->label('Filter Kelas')
+                    ->relationship('class', 'name')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('status')
                     ->label('Status Kehadiran')
                     ->options([
@@ -101,13 +110,72 @@ class StudentAttendancesTable
                         'rejected' => 'Ditolak',
                     ]),
             ])
-            ->recordActions([
-                EditAction::make(),
-                Action::make('approve')
-                    ->label('Setujui')
-                    ->icon('heroicon-o-check-circle')
+            ->actions([
+                EditAction::make()
+                    ->label('✏️ Edit')
+                    ->icon(null),
+                Action::make('send_whatsapp_notif')
+                    ->label('💬 Kirim WA')
                     ->color('success')
-                    ->visible(fn ($record) => $record->verification_status === 'pending')
+                    ->requiresConfirmation()
+                    ->modalHeading('Kirim Notifikasi WhatsApp')
+                    ->modalDescription('Kirim ulang rincian kehadiran siswa ini ke WhatsApp orang tua?')
+                    ->modalSubmitActionLabel('Ya, Kirim')
+                    ->action(function ($record) {
+                        $student = Student::with(['parent'])->find($record->student_id);
+                        if (!$student) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Gagal Mengirim')
+                                ->body('Data siswa tidak ditemukan.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $phone = $student->parent_phone ?? optional($student->parent)->phone;
+                        if (empty($phone)) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Gagal Mengirim')
+                                ->body('Nomor telepon orang tua tidak ditemukan.')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
+
+                        $dateFormatted = Carbon::parse($record->date)->translatedFormat('d F Y');
+                        $statusVal = $record->status instanceof \App\Enums\AttendanceStatus ? $record->status->value : $record->status;
+                        $statusIndonesian = match ($statusVal) {
+                            'present' => 'Hadir',
+                            'late' => 'Terlambat',
+                            'permission' => 'Izin',
+                            'sick' => 'Sakit',
+                            'absent' => 'Alpha / Tidak Hadir',
+                            default => 'Tidak Diketahui',
+                        };
+
+                        $message = "SIMPAD Info:\n\nYth. Orang Tua/Wali dari {$student->name},\n\nDiberitahukan bahwa putra/putri Anda tercatat *{$statusIndonesian}* pada tanggal {$dateFormatted}.\n";
+
+                        if ($record->check_in_time) {
+                            $message .= "Jam Masuk: {$record->check_in_time}\n";
+                        }
+                        if ($record->note) {
+                            $message .= "Catatan: {$record->note}\n";
+                        }
+
+                        $message .= "\nTerima kasih.\nSistem Presensi Sekolah SIMPAD";
+
+                        dispatch(new SendWhatsAppNotification($phone, $message));
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('WhatsApp Terkirim')
+                            ->body("Pemberitahuan kehadiran {$student->name} berhasil dikirim ke orang tua.")
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('approve')
+                    ->label('✅ Setujui')
+                    ->color('success')
+                    ->visible(fn ($record) => in_array($record->verification_status, ['pending', null], true) || empty($record->verification_status))
                     ->action(function ($record) {
                         $record->update([
                             'verification_status' => 'approved',
@@ -120,17 +188,24 @@ class StudentAttendancesTable
                         if ($student) {
                             $phone = $student->parent_phone ?? optional($student->parent)->phone;
                             if ($phone) {
-                                $status = $record->status === 'permission' ? 'Izin (Disetujui)' : 'Sakit (Disetujui)';
+                                $statusVal = $record->status instanceof \App\Enums\AttendanceStatus ? $record->status->value : $record->status;
+                                $status = $statusVal === 'permission' ? 'Izin (Disetujui)' : 'Sakit (Disetujui)';
                                 $msg = "SIMPAD Info:\n\nYth. Orang Tua/Wali {$student->name},\n\nPengajuan {$status} putra/putri Anda untuk tanggal " . Carbon::parse($record->date)->format('d/m/Y') . " telah disetujui.\n\nTerima kasih.\nSIMPAD";
                                 dispatch(new SendWhatsAppNotification($phone, $msg));
                             }
+
+                            \Filament\Notifications\Notification::make()
+                                ->title('Presensi Disetujui')
+                                ->body("Pengajuan kehadiran {$student->name} berhasil disetujui.")
+                                ->success()
+                                ->send()
+                                ->sendToDatabase(Auth::user());
                         }
                     }),
                 Action::make('reject')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
+                    ->label('❌ Tolak')
                     ->color('danger')
-                    ->visible(fn ($record) => $record->verification_status === 'pending')
+                    ->visible(fn ($record) => in_array($record->verification_status, ['pending', null], true) || empty($record->verification_status))
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         $record->update([
@@ -139,11 +214,111 @@ class StudentAttendancesTable
                             'verified_by'         => Auth::id(),
                             'verified_at'         => Carbon::now(),
                         ]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Presensi Ditolak')
+                            ->body("Pengajuan kehadiran {$record->student?->name} ditolak dan status diubah menjadi Alpha.")
+                            ->danger()
+                            ->send()
+                            ->sendToDatabase(Auth::user());
+                    }),
+            ])
+            ->headerActions([
+                Action::make('verify_all_class_today')
+                    ->label('⚡ 1 Klik Verifikasi Semua (Per Kelas)')
+                    ->color('success')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('class_id')
+                            ->label('Pilih Kelas')
+                            ->options(\App\Models\SchoolClass::orderBy('name')->pluck('name', 'id'))
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        \Filament\Forms\Components\DatePicker::make('date')
+                            ->label('Tanggal')
+                            ->default(now())
+                            ->required(),
+                    ])
+                    ->modalHeading('Verifikasi Presensi 1 Klik Per Kelas')
+                    ->modalDescription('Semua siswa yang berstatus Hadir/Terlambat/Izin/Sakit pada kelas dan tanggal yang dipilih akan langsung diverifikasi dan disetujui secara otomatis dalam 1 kali klik!')
+                    ->modalSubmitActionLabel('⚡ Verifikasi Sekarang')
+                    ->action(function (array $data) {
+                        $dateStr = \Carbon\Carbon::parse($data['date'])->toDateString();
+                        
+                        $records = \App\Models\StudentAttendance::with(['student.parent'])
+                            ->where('class_id', $data['class_id'])
+                            ->whereDate('date', $dateStr)
+                            ->get();
+
+                        $count = 0;
+                        $updatedCount = 0;
+                        foreach ($records as $record) {
+                            if ($record->verification_status !== 'approved') {
+                                $record->update([
+                                    'verification_status' => 'approved',
+                                    'verified_by'         => Auth::id(),
+                                    'verified_at'         => Carbon::now(),
+                                ]);
+                                $updatedCount++;
+
+                                $statusVal = $record->status instanceof \App\Enums\AttendanceStatus ? $record->status->value : $record->status;
+                                if (in_array($statusVal, ['permission', 'sick'])) {
+                                    $phone = $record->student?->parent_phone ?? optional($record->student?->parent)->phone;
+                                    if ($phone) {
+                                        $status = $statusVal === 'permission' ? 'Izin (Disetujui)' : 'Sakit (Disetujui)';
+                                        $msg = "SIMPAD Info:\n\nYth. Orang Tua/Wali {$record->student->name},\n\nPengajuan {$status} putra/putri Anda untuk tanggal " . Carbon::parse($record->date)->format('d/m/Y') . " telah disetujui.\n\nTerima kasih.\nSIMPAD";
+                                        dispatch(new SendWhatsAppNotification($phone, $msg));
+                                    }
+                                }
+                            }
+                            $count++;
+                        }
+
+                        $className = \App\Models\SchoolClass::find($data['class_id'])?->name ?? 'Kelas';
+                        
+                        if ($count > 0) {
+                            $bodyMsg = "Total {$count} data presensi siswa kelas **{$className}** berhasil diverifikasi dan disetujui (Baru diverifikasi: {$updatedCount}).";
+                        } else {
+                            $bodyMsg = "Tidak ditemukan data presensi sama sekali untuk kelas **{$className}** pada tanggal tersebut di database.";
+                        }
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Verifikasi 1 Klik Berhasil!')
+                            ->body($bodyMsg)
+                            ->success()
+                            ->send()
+                            ->sendToDatabase(Auth::user());
                     }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->icon(null),
+                    \Filament\Actions\BulkAction::make('verify_bulk')
+                        ->label('⚡ Verifikasi Semua Terpilih (1 Klik)')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Verifikasi Presensi Terpilih')
+                        ->modalDescription('Setujui dan verifikasi semua data presensi yang dipilih dalam 1 kali klik?')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                if ($record->verification_status === 'pending' || !$record->verification_status) {
+                                    $record->update([
+                                        'verification_status' => 'approved',
+                                        'verified_by'         => Auth::id(),
+                                        'verified_at'         => Carbon::now(),
+                                    ]);
+                                    $count++;
+                                }
+                            }
+                            \Filament\Notifications\Notification::make()
+                                ->title('Verifikasi Berhasil!')
+                                ->body("{$count} data presensi berhasil diverifikasi dalam 1 klik.")
+                                ->success()
+                                ->send()
+                                ->sendToDatabase(Auth::user());
+                        }),
                 ]),
             ]);
     }

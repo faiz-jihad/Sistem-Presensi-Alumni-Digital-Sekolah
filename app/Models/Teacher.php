@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Teacher extends Model
@@ -30,27 +30,40 @@ class Teacher extends Model
         'status',
     ];
 
-    /**
-     * Relasi ke User
-     */
+    /* ─── Relationships ─────────────────────────── */
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    /**
-     * Relasi ke School
-     */
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
     }
 
-    /**
-     * Relasi ke Classes (kelas yang diampu sebagai wali kelas)
-     */
+    /** Kelas yang diampu sebagai wali kelas */
     public function homeroomClasses(): HasMany
     {
         return $this->hasMany(SchoolClass::class, 'homeroom_teacher_id');
+    }
+
+    /** Mata pelajaran yang diampu */
+    public function subjects(): BelongsToMany
+    {
+        return $this->belongsToMany(Subject::class, 'teacher_subjects')
+            ->withTimestamps();
+    }
+
+    /** Jadwal mengajar */
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
+    /** Sesi presensi */
+    public function presensiSessions(): HasMany
+    {
+        return $this->hasMany(PresensiSession::class);
     }
 }

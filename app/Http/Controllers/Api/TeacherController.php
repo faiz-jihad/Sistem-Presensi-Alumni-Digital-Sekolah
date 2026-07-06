@@ -61,7 +61,7 @@ class TeacherController extends BaseController
 
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-                if ($user->role === 'guru') {
+                if ($user->role === 'teacher') {
                     // Guru hanya bisa melihat profil sendiri
                     if ($user->teacher?->id != $id) {
                         return $this->forbidden('Anda hanya dapat melihat profil Anda sendiri');
@@ -95,7 +95,7 @@ class TeacherController extends BaseController
 
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-                if ($user->role === 'guru' && $user->teacher?->id != $id) {
+                if ($user->role === 'teacher' && $user->teacher?->id != $id) {
                     return $this->forbidden('Anda tidak memiliki akses');
                 }
             }

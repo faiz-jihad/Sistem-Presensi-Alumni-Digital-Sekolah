@@ -11,53 +11,54 @@ use Illuminate\Support\Facades\Validator;
 class AlumniProfileController extends BaseController
 {
     /**
-     * Ambil data profil alumni login
+     * Tampilkan profil alumni yang sedang login
      */
     public function show(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        $alumni = Alumni::with('school')->where('user_id', $user->id)->first();
-        if (!$alumni) {
-            return $this->error('Data alumni tidak ditemukan untuk akun ini.', 404);
+
+        if ($user->role !== 'alumni') {
+            return $this->forbidden('Hanya alumni yang memiliki data profil alumni.');
         }
 
-        $profile = AlumniProfile::where('alumni_id', $alumni->id)->first();
+        $alumni = Alumni::with('profile')->where('user_id', $user->id)->first();
 
-        $data = [
+        if (!$alumni) {
+            return $this->error('Profil alumni tidak ditemukan.', 404);
+        }
+
+        return $this->success([
             'alumni' => $alumni,
-            'profile' => $profile,
-        ];
-
-        return $this->success($data, 'Profil alumni berhasil diambil');
+            'profile' => $alumni->profile,
+        ], 'Profil alumni berhasil dimuat.');
     }
 
     /**
-     * Update data profil alumni login
+     * Perbarui profil alumni yang sedang login
      */
     public function update(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        $alumni = Alumni::where('user_id', $user->id)->first();
-        if (!$alumni) {
-            return $this->error('Data alumni tidak ditemukan untuk akun ini.', 404);
+        if ($user->role !== 'alumni') {
+            return $this->forbidden('Hanya alumni yang dapat memperbarui profil alumni.');
         }
 
-        $profile = AlumniProfile::where('alumni_id', $alumni->id)->first();
-        if (!$profile) {
-            $profile = new AlumniProfile(['alumni_id' => $alumni->id]);
+        $alumni = Alumni::where('user_id', $user->id)->first();
+
+        if (!$alumni) {
+            return $this->error('Data alumni tidak ditemukan.', 404);
         }
 
         $validator = Validator::make($request->all(), [
             'current_status' => 'required|in:working,studying,entrepreneur,unemployed',
-            'university_name' => 'nullable|string|max:255',
-            'study_program' => 'nullable|string|max:255',
-            'company_name' => 'nullable|string|max:255',
-            'job_position' => 'nullable|string|max:255',
-            'business_name' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'province' => 'nullable|string|max:255',
+            'university_name' => 'nullable|required_if:current_status,studying|string|max:255',
+            'study_program' => 'nullable|required_if:current_status,studying|string|max:255',
+            'company_name' => 'nullable|required_if:current_status,working|string|max:255',
+            'job_position' => 'nullable|required_if:current_status,working|string|max:255',
+            'business_name' => 'nullable|required_if:current_status,entrepreneur|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'province' => 'nullable|string|max:100',
             'whatsapp' => 'nullable|string|max:20',
             'linkedin_url' => 'nullable|url|max:255',
         ]);
@@ -66,24 +67,33 @@ class AlumniProfileController extends BaseController
             return $this->validationError($validator->errors());
         }
 
-        $profile->fill($request->all());
-        $profile->save();
+        try {
+            $profile = AlumniProfile::updateOrCreate(
+                ['alumni_id' => $alumni->id],
+                $request->only([
+                    'current_status',
+                    'university_name',
+                    'study_program',
+                    'company_name',
+                    'job_position',
+                    'business_name',
+                    'city',
+                    'province',
+                    'whatsapp',
+                    'linkedin_url',
+                ])
+            );
 
-        // Optional update basic info
-        $alumniData = [];
-        if ($request->has('name')) {
-            $alumniData['name'] = $request->name;
-        }
-        if ($request->has('phone')) {
-            $alumniData['phone'] = $request->phone;
-        }
-        if (!empty($alumniData)) {
-            $alumni->update($alumniData);
-        }
+            // Update user phone number if provided
+            if ($request->has('whatsapp') && !empty($request->whatsapp)) {
+                $user->update(['phone' => $request->whatsapp]);
+            }
 
-        return $this->success([
-            'alumni' => $alumni->fresh(),
-            'profile' => $profile->fresh(),
-        ], 'Profil alumni berhasil diperbarui');
+            return $this->success([
+                'alumni' => $alumni->load('profile'),
+            ], 'Profil alumni berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 500);
+        }
     }
 }

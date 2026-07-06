@@ -5,46 +5,41 @@ namespace App\Filament\Widgets;
 use App\Models\StudentAttendance;
 use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class AttendanceChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Tren Kehadiran 7 Hari';
+    protected ?string $heading = '📈 Tren Kehadiran (30 Hari Terakhir)';
+    protected ?string $description = 'Persentase siswa hadir per hari';
 
-    protected ?string $description = 'Persentase hadir dan terlambat dibanding total presensi yang tercatat.';
+    protected static ?int $sort = 5;
 
-    protected ?string $maxHeight = '300px';
-
-    protected static ?int $sort = 3;
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
 
     protected int | string | array $columnSpan = [
-        'default' => 1,
-        'md' => 6,
-        'xl' => 8,
+        'default' => 12,
+        'lg' => 8,
     ];
 
     protected function getData(): array
     {
-        $dates = collect(range(6, 0))->map(function ($i) {
-            return now()->subDays($i)->toDateString();
-        });
+        $days = collect(range(29, 0))->map(fn($i) => now()->subDays($i)->toDateString());
 
         $labels = [];
         $percentages = [];
 
-        foreach ($dates as $date) {
-            $formattedDate = Carbon::parse($date)->locale('id')->isoFormat('dddd');
-            $labels[] = $formattedDate;
+        foreach ($days as $date) {
+            $labels[] = Carbon::parse($date)->locale('id')->isoFormat('D MMM');
 
-            // Query data kehadiran riil
             $total = StudentAttendance::where('date', $date)->count();
             if ($total > 0) {
                 $present = StudentAttendance::where('date', $date)
-                    ->whereIn('status', ['present', 'late'])
-                    ->count();
+                    ->whereIn('status', ['present', 'late'])->count();
                 $percentages[] = round(($present / $total) * 100, 1);
             } else {
-                $percentages[] = 0;
+                $percentages[] = null;
             }
         }
 
@@ -53,14 +48,15 @@ class AttendanceChartWidget extends ChartWidget
                 [
                     'label' => 'Tingkat Kehadiran (%)',
                     'data' => $percentages,
-                    'backgroundColor' => 'rgba(37, 99, 235, 0.1)',
-                    'borderColor' => 'rgb(37, 99, 235)',
-                    'borderWidth' => 3,
-                    'pointBackgroundColor' => 'rgb(37, 99, 235)',
-                    'pointBorderWidth' => 0,
-                    'pointRadius' => 4,
+                    'backgroundColor' => 'rgba(99, 102, 241, 0.12)',
+                    'borderColor' => 'rgb(99, 102, 241)',
+                    'borderWidth' => 2.5,
                     'fill' => true,
                     'tension' => 0.4,
+                    'pointBackgroundColor' => 'rgb(99, 102, 241)',
+                    'pointRadius' => 3,
+                    'pointHoverRadius' => 6,
+                    'spanGaps' => true,
                 ],
             ],
             'labels' => $labels,
@@ -75,16 +71,13 @@ class AttendanceChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
-            'maintainAspectRatio' => false,
+            'plugins' => [
+                'legend' => ['display' => false],
+            ],
             'scales' => [
                 'y' => [
-                    'beginAtZero' => true,
+                    'min' => 0,
                     'max' => 100,
-                ],
-            ],
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
                 ],
             ],
         ];

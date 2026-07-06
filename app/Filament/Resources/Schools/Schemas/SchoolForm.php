@@ -61,6 +61,22 @@ class SchoolForm
                     ->maxLength(255)
                     ->placeholder('Masukkan nama kepala sekolah'),
                     
+                TextInput::make('latitude')
+                    ->label('Latitude Sekolah')
+                    ->placeholder('Contoh: -6.123456')
+                    ->maxLength(50),
+                    
+                TextInput::make('longitude')
+                    ->label('Longitude Sekolah')
+                    ->placeholder('Contoh: 106.123456')
+                    ->maxLength(50),
+                    
+                TextInput::make('radius_meters')
+                    ->label('Radius Geofencing (Meter)')
+                    ->numeric()
+                    ->default(100)
+                    ->helperText('Jarak maksimal guru boleh melakukan presensi dari titik sekolah (dalam meter)'),
+                    
                 FileUpload::make('logo')
                     ->label('Logo Sekolah')
                     ->image()

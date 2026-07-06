@@ -45,7 +45,7 @@ class ReportService
         foreach ($students as $student) {
             $att = $attendances->get($student->id);
             $status = $att ? $att->status : 'not_recorded';
-            
+
             if (array_key_exists($status, $summary)) {
                 $summary[$status]++;
             }
@@ -103,7 +103,7 @@ class ReportService
 
         foreach ($students as $student) {
             $studentAtts = $attendances->get($student->id) ?? collect();
-            
+
             $counts = [
                 'present' => 0,
                 'late' => 0,
@@ -160,8 +160,10 @@ class ReportService
         $sentCount = 0;
 
         foreach ($students as $student) {
-            // Ambil nomor telp ortu
-            $phone = optional($student->parent)->phone;
+            // Ambil nomor telp ortu dari data siswa terlebih dahulu, lalu fallback ke relasi parent
+            $phone = $student->parent_phone
+                ?? optional($student->parent)->phone
+                ?? null;
             if (!$phone) {
                 continue;
             }
@@ -223,7 +225,9 @@ class ReportService
         $sentCount = 0;
 
         foreach ($students as $student) {
-            $phone = optional($student->parent)->phone;
+            $phone = $student->parent_phone
+                ?? optional($student->parent)->phone
+                ?? null;
             if (!$phone) {
                 continue;
             }

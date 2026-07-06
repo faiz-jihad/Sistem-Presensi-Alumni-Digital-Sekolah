@@ -15,7 +15,12 @@ class DailyAttendanceChartWidget extends ChartWidget
 
     protected ?string $maxHeight = '300px';
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 6;
+
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
 
     protected int | string | array $columnSpan = [
         'default' => 1,

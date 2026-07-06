@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\RoleController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\AlumniProfileController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\AlumniEventController;
 use App\Http\Controllers\Api\AlumniJobController;
+use App\Http\Controllers\Api\TeacherAttendanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -24,8 +26,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
 
-    // ─── Protected routes (memerlukan token Sanctum) ─────────────────────────
-    Route::middleware('auth:sanctum')->group(function () {
+// ─── Protected routes (memerlukan token Sanctum) ─────────────────────────
+Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
@@ -42,9 +44,9 @@ Route::prefix('v1')->group(function () {
         // Dashboard — semua role yang sudah login bisa akses
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
-        // Dashboard stats — hanya admin & super_admin
-        Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
-            ->middleware('role:admin,super_admin');
+    // Dashboard stats — hanya admin & super_admin
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
+        ->middleware('role:admin,super_admin');
 
         // ─── Role & Permission (hanya super_admin) ─────────────────────────
         Route::middleware('role:super_admin')->group(function () {
@@ -58,17 +60,17 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('schools', SchoolController::class);
         });
 
-        // ─── Data Siswa ─────────────────────────────────────────────────────
-        Route::middleware('role:admin,super_admin')->group(function () {
-            Route::apiResource('students', StudentController::class);
-        });
+    // ─── Data Siswa ─────────────────────────────────────────────────────
+    Route::middleware('role:admin,super_admin')->group(function () {
+        Route::apiResource('students', StudentController::class);
+    });
 
-        // ─── Data Kelas ─────────────────────────────────────────────────────
-        Route::middleware('role:admin,super_admin,teacher')->group(function () {
-            Route::get('/classes', [ClassController::class, 'index']);
-            Route::get('/classes/{id}', [ClassController::class, 'show']);
-            Route::get('/classes/{id}/students', [ClassController::class, 'students']);
-        });
+    // ─── Data Kelas ─────────────────────────────────────────────────────
+    Route::middleware('role:admin,super_admin,teacher')->group(function () {
+        Route::get('/classes', [ClassController::class, 'index']);
+        Route::get('/classes/{id}', [ClassController::class, 'show']);
+        Route::get('/classes/{id}/students', [ClassController::class, 'students']);
+    });
 
         // ─── Data Guru ───────────────────────────────────────────────────────
         Route::get('/teachers', [TeacherController::class, 'index'])
@@ -78,26 +80,26 @@ Route::prefix('v1')->group(function () {
         Route::get('/teachers/{id}/classes', [TeacherController::class, 'classes'])
             ->middleware('role:admin,super_admin,teacher');
 
-        // ─── Data Presensi / Kehadiran ───────────────────────────────────────────
-        Route::prefix('attendances')->group(function () {
-            // List presensi
-            Route::get('/', [StudentAttendanceController::class, 'index']);
-
-            // Bulk input (Guru/Admin)
-            Route::post('/bulk', [StudentAttendanceController::class, 'bulkStore'])
-                ->middleware('role:teacher,admin,super_admin');
-
-            // Presensi mandiri (Siswa) via QR Code
-            Route::post('/presensi', [StudentAttendanceController::class, 'presensiMandiri'])
-                ->middleware('role:student');
-
-            // Ajukan izin/sakit (Siswa)
-            Route::post('/izin', [StudentAttendanceController::class, 'storeIzin'])
-                ->middleware('role:student');
-
-            // Verifikasi izin (Admin & Guru/Wali Kelas)
-            Route::post('/{id}/verify', [StudentAttendanceController::class, 'verifyIzin'])
-                ->middleware('role:admin,super_admin,teacher');
+    // ─── Data Presensi / Kehadiran ───────────────────────────────────────────
+    Route::prefix('attendances')->group(function () {
+        // List presensi
+        Route::get('/', [StudentAttendanceController::class, 'index']);
+        
+        // Bulk input (Guru/Admin)
+        Route::post('/bulk', [StudentAttendanceController::class, 'bulkStore'])
+            ->middleware('role:teacher,admin,super_admin');
+            
+        // Presensi mandiri (Siswa) via QR Code
+        Route::post('/presensi', [StudentAttendanceController::class, 'presensiMandiri'])
+            ->middleware('role:student');
+            
+        // Ajukan izin/sakit (Siswa)
+        Route::post('/izin', [StudentAttendanceController::class, 'storeIzin'])
+            ->middleware('role:student');
+            
+        // Verifikasi izin (Admin & Guru/Wali Kelas)
+        Route::post('/{id}/verify', [StudentAttendanceController::class, 'verifyIzin'])
+            ->middleware('role:admin,super_admin,teacher');
 
             Route::post('/report/send-daily', [ReportController::class, 'sendDailyRecap'])
                 ->middleware('role:admin,super_admin,teacher');
@@ -112,6 +114,31 @@ Route::prefix('v1')->group(function () {
             ->middleware('role:admin,super_admin,teacher');
         Route::get('/attendance/monthly', [ReportController::class, 'monthly'])
             ->middleware('role:admin,super_admin,teacher');
+
+        // ─── Teacher & Attendance Flow Routes (presensi.md) ──────────────────────
+        Route::get('/teacher/today', [AttendanceController::class, 'today'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/teacher/check-in', [TeacherAttendanceController::class, 'checkIn'])
+            ->middleware('role:teacher');
+        Route::post('/teacher/check-out', [TeacherAttendanceController::class, 'checkOut'])
+            ->middleware('role:teacher');
+        Route::get('/teacher-attendance/today', [TeacherAttendanceController::class, 'today'])
+            ->middleware('role:teacher');
+
+        Route::post('/attendance/open', [AttendanceController::class, 'open'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/attendance/manual', [AttendanceController::class, 'manual'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/attendance/generate-qr', [AttendanceController::class, 'generateQr'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/attendance/scan', [AttendanceController::class, 'scan'])
+            ->middleware('role:student');
+        Route::post('/attendance/close', [AttendanceController::class, 'close'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::get('/attendance/session/{id}', [AttendanceController::class, 'session'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::get('/attendance/history', [AttendanceController::class, 'history'])
+            ->middleware('role:teacher,admin,super_admin');
 
         // ─── Sesi Presensi (PresensiSession) ─────────────────────────────────────
         Route::prefix('presensi-sessions')->middleware('role:admin,super_admin,teacher')->group(function () {
@@ -131,18 +158,20 @@ Route::prefix('v1')->group(function () {
         Route::get('/export/alumni', [ExportController::class, 'alumni'])
             ->middleware('role:admin,super_admin');
 
-        // ─── Event Alumni (AlumniEvent) ──────────────────────────────────────────
-        Route::prefix('alumni-events')->group(function () {
-            Route::get('/', [AlumniEventController::class, 'index']);
-            Route::get('/{id}', [AlumniEventController::class, 'show']);
-            Route::post('/', [AlumniEventController::class, 'store']);
-            Route::post('/{id}', [AlumniEventController::class, 'update']);
-            Route::delete('/{id}', [AlumniEventController::class, 'destroy']);
-
-            Route::post('/{id}/approve', [AlumniEventController::class, 'approve'])
-                ->middleware('role:admin,super_admin');
-            Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])
-                ->middleware('role:admin,super_admin');
-        });
+    // ─── Event Alumni (AlumniEvent) ──────────────────────────────────────────
+    Route::prefix('alumni-events')->group(function () {
+        Route::get('/', [AlumniEventController::class, 'index']);
+        Route::get('/{id}', [AlumniEventController::class, 'show']);
+        Route::post('/', [AlumniEventController::class, 'store']);
+        Route::post('/{id}', [AlumniEventController::class, 'update']);
+        Route::delete('/{id}', [AlumniEventController::class, 'destroy']);
+        
+        Route::post('/{id}/approve', [AlumniEventController::class, 'approve'])
+            ->middleware('role:admin,super_admin');
+        Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])
+            ->middleware('role:admin,super_admin');
     });
 });
+});
+
+

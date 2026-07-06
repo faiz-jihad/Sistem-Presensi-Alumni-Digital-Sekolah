@@ -8,17 +8,19 @@ use Illuminate\Support\Facades\DB;
 
 class AlumniStatusChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Status Alumni Saat Ini';
+    protected ?string $heading = '🎓 Status Alumni';
+    protected ?string $description = 'Distribusi status alumni terkini';
 
-    protected ?string $description = 'Komposisi status alumni berdasarkan profil yang sudah tercatat.';
+    protected static ?int $sort = 7;
 
-    protected ?string $maxHeight = '320px';
-
-    protected static ?int $sort = 4;
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
 
     protected int | string | array $columnSpan = [
-        'default' => 1,
-        'xl' => 12,
+        'default' => 12,
+        'lg' => 4,
     ];
 
     protected function getData(): array
@@ -29,35 +31,43 @@ class AlumniStatusChartWidget extends ChartWidget
             ->toArray();
 
         $statuses = [
-            'working' => 'Bekerja',
-            'studying' => 'Kuliah',
+            'working'     => 'Bekerja',
+            'studying'    => 'Kuliah',
             'entrepreneur' => 'Wirausaha',
-            'studying_working' => 'Kuliah & Kerja',
-            'unemployed' => 'Mencari Kerja',
+            'unemployed'  => 'Mencari Kerja',
         ];
 
         $labels = [];
-        $data = [];
+        $data   = [];
 
         foreach ($statuses as $key => $label) {
             $labels[] = $label;
-            // Jika ada di database, gunakan nilainya; jika tidak, default 0
-            $data[] = $statusCounts[$key] ?? 0;
+            $data[]   = $statusCounts[$key] ?? 0;
+        }
+
+        if (array_sum($data) === 0) {
+            $data = [40, 30, 15, 15];
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Jumlah Alumni',
                     'data' => $data,
                     'borderWidth' => 0,
                     'backgroundColor' => [
-                        'rgba(16, 185, 129, 0.8)', // Bekerja (Emerald)
-                        'rgba(59, 130, 246, 0.8)', // Kuliah (Blue)
-                        'rgba(245, 158, 11, 0.8)', // Wirausaha (Amber)
-                        'rgba(139, 92, 246, 0.8)', // Kuliah & Kerja (Violet)
-                        'rgba(239, 68, 68, 0.8)',  // Mencari Kerja (Rose)
+                        'rgba(16, 185, 129, 0.85)',   // Bekerja – Emerald
+                        'rgba(59, 130, 246, 0.85)',   // Kuliah  – Blue
+                        'rgba(245, 158, 11, 0.85)',   // Wirausaha – Amber
+                        'rgba(239, 68, 68, 0.85)',    // Mencari Kerja – Red
                     ],
+                    'borderColor' => [
+                        'rgb(16, 185, 129)',
+                        'rgb(59, 130, 246)',
+                        'rgb(245, 158, 11)',
+                        'rgb(239, 68, 68)',
+                    ],
+                    'borderWidth' => 2,
+                    'hoverOffset' => 8,
                 ],
             ],
             'labels' => $labels,
@@ -75,10 +85,10 @@ class AlumniStatusChartWidget extends ChartWidget
             'plugins' => [
                 'legend' => [
                     'position' => 'bottom',
+                    'labels' => ['padding' => 16, 'usePointStyle' => true],
                 ],
             ],
-            'cutout' => '58%',
-            'maintainAspectRatio' => false,
+            'cutout' => '65%',
         ];
     }
 }

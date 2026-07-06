@@ -39,14 +39,24 @@ class SchoolResource extends Resource
         return 'Sekolah';
     }
 
+    public static function getModelLabel(): string
+    {
+        return 'Sekolah';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Sekolah';
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Manajemen Akademik';
+        return 'Master Data';
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 2;
+        return 1;
     }
 
     public static function getGloballySearchableAttributes(): array

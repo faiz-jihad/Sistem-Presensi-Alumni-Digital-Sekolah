@@ -114,6 +114,11 @@ class RoleAndPermissionSeeder extends Seeder
                 'view_profile',
                 'update_profile',
             ],
+            'parent' => [
+                'view_attendance',
+                'view_grades',
+                'view_profile',
+            ],
         ];
 
         foreach ($rolePermissions as $roleName => $permissionsList) {

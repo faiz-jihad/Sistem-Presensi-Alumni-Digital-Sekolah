@@ -12,7 +12,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $user->isAdmin();
     }
 
     /**
@@ -20,7 +20,15 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isAdmin()) {
+            return $user->school_id === $model->school_id;
+        }
+
+        return $user->id === $model->id;
     }
 
     /**
@@ -28,7 +36,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $user->isAdmin();
     }
 
     /**
@@ -36,7 +44,15 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isAdmin()) {
+            return $user->school_id === $model->school_id;
+        }
+
+        return $user->id === $model->id;
     }
 
     /**
@@ -44,6 +60,15 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isAdmin()) {
+            // Admin cannot delete super admins or users from other schools
+            return $user->school_id === $model->school_id && !$model->isSuperAdmin();
+        }
+
         return false;
     }
 
@@ -52,7 +77,7 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        return false;
+        return $user->isSuperAdmin() || ($user->isAdmin() && $user->school_id === $model->school_id);
     }
 
     /**
@@ -60,6 +85,6 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        return false;
+        return $user->isSuperAdmin();
     }
 }

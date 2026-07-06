@@ -26,17 +26,22 @@ class PresensiSessionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
 
-    protected static ?string $navigationLabel = 'Sesi Presensi';
+    protected static ?string $navigationLabel = 'Sesi Presensi Kelas';
 
     protected static ?string $modelLabel = 'Sesi Presensi';
 
-    protected static ?string $pluralModelLabel = 'Sesi Presensi';
+    protected static ?string $pluralModelLabel = 'Sesi Presensi Kelas';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Presensi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Presensi & Kehadiran';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'date';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -39,14 +39,24 @@ class StudentResource extends Resource
         return 'Siswa';
     }
 
+    public static function getModelLabel(): string
+    {
+        return 'Siswa';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Siswa';
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Manajemen Akademik';
+        return 'Master Data';
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 4;
+        return 5;
     }
 
     public static function getGloballySearchableAttributes(): array

@@ -10,7 +10,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RecentSchools extends BaseWidget
 {
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 8;
+
+    public static function canView(): bool
+    {
+        return auth()->user()->role === 'super_admin';
+    }
 
     protected int | string | array $columnSpan = [
         'default' => 12,

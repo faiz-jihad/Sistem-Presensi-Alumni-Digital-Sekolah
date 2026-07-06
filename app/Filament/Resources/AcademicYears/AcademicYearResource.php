@@ -37,17 +37,27 @@ class AcademicYearResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Tahun Akademik';
+        return 'Tahun Ajaran';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Tahun Ajaran';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Tahun Ajaran';
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Manajemen Akademik';
+        return 'Master Data';
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 1;
+        return 2;
     }
 
     public static function getGloballySearchableAttributes(): array

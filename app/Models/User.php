@@ -48,6 +48,30 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Relasi ke Teacher
+     */
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke Student (sebagai orang tua/parent)
+     */
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'parent_user_id');
+    }
+
+    /**
+     * Relasi ke Alumni
+     */
+    public function alumni()
+    {
+        return $this->hasOne(Alumni::class, 'user_id');
+    }
+
+    /**
      * Role yang dikelola oleh Spatie Permission (hanya untuk akses Filament panel)
      */
     private const SPATIE_ROLES = ['super_admin', 'admin', 'teacher'];

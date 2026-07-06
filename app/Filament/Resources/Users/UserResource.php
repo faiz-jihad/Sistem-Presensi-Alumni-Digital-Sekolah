@@ -36,17 +36,27 @@ class UserResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Pengguna';
+        return 'User';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Akun Pengguna';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Pengguna';
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Manajemen Pengguna';
+        return 'Master Data';
     }
 
     public static function getNavigationSort(): ?int
     {
-        return 1;
+        return 6;
     }
 
     public static function getGloballySearchableAttributes(): array

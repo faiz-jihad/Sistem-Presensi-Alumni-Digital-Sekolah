@@ -22,13 +22,13 @@ class AttendanceReport extends Page
 {
     protected string $view = 'filament.pages.attendance-report';
 
-    protected static ?string $navigationLabel = 'Rekap Laporan';
+    protected static ?string $navigationLabel = 'Rekap Bulanan';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Laporan & Monitoring';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public ?array $data = [];
 

@@ -28,11 +28,16 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
 
     protected string $view = 'filament.pages.whatsapp-notif';
 
-    protected static ?string $navigationLabel = 'Notifikasi WA Orang Tua';
+    protected static ?string $navigationLabel = 'Kirim WA Orang Tua';
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Laporan & Monitoring';
+    protected static \UnitEnum|string|null $navigationGroup = 'Presensi & Kehadiran';
 
     protected static ?int $navigationSort = 5;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public ?array $data = [];
 
@@ -196,7 +201,8 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
                 ->title('Notifikasi WhatsApp Berhasil Dikirim!')
                 ->body($message)
                 ->success()
-                ->send();
+                ->send()
+                ->sendToDatabase(auth()->user());
 
         } catch (\Exception $e) {
             Notification::make()

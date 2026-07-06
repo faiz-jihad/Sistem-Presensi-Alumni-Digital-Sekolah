@@ -24,7 +24,7 @@ class StudentAttendanceController extends BaseController
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = StudentAttendance::with(['student.class', 'teacher']);
+        $query = StudentAttendance::with(['student.class', 'teacher', 'presensiSession']);
 
         // Filter berdasarkan role
         if ($user->role === 'student') {
@@ -89,10 +89,11 @@ class StudentAttendanceController extends BaseController
         $validator = Validator::make($request->all(), [
             'class_id' => 'required|exists:classes,id',
             'date' => 'required|date',
-            'attendances' => 'required|array',
+            'presensi_session_id' => 'nullable|exists:presensi_sessions,id',
+            'attendances' => 'required|array|min:1',
             'attendances.*.student_id' => 'required|exists:students,id',
             'attendances.*.status' => 'required|in:present,late,permission,sick,absent',
-            'attendances.*.note' => 'nullable|string',
+            'attendances.*.note' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -106,7 +107,8 @@ class StudentAttendanceController extends BaseController
                 $teacherId,
                 $request->class_id,
                 $request->date,
-                $request->attendances
+                $request->attendances,
+                $request->presensi_session_id
             );
 
             return $this->success($result, "Presensi kelas berhasil disimpan.");
@@ -129,7 +131,7 @@ class StudentAttendanceController extends BaseController
     public function presensiMandiri(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         // Cari siswa yang terhubung dengan akun ini
         $student = Student::where('parent_user_id', $user->id)
             ->orWhere('name', $user->name)
@@ -138,9 +140,9 @@ class StudentAttendanceController extends BaseController
         if (!$student) {
             $student = Student::where('parent_user_id', $user->id)->first();
         }
-        
+
         if (!$student) {
-            $student = Student::where('nis', $user->email)->first(); 
+            $student = Student::where('nis', $user->email)->first();
         }
 
         if (!$student) {
@@ -172,7 +174,7 @@ class StudentAttendanceController extends BaseController
     public function storeIzin(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $student = Student::where('name', $user->name)
             ->orWhere('parent_user_id', $user->id)
             ->first();
@@ -194,6 +196,17 @@ class StudentAttendanceController extends BaseController
 
         try {
             $attendance = $this->attendanceService->applyLeave($student->id, $request->all());
+
+            $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+            if ($admins->isNotEmpty()) {
+                $statusLabel = $request->status === 'sick' ? 'Sakit' : 'Izin';
+                \Filament\Notifications\Notification::make()
+                    ->title("Pengajuan {$statusLabel} Siswa")
+                    ->body("Siswa **{$student->name}** mengajukan **{$statusLabel}** untuk tanggal **" . \Carbon\Carbon::parse($request->date)->translatedFormat('d F Y') . "**. Catatan: {$request->note}")
+                    ->warning()
+                    ->sendToDatabase($admins);
+            }
+
             return $this->success(
                 new StudentAttendanceResource($attendance),
                 "Pengajuan izin/sakit berhasil dikirim dan menunggu verifikasi."

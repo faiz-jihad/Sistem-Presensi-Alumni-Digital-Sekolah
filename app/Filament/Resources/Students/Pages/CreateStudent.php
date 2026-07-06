@@ -42,7 +42,10 @@ class CreateStudent extends CreateRecord
             $parent->update(['name' => $parentName]);
 
             // Hubungkan orang tua ke siswa
-            $student->update(['parent_user_id' => $parent->id]);
+            $student->update([
+                'parent_user_id' => $parent->id,
+                'parent_phone' => $parentPhone,
+            ]);
         }
 
         // Buat akun login siswa (untuk Mobile)

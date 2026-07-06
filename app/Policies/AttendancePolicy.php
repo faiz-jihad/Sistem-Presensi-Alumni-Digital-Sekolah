@@ -13,7 +13,7 @@ class AttendancePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $user->isAdmin() || $user->isTeacher();
     }
 
     /**
@@ -21,7 +21,11 @@ class AttendancePolicy
      */
     public function view(User $user, StudentAttendance $studentAttendance): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        return ($user->isAdmin() || $user->isTeacher()) && $user->school_id === $studentAttendance->school_id;
     }
 
     /**
@@ -29,7 +33,7 @@ class AttendancePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $user->isAdmin() || $user->isTeacher();
     }
 
     /**
@@ -37,7 +41,11 @@ class AttendancePolicy
      */
     public function update(User $user, StudentAttendance $studentAttendance): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        return ($user->isAdmin() || $user->isTeacher()) && $user->school_id === $studentAttendance->school_id;
     }
 
     /**
@@ -45,7 +53,11 @@ class AttendancePolicy
      */
     public function delete(User $user, StudentAttendance $studentAttendance): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        return $user->isAdmin() && $user->school_id === $studentAttendance->school_id;
     }
 
     /**
@@ -53,7 +65,7 @@ class AttendancePolicy
      */
     public function restore(User $user, StudentAttendance $studentAttendance): bool
     {
-        return false;
+        return $user->isSuperAdmin() || ($user->isAdmin() && $user->school_id === $studentAttendance->school_id);
     }
 
     /**
@@ -61,6 +73,6 @@ class AttendancePolicy
      */
     public function forceDelete(User $user, StudentAttendance $studentAttendance): bool
     {
-        return false;
+        return $user->isSuperAdmin();
     }
 }

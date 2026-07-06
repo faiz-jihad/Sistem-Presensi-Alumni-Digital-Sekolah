@@ -36,12 +36,22 @@ class StudentClassResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Kelas Siswa';
+        return 'Kelas';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'Kelas';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return 'Daftar Kelas';
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Manajemen Akademik';
+        return 'Master Data';
     }
 
     public static function getNavigationSort(): ?int

@@ -8,7 +8,12 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AlumniStatsWidget extends BaseWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
+
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin']);
+    }
 
     protected function getStats(): array
     {

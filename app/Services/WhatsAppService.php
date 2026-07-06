@@ -25,8 +25,18 @@ class WhatsAppService
      */
     public function sendMessage(string $to, string $message): bool
     {
+        if (empty(trim($to))) {
+            Log::warning('WhatsApp recipient is empty.');
+            return false;
+        }
+
         // Bersihkan format nomor agar dimulai dengan 62 (atau format yang sesuai)
         $to = $this->formatPhoneNumber($to);
+
+        if (empty($to)) {
+            Log::warning('WhatsApp recipient became empty after formatting.');
+            return false;
+        }
 
         // Fallback jika token masih default/placeholder
         if (empty($this->apiToken) || $this->apiToken === 'your-token-here' || $this->apiToken === 'token-kamu-disini') {

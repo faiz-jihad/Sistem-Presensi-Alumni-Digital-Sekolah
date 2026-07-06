@@ -32,7 +32,11 @@ class ClassController extends BaseController
 
             $classes = SchoolClass::where('school_id', $schoolId)
                 ->when($teacher, function ($query) use ($teacher) {
-                    $query->where('homeroom_teacher_id', $teacher->id);
+                    $scheduledClassIds = \App\Models\Schedule::where('teacher_id', $teacher->id)->pluck('class_id')->unique();
+                    $query->where(function ($q) use ($teacher, $scheduledClassIds) {
+                        $q->where('homeroom_teacher_id', $teacher->id)
+                          ->orWhereIn('id', $scheduledClassIds);
+                    });
                 })
                 ->with(['homeroomTeacher' => function ($query) {
                     $query->select('id', 'name');
@@ -72,12 +76,12 @@ class ClassController extends BaseController
                 return $this->notFound('Kelas tidak ditemukan');
             }
 
-            // Cek akses (admin atau guru wali kelas)
+            // Cek akses (admin atau guru wali kelas / pengajar)
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-                // Untuk guru, cek apakah dia wali kelas ini
                 if ($user->role === 'teacher') {
-                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
-                    if ($class->homeroom_teacher_id !== $teacherId) {
+                    $teacherId = $user->teacher?->id;
+                    $isScheduled = \App\Models\Schedule::where('teacher_id', $teacherId)->where('class_id', $class->id)->exists();
+                    if ($class->homeroom_teacher_id !== $teacherId && !$isScheduled) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
                 } else {
@@ -110,8 +114,9 @@ class ClassController extends BaseController
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 if ($user->role === 'teacher') {
-                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
-                    if ($class->homeroom_teacher_id !== $teacherId) {
+                    $teacherId = $user->teacher?->id;
+                    $isScheduled = \App\Models\Schedule::where('teacher_id', $teacherId)->where('class_id', $class->id)->exists();
+                    if ($class->homeroom_teacher_id !== $teacherId && !$isScheduled) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
                 } else {
@@ -119,16 +124,35 @@ class ClassController extends BaseController
                 }
             }
 
-            $students = $class->students()
-                ->select('id', 'class_id', 'parent_user_id', 'nis', 'nisn', 'name', 'gender', 'birth_date', 'status')
-                ->with(['parent' => function ($query) {
-                    $query->select('id', 'name');
-                }])
-                ->orderBy('name')
-                ->get();
+            $date = $request->query('date');
+            
+            $studentsQuery = $class->students()
+                ->select('id', 'class_id', 'nis', 'nisn', 'name', 'gender', 'status')
+                ->orderBy('name');
+
+            if ($date) {
+                $studentsQuery->with(['attendances' => function ($q) use ($date) {
+                    $q->where('date', $date);
+                }]);
+            }
+
+            $students = $studentsQuery->get()->map(function ($student) use ($date) {
+                $att = $date ? $student->attendances->first() : null;
+                return [
+                    'id' => $student->id,
+                    'nis' => $student->nis,
+                    'nisn' => $student->nisn,
+                    'name' => $student->name,
+                    'gender' => $student->gender,
+                    'status' => $student->status,
+                    'attendance_status' => $att ? $att->status : null,
+                    'attendance_note' => $att ? $att->note : null,
+                ];
+            });
 
             return $this->success([
                 'class' => $class->only(['id', 'name', 'grade', 'major']),
+                'date' => $date,
                 'students' => $students
             ], 'Daftar siswa berhasil diambil');
 

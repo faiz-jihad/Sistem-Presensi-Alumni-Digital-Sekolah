@@ -2,10 +2,16 @@
 
 namespace App\Filament\Resources\StudentAttendances\Schemas;
 
+use App\Models\PresensiSession;
+use App\Models\School;
+use App\Models\SchoolClass;
+use App\Models\Student;
+use App\Models\Teacher;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TimePicker;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class StudentAttendanceForm
@@ -14,37 +20,48 @@ class StudentAttendanceForm
     {
         return $schema
             ->components([
-                Select::make('school_id')
-                    ->label('Sekolah')
-                    ->relationship('school', 'name')
-                    ->required()
-                    ->searchable(),
-                Select::make('class_id')
-                    ->label('Kelas')
-                    ->relationship('class', 'name')
-                    ->required()
-                    ->searchable(),
-                Select::make('student_id')
-                    ->label('Siswa')
-                    ->relationship('student', 'name')
-                    ->required()
-                    ->searchable(),
-                Select::make('teacher_id')
-                    ->label('Guru')
-                    ->relationship('teacher', 'name')
-                    ->nullable()
-                    ->searchable(),
                 DatePicker::make('date')
                     ->label('Tanggal')
-                    ->required(),
-                TimePicker::make('check_in_time')
-                    ->label('Waktu Masuk')
-                    ->nullable(),
-                TimePicker::make('check_out_time')
-                    ->label('Waktu Keluar')
-                    ->nullable(),
+                    ->required()
+                    ->default(now()->toDateString()),
+                Select::make('school_id')
+                    ->label('Sekolah')
+                    ->options(School::query()->orderBy('name')->pluck('name', 'id'))
+                    ->required()
+                    ->searchable()
+                    ->preload()
+                    ->live(),
+                Select::make('class_id')
+                    ->label('Kelas')
+                    ->options(function (Get $get) {
+                        $schoolId = $get('school_id');
+
+                        return SchoolClass::query()
+                            ->when($schoolId, fn($query) => $query->where('school_id', $schoolId))
+                            ->orderBy('name')
+                            ->pluck('name', 'id');
+                    })
+                    ->required()
+                    ->searchable()
+                    ->preload()
+                    ->live(),
+                Select::make('student_id')
+                    ->label('Siswa')
+                    ->options(function (Get $get) {
+                        $schoolId = $get('school_id');
+                        $classId = $get('class_id');
+
+                        return Student::query()
+                            ->when($schoolId, fn($query) => $query->where('school_id', $schoolId))
+                            ->when($classId, fn($query) => $query->where('class_id', $classId))
+                            ->orderBy('name')
+                            ->pluck('name', 'id');
+                    })
+                    ->required()
+                    ->searchable()
+                    ->preload(),
                 Select::make('status')
-                    ->label('Status Kehadiran')
+                    ->label('Status')
                     ->options([
                         'present'    => 'Hadir',
                         'late'       => 'Terlambat',
@@ -52,7 +69,18 @@ class StudentAttendanceForm
                         'sick'       => 'Sakit',
                         'absent'     => 'Alpha',
                     ])
-                    ->required(),
+                    ->required()
+                    ->default('present'),
+                Select::make('teacher_id')
+                    ->label('Guru')
+                    ->options(Teacher::query()->orderBy('name')->pluck('name', 'id'))
+                    ->nullable()
+                    ->searchable()
+                    ->preload(),
+                TimePicker::make('check_in_time')
+                    ->label('Jam Masuk')
+                    ->nullable()
+                    ->default(now()->format('H:i')),
                 Textarea::make('note')
                     ->label('Catatan')
                     ->nullable()
@@ -64,7 +92,8 @@ class StudentAttendanceForm
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                     ])
-                    ->nullable(),
+                    ->nullable()
+                    ->default('pending'),
             ]);
     }
 }
