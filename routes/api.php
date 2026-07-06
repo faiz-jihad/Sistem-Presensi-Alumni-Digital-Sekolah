@@ -12,17 +12,11 @@ use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\StudentAttendanceController;
 use App\Http\Controllers\Api\PresensiSessionController;
 use App\Http\Controllers\Api\ReportController;
-<<<<<<< Updated upstream
 use App\Http\Controllers\Api\AlumniController;
 use App\Http\Controllers\Api\AlumniProfileController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\AlumniEventController;
-=======
 use App\Http\Controllers\Api\TeacherAttendanceController;
-use App\Http\Controllers\Api\AlumniController;
-use App\Http\Controllers\Api\AlumniProfileController;
-use App\Http\Controllers\Api\ExportController;
->>>>>>> Stashed changes
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -117,6 +111,31 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/attendance/monthly', [ReportController::class, 'monthly'])
             ->middleware('role:admin,super_admin,teacher');
 
+        // ─── Teacher & Attendance Flow Routes (presensi.md) ──────────────────────
+        Route::get('/teacher/today', [AttendanceController::class, 'today'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/teacher/check-in', [TeacherAttendanceController::class, 'checkIn'])
+            ->middleware('role:teacher');
+        Route::post('/teacher/check-out', [TeacherAttendanceController::class, 'checkOut'])
+            ->middleware('role:teacher');
+        Route::get('/teacher-attendance/today', [TeacherAttendanceController::class, 'today'])
+            ->middleware('role:teacher');
+
+        Route::post('/attendance/open', [AttendanceController::class, 'open'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/attendance/manual', [AttendanceController::class, 'manual'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/attendance/generate-qr', [AttendanceController::class, 'generateQr'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::post('/attendance/scan', [AttendanceController::class, 'scan'])
+            ->middleware('role:student');
+        Route::post('/attendance/close', [AttendanceController::class, 'close'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::get('/attendance/session/{id}', [AttendanceController::class, 'session'])
+            ->middleware('role:teacher,admin,super_admin');
+        Route::get('/attendance/history', [AttendanceController::class, 'history'])
+            ->middleware('role:teacher,admin,super_admin');
+
         // ─── Sesi Presensi (PresensiSession) ─────────────────────────────────────
         Route::prefix('presensi-sessions')->middleware('role:admin,super_admin,teacher')->group(function () {
             Route::get('/', [PresensiSessionController::class, 'index']);
@@ -149,3 +168,6 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware('role:admin,super_admin');
     });
 });
+});
+
+

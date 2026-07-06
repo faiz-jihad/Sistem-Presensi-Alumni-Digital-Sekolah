@@ -32,7 +32,11 @@ class ClassController extends BaseController
 
             $classes = SchoolClass::where('school_id', $schoolId)
                 ->when($teacher, function ($query) use ($teacher) {
-                    $query->where('homeroom_teacher_id', $teacher->id);
+                    $scheduledClassIds = \App\Models\Schedule::where('teacher_id', $teacher->id)->pluck('class_id')->unique();
+                    $query->where(function ($q) use ($teacher, $scheduledClassIds) {
+                        $q->where('homeroom_teacher_id', $teacher->id)
+                          ->orWhereIn('id', $scheduledClassIds);
+                    });
                 })
                 ->with(['homeroomTeacher' => function ($query) {
                     $query->select('id', 'name');
@@ -72,16 +76,12 @@ class ClassController extends BaseController
                 return $this->notFound('Kelas tidak ditemukan');
             }
 
-            // Cek akses (admin atau guru wali kelas)
+            // Cek akses (admin atau guru wali kelas / pengajar)
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-                // Untuk guru, cek apakah dia wali kelas ini
                 if ($user->role === 'teacher') {
-<<<<<<< Updated upstream
-                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
-=======
                     $teacherId = $user->teacher?->id;
->>>>>>> Stashed changes
-                    if ($class->homeroom_teacher_id !== $teacherId) {
+                    $isScheduled = \App\Models\Schedule::where('teacher_id', $teacherId)->where('class_id', $class->id)->exists();
+                    if ($class->homeroom_teacher_id !== $teacherId && !$isScheduled) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
                 } else {
@@ -114,12 +114,9 @@ class ClassController extends BaseController
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 if ($user->role === 'teacher') {
-<<<<<<< Updated upstream
-                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
-=======
                     $teacherId = $user->teacher?->id;
->>>>>>> Stashed changes
-                    if ($class->homeroom_teacher_id !== $teacherId) {
+                    $isScheduled = \App\Models\Schedule::where('teacher_id', $teacherId)->where('class_id', $class->id)->exists();
+                    if ($class->homeroom_teacher_id !== $teacherId && !$isScheduled) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
                 } else {
@@ -127,15 +124,6 @@ class ClassController extends BaseController
                 }
             }
 
-<<<<<<< Updated upstream
-            $students = $class->students()
-                ->select('id', 'class_id', 'parent_user_id', 'nis', 'nisn', 'name', 'gender', 'birth_date', 'status')
-                ->with(['parent' => function ($query) {
-                    $query->select('id', 'name');
-                }])
-                ->orderBy('name')
-                ->get();
-=======
             $date = $request->query('date');
             
             $studentsQuery = $class->students()
@@ -161,7 +149,6 @@ class ClassController extends BaseController
                     'attendance_note' => $att ? $att->note : null,
                 ];
             });
->>>>>>> Stashed changes
 
             return $this->success([
                 'class' => $class->only(['id', 'name', 'grade', 'major']),

@@ -35,6 +35,9 @@ class DatabaseSeeder extends Seeder
         $admin->syncRoles(['super_admin']);
 
         // Seed data dummy lengkap (sekolah, kelas, guru, siswa, jadwal, dll.)
-        $this->call(DummyDataSeeder::class);
+        $this->call([
+            DummyDataSeeder::class,
+            PresensiSessionSeeder::class,
+        ]);
     }
 }

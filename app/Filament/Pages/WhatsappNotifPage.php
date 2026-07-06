@@ -30,11 +30,7 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
 
     protected static ?string $navigationLabel = 'Kirim WA Orang Tua';
 
-<<<<<<< Updated upstream
-    protected static \UnitEnum|string|null $navigationGroup = 'Laporan & Monitoring';
-=======
     protected static \UnitEnum|string|null $navigationGroup = 'Presensi & Kehadiran';
->>>>>>> Stashed changes
 
     protected static ?int $navigationSort = 5;
 

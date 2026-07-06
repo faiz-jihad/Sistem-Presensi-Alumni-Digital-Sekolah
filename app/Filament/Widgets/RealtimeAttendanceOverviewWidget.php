@@ -17,7 +17,7 @@ class RealtimeAttendanceOverviewWidget extends Widget
 
     protected int | string | array $columnSpan = 'full';
 
-    protected static ?string $pollingInterval = '15s';
+    protected ?string $pollingInterval = '15s';
 
     public function getData(): array
     {

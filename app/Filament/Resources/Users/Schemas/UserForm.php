@@ -14,32 +14,20 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
-<<<<<<< Updated upstream
-                    ->label('Nama')
-=======
                     ->label('Nama Lengkap')
                     ->placeholder('Masukkan nama lengkap')
->>>>>>> Stashed changes
                     ->required(),
                     
                 TextInput::make('email')
-<<<<<<< Updated upstream
-                    ->label('Email')
-=======
                     ->label('Alamat Email')
->>>>>>> Stashed changes
                     ->email()
                     ->placeholder('contoh@sekolah.sch.id')
                     ->unique(ignoreRecord: true)
                     ->required(),
                     
                 TextInput::make('phone')
-<<<<<<< Updated upstream
-                    ->label('Telepon')
-=======
                     ->label('Nomor Telepon')
                     ->placeholder('Contoh: 08123456789')
->>>>>>> Stashed changes
                     ->tel(),
                     
                 TextInput::make('password')
@@ -50,27 +38,6 @@ class UserForm
                     ->required(fn (string $context): bool => $context === 'create'),
                     
                 Select::make('role')
-<<<<<<< Updated upstream
-                    ->label('Peran')
-                    ->options([
-                        'super_admin' => 'Super Admin',
-                        'admin' => 'Admin',
-                        'teacher' => 'Guru',
-                        'student' => 'Siswa',
-                        'parent' => 'Orang Tua / Wali',
-                        'alumni' => 'Alumni',
-                    ])
-                    ->default('student')
-                    ->required(),
-                TextInput::make('school_id')
-                    ->label('ID Sekolah')
-                    ->numeric(),
-                Select::make('status')
-                    ->label('Status')
-                    ->options([
-                        'active' => 'Aktif',
-                        'inactive' => 'Tidak Aktif',
-=======
                     ->label('Peran (Role)')
                     ->options(function () {
                         $currentUser = auth()->user();
@@ -115,23 +82,17 @@ class UserForm
                     ->options([
                         'active' => 'Aktif',
                         'inactive' => 'Nonaktif',
->>>>>>> Stashed changes
                         'suspended' => 'Ditangguhkan',
                     ])
                     ->default('active')
                     ->native(false)
                     ->required(),
-<<<<<<< Updated upstream
-                DateTimePicker::make('email_verified_at')
-                    ->label('Verifikasi Email Pada'),
-=======
                     
                 DateTimePicker::make('email_verified_at')
                     ->label('Diverifikasi Pada')
                     ->placeholder('Tanggal verifikasi email')
                     ->disabled()
                     ->dehydrated(false),
->>>>>>> Stashed changes
             ]);
     }
 }

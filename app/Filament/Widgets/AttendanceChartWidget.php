@@ -8,20 +8,6 @@ use Carbon\Carbon;
 
 class AttendanceChartWidget extends ChartWidget
 {
-<<<<<<< Updated upstream
-    protected ?string $heading = 'Tren Kehadiran 7 Hari';
-
-    protected ?string $description = 'Persentase hadir dan terlambat dibanding total presensi yang tercatat.';
-
-    protected ?string $maxHeight = '300px';
-
-    protected static ?int $sort = 3;
-
-    protected int | string | array $columnSpan = [
-        'default' => 1,
-        'md' => 6,
-        'xl' => 8,
-=======
     protected ?string $heading = '📈 Tren Kehadiran (30 Hari Terakhir)';
     protected ?string $description = 'Persentase siswa hadir per hari';
 
@@ -30,7 +16,6 @@ class AttendanceChartWidget extends ChartWidget
     protected int | string | array $columnSpan = [
         'default' => 12,
         'lg' => 8,
->>>>>>> Stashed changes
     ];
 
     protected function getData(): array
@@ -49,11 +34,7 @@ class AttendanceChartWidget extends ChartWidget
                     ->whereIn('status', ['present', 'late'])->count();
                 $percentages[] = round(($present / $total) * 100, 1);
             } else {
-<<<<<<< Updated upstream
-                $percentages[] = 0;
-=======
                 $percentages[] = null;
->>>>>>> Stashed changes
             }
         }
 
@@ -62,18 +43,9 @@ class AttendanceChartWidget extends ChartWidget
                 [
                     'label' => 'Tingkat Kehadiran (%)',
                     'data' => $percentages,
-<<<<<<< Updated upstream
-                    'backgroundColor' => 'rgba(37, 99, 235, 0.1)',
-                    'borderColor' => 'rgb(37, 99, 235)',
-                    'borderWidth' => 3,
-                    'pointBackgroundColor' => 'rgb(37, 99, 235)',
-                    'pointBorderWidth' => 0,
-                    'pointRadius' => 4,
-=======
                     'backgroundColor' => 'rgba(99, 102, 241, 0.12)',
                     'borderColor' => 'rgb(99, 102, 241)',
                     'borderWidth' => 2.5,
->>>>>>> Stashed changes
                     'fill' => true,
                     'tension' => 0.4,
                     'pointBackgroundColor' => 'rgb(99, 102, 241)',
@@ -94,18 +66,6 @@ class AttendanceChartWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
-<<<<<<< Updated upstream
-            'maintainAspectRatio' => false,
-            'scales' => [
-                'y' => [
-                    'beginAtZero' => true,
-                    'max' => 100,
-                ],
-            ],
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-=======
             'plugins' => [
                 'legend' => ['display' => false],
                 'tooltip' => ['callbacks' => []],
@@ -121,7 +81,6 @@ class AttendanceChartWidget extends ChartWidget
                 'x' => [
                     'grid' => ['display' => false],
                     'ticks' => ['maxTicksLimit' => 10],
->>>>>>> Stashed changes
                 ],
             ],
         ];

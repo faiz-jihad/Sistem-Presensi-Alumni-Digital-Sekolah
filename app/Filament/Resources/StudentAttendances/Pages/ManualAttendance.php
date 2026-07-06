@@ -147,19 +147,11 @@ class ManualAttendance extends Page
                         Select::make('status')
                             ->label('Status')
                             ->options([
-<<<<<<< Updated upstream
-                                'present'    => 'Hadir',
-                                'late'       => 'Terlambat',
-                                'sick'       => 'Sakit',
-                                'permission' => 'Izin',
-                                'absent'     => 'Alpha',
-=======
                                 'present'    => '🟢 Hadir',
                                 'late'       => '🟡 Terlambat',
                                 'sick'       => '🔵 Sakit',
                                 'permission' => '🟡 Izin',
                                 'absent'     => '🔴 Alpha',
->>>>>>> Stashed changes
                             ])
                             ->default('present')
                             ->required()

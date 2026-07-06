@@ -26,21 +26,6 @@ class StudentAttendanceResource extends JsonResource
                 'absent'     => 'Alpha',
                 default      => $this->status,
             },
-<<<<<<< Updated upstream
-            'check_in_time'       => $this->check_in_time,
-            'check_out_time'      => $this->check_out_time,
-            'note'                => $this->note,
-            'attachment'          => $this->attachment ? asset('storage/' . $this->attachment) : null,
-            'verification_status' => $this->verification_status,
-            'verified_at'         => $this->verified_at?->toDateTimeString(),
-            'student'             => $this->whenLoaded('student', fn () => [
-                'id'         => $this->student->id,
-                'name'       => $this->student->name,
-                'nis'        => $this->student->nis,
-                'nisn'       => $this->student->nisn,
-                'gender'     => $this->student->gender,
-                'birth_date' => $this->student->birth_date,
-=======
             'check_in_time'        => $this->check_in_time,
             'check_out_time'       => $this->check_out_time,
             'note'                 => $this->note,
@@ -59,7 +44,6 @@ class StudentAttendanceResource extends JsonResource
                 'id'   => $this->student->id,
                 'name' => $this->student->name,
                 'nis'  => $this->student->nis,
->>>>>>> Stashed changes
             ]),
             'class'                => $this->whenLoaded('class', fn () => [
                 'id'    => $this->class->id,

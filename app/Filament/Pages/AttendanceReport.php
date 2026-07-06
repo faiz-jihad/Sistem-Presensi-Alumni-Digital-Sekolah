@@ -28,11 +28,7 @@ class AttendanceReport extends Page
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentChartBar;
 
-<<<<<<< Updated upstream
-    protected static ?int $navigationSort = 1;
-=======
     protected static ?int $navigationSort = 2;
->>>>>>> Stashed changes
 
     public ?array $data = [];
 

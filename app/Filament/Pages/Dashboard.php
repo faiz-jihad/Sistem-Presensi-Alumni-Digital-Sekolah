@@ -25,22 +25,12 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-<<<<<<< Updated upstream
-            StatsOverview::class,
-            AlumniStatsWidget::class,
-            AttendanceChartWidget::class,
-            AlumniStatusChartWidget::class,
-            RecentSchools::class,
-            RecentStudents::class,
-            RecentTeachers::class,
-=======
             DashboardHeroWidget::class,         // sort -1 – Hero banner + quick actions
             StatsOverview::class,               // sort  1 – Stat cards w/ sparklines
             RealtimeAttendanceOverviewWidget::class, // sort 2 – Live KBM cards
             AttendanceChartWidget::class,       // sort  3 – 30-day line chart
             AlumniStatusChartWidget::class,     // sort  3 – Doughnut alumni
             WeeklyAttendanceBarChart::class,    // sort  4 – 7-day bar chart
->>>>>>> Stashed changes
         ];
     }
 

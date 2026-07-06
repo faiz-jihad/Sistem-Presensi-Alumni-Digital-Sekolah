@@ -14,11 +14,7 @@ class AttendanceService
     /**
      * Guru/Admin melakukan input presensi kelas manual atau bulk.
      */
-<<<<<<< Updated upstream
-    public function recordClassAttendance(?int $teacherId, int $classId, string $date, array $attendances): array
-=======
     public function recordClassAttendance(?int $teacherId, int $classId, string $date, array $attendances, ?int $presensiSessionId = null): array
->>>>>>> Stashed changes
     {
         if (empty($attendances)) {
             throw new \Exception('Daftar kehadiran kosong.');

@@ -8,19 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class AlumniStatusChartWidget extends ChartWidget
 {
-<<<<<<< Updated upstream
-    protected ?string $heading = 'Status Alumni Saat Ini';
-
-    protected ?string $description = 'Komposisi status alumni berdasarkan profil yang sudah tercatat.';
-
-    protected ?string $maxHeight = '320px';
-
-    protected static ?int $sort = 4;
-
-    protected int | string | array $columnSpan = [
-        'default' => 1,
-        'xl' => 12,
-=======
     protected ?string $heading = '🎓 Status Alumni';
     protected ?string $description = 'Distribusi status alumni terkini';
 
@@ -29,7 +16,6 @@ class AlumniStatusChartWidget extends ChartWidget
     protected int | string | array $columnSpan = [
         'default' => 12,
         'lg' => 4,
->>>>>>> Stashed changes
     ];
 
     protected function getData(): array
@@ -54,13 +40,10 @@ class AlumniStatusChartWidget extends ChartWidget
             $data[]   = $statusCounts[$key] ?? 0;
         }
 
-<<<<<<< Updated upstream
-=======
         if (array_sum($data) === 0) {
             $data = [40, 30, 15, 15];
         }
 
->>>>>>> Stashed changes
         return [
             'datasets' => [
                 [
@@ -97,17 +80,10 @@ class AlumniStatusChartWidget extends ChartWidget
             'plugins' => [
                 'legend' => [
                     'position' => 'bottom',
-<<<<<<< Updated upstream
-                ],
-            ],
-            'cutout' => '58%',
-            'maintainAspectRatio' => false,
-=======
                     'labels' => ['padding' => 16, 'usePointStyle' => true],
                 ],
             ],
             'cutout' => '65%',
->>>>>>> Stashed changes
         ];
     }
 }

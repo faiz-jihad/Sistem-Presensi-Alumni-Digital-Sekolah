@@ -20,39 +20,6 @@ class StudentAttendanceForm
     {
         return $schema
             ->components([
-<<<<<<< Updated upstream
-                Select::make('school_id')
-                    ->label('Sekolah')
-                    ->relationship('school', 'name')
-                    ->required()
-                    ->searchable(),
-                Select::make('class_id')
-                    ->label('Kelas')
-                    ->relationship('class', 'name')
-                    ->required()
-                    ->searchable(),
-                Select::make('student_id')
-                    ->label('Siswa')
-                    ->relationship('student', 'name')
-                    ->required()
-                    ->searchable(),
-                Select::make('teacher_id')
-                    ->label('Guru')
-                    ->relationship('teacher', 'name')
-                    ->nullable()
-                    ->searchable(),
-                DatePicker::make('date')
-                    ->label('Tanggal')
-                    ->required(),
-                TimePicker::make('check_in_time')
-                    ->label('Waktu Masuk')
-                    ->nullable(),
-                TimePicker::make('check_out_time')
-                    ->label('Waktu Keluar')
-                    ->nullable(),
-                Select::make('status')
-                    ->label('Status Kehadiran')
-=======
                 DatePicker::make('date')
                     ->label('Tanggal')
                     ->required()
@@ -95,7 +62,6 @@ class StudentAttendanceForm
                     ->preload(),
                 Select::make('status')
                     ->label('Status')
->>>>>>> Stashed changes
                     ->options([
                         'present'    => 'Hadir',
                         'late'       => 'Terlambat',
