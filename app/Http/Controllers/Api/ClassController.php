@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\SchoolClass;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -17,16 +18,26 @@ class ClassController extends BaseController
             /** @var \App\Models\User $user */
             $user = $request->user();
 
-            $schoolId = $request->query('school_id') ?? $user->school_id;
+            $teacher = $user->role === 'teacher'
+                ? Teacher::where('user_id', $user->id)->first()
+                : null;
+
+            $schoolId = $request->query('school_id')
+                ?? $user->school_id
+                ?? $teacher?->school_id;
 
             if (!$schoolId) {
                 return $this->error('ID sekolah diperlukan.', 400);
             }
 
             $classes = SchoolClass::where('school_id', $schoolId)
+                ->when($teacher, function ($query) use ($teacher) {
+                    $query->where('homeroom_teacher_id', $teacher->id);
+                })
                 ->with(['homeroomTeacher' => function ($query) {
                     $query->select('id', 'name');
                 }])
+                ->withCount('students')
                 ->orderBy('grade')
                 ->orderBy('name')
                 ->get();
@@ -64,8 +75,8 @@ class ClassController extends BaseController
             // Cek akses (admin atau guru wali kelas)
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 // Untuk guru, cek apakah dia wali kelas ini
-                if ($user->role === 'guru') {
-                    $teacherId = $user->teacher?->id;
+                if ($user->role === 'teacher') {
+                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
                     if ($class->homeroom_teacher_id !== $teacherId) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
@@ -98,8 +109,8 @@ class ClassController extends BaseController
 
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
-                if ($user->role === 'guru') {
-                    $teacherId = $user->teacher?->id;
+                if ($user->role === 'teacher') {
+                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
                     if ($class->homeroom_teacher_id !== $teacherId) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
@@ -109,7 +120,10 @@ class ClassController extends BaseController
             }
 
             $students = $class->students()
-                ->select('id', 'nis', 'nisn', 'name', 'gender', 'status')
+                ->select('id', 'class_id', 'parent_user_id', 'nis', 'nisn', 'name', 'gender', 'birth_date', 'status')
+                ->with(['parent' => function ($query) {
+                    $query->select('id', 'name');
+                }])
                 ->orderBy('name')
                 ->get();
 

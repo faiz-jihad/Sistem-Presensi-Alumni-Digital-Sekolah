@@ -196,6 +196,20 @@ class DummyDataSeeder extends Seeder
                 ])
             );
 
+            $parent = \App\Models\User::firstOrCreate(
+                ['phone' => $s['parent_phone'], 'role' => 'parent'],
+                [
+                    'name'      => $s['parent_name'],
+                    'email'     => 'ortu_' . preg_replace('/\D/', '', $s['parent_phone']) . '@internal.app',
+                    'password'  => Hash::make('ortu123456'),
+                    'role'      => 'parent',
+                    'school_id' => $school->id,
+                    'status'    => 'active',
+                ]
+            );
+            $parent->update(['name' => $s['parent_name']]);
+            $student->update(['parent_user_id' => $parent->id]);
+
             // Buat user siswa jika belum ada
             $studentUser = \App\Models\User::firstOrCreate(
                 ['email' => strtolower(str_replace(' ', '.', $s['name'])) . '@smkn1demo.sch.id'],

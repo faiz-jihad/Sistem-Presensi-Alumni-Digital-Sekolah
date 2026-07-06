@@ -16,7 +16,7 @@ class AttendanceService
     /**
      * Guru/Admin melakukan input presensi kelas manual atau bulk.
      */
-    public function recordClassAttendance(int $teacherId, int $classId, string $date, array $attendances): array
+    public function recordClassAttendance(?int $teacherId, int $classId, string $date, array $attendances): array
     {
         $schoolId = DB::table('classes')->where('id', $classId)->value('school_id');
         if (!$schoolId) {

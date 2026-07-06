@@ -28,8 +28,9 @@ class StudentAttendanceController extends BaseController
 
         // Filter berdasarkan role
         if ($user->role === 'student') {
-            $student = Student::where('name', $user->name)
-                ->orWhere('parent_user_id', $user->id)
+            $student = Student::where('parent_user_id', $user->id)
+                ->orWhere('name', $user->name)
+                ->orWhere('nis', $user->email)
                 ->first();
             if (!$student) {
                 return $this->error("Data siswa tidak ditemukan untuk akun ini.", 404);
