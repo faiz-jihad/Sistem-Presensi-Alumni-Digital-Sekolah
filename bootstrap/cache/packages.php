@@ -29,6 +29,13 @@
       0 => 'Barryvdh\\DomPDF\\ServiceProvider',
     ),
   ),
+  'bezhansalleh/filament-language-switch' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'BezhanSalleh\\LanguageSwitch\\LanguageSwitchServiceProvider',
+    ),
+  ),
   'blade-ui-kit/blade-heroicons' => 
   array (
     'providers' => 
@@ -41,6 +48,13 @@
     'providers' => 
     array (
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
+    ),
+  ),
+  'codezero/browser-locale' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'CodeZero\\BrowserLocale\\Laravel\\BrowserLocaleServiceProvider',
     ),
   ),
   'dedoc/scramble' => 
@@ -132,6 +146,83 @@
     'providers' => 
     array (
       0 => 'Knuckles\\Scribe\\ScribeServiceProvider',
+    ),
+  ),
+  'laravel-lang/actions' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Actions\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/attributes' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Attributes\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/config' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Config\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/http-statuses' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\HttpStatuses\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/lang' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Lang\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/locales' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Locales\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/models' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Models\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/moonshine' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\MoonShine\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/publisher' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Publisher\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/routes' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\Routes\\ServiceProvider',
+    ),
+  ),
+  'laravel-lang/starter-kits' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'LaravelLang\\StarterKits\\ServiceProvider',
     ),
   ),
   'laravel/pail' => 

@@ -24,8 +24,17 @@ class UsersTable
                     ->label('Email')
                     ->searchable(),
                 TextColumn::make('role')
-                    ->label('Role')
-                    ->badge(),
+                    ->label('Peran')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'super_admin' => 'Super Admin',
+                        'admin' => 'Admin',
+                        'teacher' => 'Guru',
+                        'student' => 'Siswa',
+                        'parent' => 'Orang Tua / Wali',
+                        'alumni' => 'Alumni',
+                        default => $state,
+                    }),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -33,6 +42,12 @@ class UsersTable
                         'active' => 'success',
                         'suspended' => 'danger',
                         default => 'warning',
+                    })
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'suspended' => 'Ditangguhkan',
+                        default => $state,
                     }),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -41,6 +56,7 @@ class UsersTable
             ])
             ->filters([
                 SelectFilter::make('role')
+                    ->label('Peran')
                     ->options([
                         'super_admin' => 'Super Admin',
                         'admin' => 'Admin',
@@ -48,6 +64,7 @@ class UsersTable
                         'student' => 'Siswa',
                     ]),
                 SelectFilter::make('status')
+                    ->label('Status')
                     ->options([
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',

@@ -17,6 +17,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class AcademicYearResource extends Resource
 {
     protected static ?string $model = AcademicYear::class;
+
+    protected static ?string $modelLabel = 'Tahun Akademik';
+
+    protected static ?string $pluralModelLabel = 'Tahun Akademik';
     
     protected static ?string $recordTitleAttribute = 'name';
 

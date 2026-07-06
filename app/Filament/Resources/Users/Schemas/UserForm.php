@@ -14,17 +14,21 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Email')
                     ->email()
                     ->required(),
                 TextInput::make('phone')
+                    ->label('Telepon')
                     ->tel(),
                 TextInput::make('password')
+                    ->label('Kata Sandi')
                     ->password()
                     ->required(),
                 Select::make('role')
+                    ->label('Peran')
                     ->options([
                         'super_admin' => 'Super Admin',
                         'admin' => 'Admin',
@@ -36,12 +40,19 @@ class UserForm
                     ->default('student')
                     ->required(),
                 TextInput::make('school_id')
+                    ->label('ID Sekolah')
                     ->numeric(),
                 Select::make('status')
-                    ->options(['active' => 'Active', 'inactive' => 'Inactive', 'suspended' => 'Suspended'])
+                    ->label('Status')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'suspended' => 'Ditangguhkan',
+                    ])
                     ->default('active')
                     ->required(),
-                DateTimePicker::make('email_verified_at'),
+                DateTimePicker::make('email_verified_at')
+                    ->label('Verifikasi Email Pada'),
             ]);
     }
 }

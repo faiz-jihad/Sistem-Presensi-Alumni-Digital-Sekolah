@@ -17,6 +17,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SchoolResource extends Resource
 {
     protected static ?string $model = School::class;
+
+    protected static ?string $modelLabel = 'Sekolah';
+
+    protected static ?string $pluralModelLabel = 'Sekolah';
     
     protected static ?string $recordTitleAttribute = 'name';
 

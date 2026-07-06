@@ -14,6 +14,10 @@ class AlumniResource extends Resource
 {
     protected static ?string $model = Alumni::class;
 
+    protected static ?string $modelLabel = 'Alumni';
+
+    protected static ?string $pluralModelLabel = 'Alumni';
+
     public static function getNavigationIcon(): ?string
     {
         return 'heroicon-o-users';
