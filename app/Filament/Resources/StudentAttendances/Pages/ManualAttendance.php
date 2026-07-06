@@ -77,11 +77,11 @@ class ManualAttendance extends Page
                         Select::make('status')
                             ->label('Status Kehadiran')
                             ->options([
-                                'present'    => '✅ Hadir',
-                                'late'       => '🕐 Terlambat',
-                                'sick'       => '🤒 Sakit',
-                                'permission' => '📋 Izin',
-                                'absent'     => '❌ Alpha',
+                                'present'    => 'Hadir',
+                                'late'       => 'Terlambat',
+                                'sick'       => 'Sakit',
+                                'permission' => 'Izin',
+                                'absent'     => 'Alpha',
                             ])
                             ->default('present')
                             ->required()

@@ -20,7 +20,12 @@
         }
         @media (min-width: 768px) {
             .stat-grid {
-                grid-template-columns: repeat(5, minmax(0, 1fr));
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1280px) {
+            .stat-grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
             }
         }
         .stat-card {
@@ -44,6 +49,9 @@
         .stat-card-absent { background-color: #fef2f2; border-color: #fca5a5; color: #991b1b; }
         .dark .stat-card-absent { background-color: rgba(153, 27, 27, 0.15); border-color: rgba(153, 27, 27, 0.4); color: #f87171; }
 
+        .stat-card-neutral { background-color: #f8fafc; border-color: #cbd5e1; color: #334155; }
+        .dark .stat-card-neutral { background-color: rgba(51, 65, 85, 0.22); border-color: rgba(148, 163, 184, 0.25); color: #cbd5e1; }
+
         .stat-label {
             font-size: 11px;
             font-weight: 600;
@@ -54,6 +62,56 @@
             font-size: 24px;
             font-weight: 700;
             margin-top: 4px;
+        }
+
+        .report-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .dark .report-toolbar {
+            border-bottom-color: #27272a;
+        }
+        @media (min-width: 768px) {
+            .report-toolbar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+        .report-heading {
+            font-size: 18px;
+            line-height: 28px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .dark .report-heading {
+            color: #f8fafc;
+        }
+        .report-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .dark .meta-pill {
+            border-color: #27272a;
+            background-color: #09090b;
+            color: #cbd5e1;
         }
 
         .table-container {
@@ -145,21 +203,45 @@
         @endphp
 
         @if($report)
+            @php
+                $isDaily = ($this->data['type'] ?? 'daily') === 'daily';
+                $classMajor = $report['class']['major'] ? ' - ' . $report['class']['major'] : '';
+                $periodLabel = $isDaily
+                    ? \Carbon\Carbon::parse($report['date'])->locale('id')->isoFormat('dddd, D MMMM Y')
+                    : \Carbon\Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->locale('id')->isoFormat('MMMM Y');
+
+                $monthlySummary = [
+                    'present' => 0,
+                    'late' => 0,
+                    'sick' => 0,
+                    'permission' => 0,
+                    'absent' => 0,
+                    'recorded' => 0,
+                ];
+
+                if (! $isDaily) {
+                    foreach ($report['students'] as $student) {
+                        $monthlySummary['present'] += $student['summary']['present'] ?? 0;
+                        $monthlySummary['late'] += $student['summary']['late'] ?? 0;
+                        $monthlySummary['sick'] += $student['summary']['sick'] ?? 0;
+                        $monthlySummary['permission'] += $student['summary']['permission'] ?? 0;
+                        $monthlySummary['absent'] += $student['summary']['absent'] ?? 0;
+                        $monthlySummary['recorded'] += $student['total_recorded_days'] ?? 0;
+                    }
+                }
+            @endphp
             <div class="report-section space-y-6">
                 <!-- Header Laporan & Ekspor -->
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div class="report-toolbar">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">
-                            Pratinjau Laporan Kehadiran
+                        <h3 class="report-heading">
+                            Rekap Presensi {{ $isDaily ? 'Harian' : 'Bulanan' }}
                         </h3>
-                        <p class="text-xs text-slate-500 mt-1">
-                            Kelas: <strong>{{ $report['class']['name'] }} ({{ $report['class']['major'] }})</strong> | 
-                            @if($this->data['type'] === 'daily')
-                                Hari/Tanggal: <strong>{{ \Carbon\Carbon::parse($report['date'])->locale('id')->isoFormat('dddd, D MMMM Y') }}</strong>
-                            @else
-                                Periode: <strong>{{ \Carbon\Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->locale('id')->isoFormat('MMMM Y') }}</strong>
-                            @endif
-                        </p>
+                        <div class="report-meta">
+                            <span class="meta-pill">{{ $report['class']['name'] }}{{ $classMajor }}</span>
+                            <span class="meta-pill">{{ $periodLabel }}</span>
+                            <span class="meta-pill">{{ count($report['students']) }} siswa</span>
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -184,7 +266,7 @@
                 </div>
 
                 <!-- Summary Cards -->
-                @if($this->data['type'] === 'daily')
+                @if($isDaily)
                     <div class="stat-grid">
                         <div class="stat-card stat-card-present">
                             <p class="stat-label">Hadir</p>
@@ -206,12 +288,36 @@
                             <p class="stat-label">Alpha</p>
                             <p class="stat-value">{{ $report['summary']['absent'] }}</p>
                         </div>
+                        <div class="stat-card stat-card-neutral">
+                            <p class="stat-label">Belum Diisi</p>
+                            <p class="stat-value">{{ $report['summary']['not_recorded'] ?? 0 }}</p>
+                        </div>
                     </div>
                 @else
-                    <div class="stat-grid" style="grid-template-columns: 1fr;">
-                        <div class="stat-card" style="background-color: #f8fafc; border-color: #e2e8f0; color: #334155; max-width: 250px;">
-                            <p class="stat-label" style="color: #64748b;">Total Siswa</p>
-                            <p class="stat-value" style="color: #0f172a;">{{ $report['total_students'] }} Siswa</p>
+                    <div class="stat-grid">
+                        <div class="stat-card stat-card-neutral">
+                            <p class="stat-label">Total Siswa</p>
+                            <p class="stat-value">{{ $report['total_students'] }}</p>
+                        </div>
+                        <div class="stat-card stat-card-present">
+                            <p class="stat-label">Hadir</p>
+                            <p class="stat-value">{{ $monthlySummary['present'] }}</p>
+                        </div>
+                        <div class="stat-card stat-card-late">
+                            <p class="stat-label">Terlambat</p>
+                            <p class="stat-value">{{ $monthlySummary['late'] }}</p>
+                        </div>
+                        <div class="stat-card stat-card-sick">
+                            <p class="stat-label">Sakit</p>
+                            <p class="stat-value">{{ $monthlySummary['sick'] }}</p>
+                        </div>
+                        <div class="stat-card stat-card-permission">
+                            <p class="stat-label">Izin</p>
+                            <p class="stat-value">{{ $monthlySummary['permission'] }}</p>
+                        </div>
+                        <div class="stat-card stat-card-absent">
+                            <p class="stat-label">Alpha</p>
+                            <p class="stat-value">{{ $monthlySummary['absent'] }}</p>
                         </div>
                     </div>
                 @endif
@@ -224,11 +330,12 @@
                                 <th style="width: 50px; text-align: center;">No</th>
                                 <th style="min-width: 200px;">Nama Siswa</th>
                                 <th style="width: 120px;">NIS</th>
-                                @if($this->data['type'] === 'daily')
+                                @if($isDaily)
                                     <th style="width: 150px;">Status</th>
                                     <th style="width: 110px; text-align: center;">Jam Masuk</th>
                                     <th>Catatan</th>
                                 @else
+                                    <th style="width: 110px; text-align: center;">Hari Direkap</th>
                                     <th style="width: 80px; text-align: center;">Hadir</th>
                                     <th style="width: 80px; text-align: center;">Telat</th>
                                     <th style="width: 80px; text-align: center;">Sakit</th>
@@ -247,7 +354,7 @@
                                     </td>
                                     <td>{{ $student['nis'] }}</td>
                                     
-                                    @if($this->data['type'] === 'daily')
+                                    @if($isDaily)
                                         <td>
                                             @php
                                                 $badgeClass = match($student['status']) {
@@ -264,7 +371,8 @@
                                                     'permission' => 'Izin',
                                                     'sick' => 'Sakit',
                                                     'absent' => 'Alpha',
-                                                    default => 'Belum Diisi',
+                                                    'not_recorded' => 'Belum Diisi',
+                                                    default => 'Tidak Dikenal',
                                                 };
                                             @endphp
                                             <span class="badge {{ $badgeClass }}">
@@ -276,6 +384,7 @@
                                             {{ $student['note'] ?: '-' }}
                                         </td>
                                     @else
+                                        <td style="text-align: center; font-weight: 600;">{{ $student['total_recorded_days'] }}</td>
                                         <td style="text-align: center; font-weight: 600; color: #059669;">{{ $student['summary']['present'] }}</td>
                                         <td style="text-align: center; font-weight: 600; color: #d97706;">{{ $student['summary']['late'] }}</td>
                                         <td style="text-align: center; font-weight: 600; color: #7c3aed;">{{ $student['summary']['sick'] }}</td>

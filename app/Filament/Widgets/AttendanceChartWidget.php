@@ -9,13 +9,18 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceChartWidget extends ChartWidget
 {
-    protected ?string $heading = 'Grafik Tingkat Kehadiran (7 Hari Terakhir)';
+    protected ?string $heading = 'Tren Kehadiran 7 Hari';
 
-    protected static ?int $sort = 2;
+    protected ?string $description = 'Persentase hadir dan terlambat dibanding total presensi yang tercatat.';
+
+    protected ?string $maxHeight = '300px';
+
+    protected static ?int $sort = 3;
 
     protected int | string | array $columnSpan = [
-        'default' => 12,
-        'md' => 8,
+        'default' => 1,
+        'md' => 6,
+        'xl' => 8,
     ];
 
     protected function getData(): array
@@ -39,11 +44,7 @@ class AttendanceChartWidget extends ChartWidget
                     ->count();
                 $percentages[] = round(($present / $total) * 100, 1);
             } else {
-                // Fallback dummy value agar grafik tetap cantik di database kosong/sebelum absensi dilakukan
-                $percentages[] = match (Carbon::parse($date)->dayOfWeek) {
-                    Carbon::SATURDAY, Carbon::SUNDAY => 0,
-                    default => rand(92, 98),
-                };
+                $percentages[] = 0;
             }
         }
 
@@ -55,6 +56,9 @@ class AttendanceChartWidget extends ChartWidget
                     'backgroundColor' => 'rgba(37, 99, 235, 0.1)',
                     'borderColor' => 'rgb(37, 99, 235)',
                     'borderWidth' => 3,
+                    'pointBackgroundColor' => 'rgb(37, 99, 235)',
+                    'pointBorderWidth' => 0,
+                    'pointRadius' => 4,
                     'fill' => true,
                     'tension' => 0.4,
                 ],
@@ -66,5 +70,23 @@ class AttendanceChartWidget extends ChartWidget
     protected function getType(): string
     {
         return 'line';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'maintainAspectRatio' => false,
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'max' => 100,
+                ],
+            ],
+            'plugins' => [
+                'legend' => [
+                    'display' => false,
+                ],
+            ],
+        ];
     }
 }

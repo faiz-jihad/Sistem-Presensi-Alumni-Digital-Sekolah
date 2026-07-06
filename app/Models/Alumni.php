@@ -19,10 +19,22 @@ class Alumni extends Model
         'user_id',
         'nisn',
         'name',
+        'gender',
         'graduation_year',
         'class_name',
         'major',
+        'photo',
+        'email',
+        'phone',
         'verification_status',
+        'verified_by',
+        'verified_at',
+        'verification_notes',
+    ];
+
+    protected $casts = [
+        'graduation_year' => 'integer',
+        'verified_at' => 'datetime',
     ];
 
     public function school(): BelongsTo
@@ -35,8 +47,23 @@ class Alumni extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function profile(): HasOne
+    public function verifiedBy(): BelongsTo
     {
-        return $this->hasOne(AlumniProfile::class, 'alumni_id');
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('verification_status', 'pending');
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->where('verification_status', 'verified');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('verification_status', 'rejected');
     }
 }

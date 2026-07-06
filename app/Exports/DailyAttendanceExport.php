@@ -37,7 +37,6 @@ class DailyAttendanceExport implements FromArray, WithHeadings, WithTitle, Shoul
                 $student['nis'],
                 $status,
                 $student['check_in_time'] ?: '-',
-                $student['check_out_time'] ?: '-',
                 $student['note'] ?: '-',
             ];
         }
@@ -53,7 +52,6 @@ class DailyAttendanceExport implements FromArray, WithHeadings, WithTitle, Shoul
             'NIS',
             'Status Kehadiran',
             'Jam Masuk',
-            'Jam Pulang',
             'Catatan',
         ];
     }

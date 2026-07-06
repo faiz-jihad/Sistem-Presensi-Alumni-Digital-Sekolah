@@ -17,6 +17,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class StudentClassResource extends Resource
 {
     protected static ?string $model = StudentClass::class;
+
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
+
+    protected static ?string $modelLabel = 'Kelas Siswa';
+
+    protected static ?string $pluralModelLabel = 'Kelas Siswa';
     
     protected static ?string $recordTitleAttribute = 'name';
 

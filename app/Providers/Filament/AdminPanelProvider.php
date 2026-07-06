@@ -2,15 +2,15 @@
 
 namespace App\Providers\Filament;
 
-
 use App\Filament\Pages\Dashboard;
-
+use App\Filament\Pages\DashboardGrafik;
+use App\Filament\Pages\WhatsappNotifPage;
+use App\Filament\Resources\StudentAttendances\Pages\ManualAttendance;
+use App\Filament\Pages\TracerStudy;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
-
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -21,6 +21,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,9 +40,10 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
-                \App\Filament\Resources\StudentAttendances\Pages\ManualAttendance::class,
-                \App\Filament\Pages\WhatsappNotifPage::class,
-                \App\Filament\Pages\DashboardGrafik::class,
+                ManualAttendance::class,
+                WhatsappNotifPage::class,
+                DashboardGrafik::class,
+                TracerStudy::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -52,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\RecentSchools::class,
                 \App\Filament\Widgets\RecentStudents::class,
                 \App\Filament\Widgets\RecentTeachers::class,
+                \App\Filament\Widgets\AlumniStatsWidget::class,
                 Widgets\AccountWidget::class,
             ])
             ->middleware([

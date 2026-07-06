@@ -18,6 +18,11 @@ class StudentAttendanceResource extends Resource
 {
     protected static ?string $model = StudentAttendance::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
     protected static ?string $navigationLabel = 'Presensi Siswa';
