@@ -14,7 +14,10 @@ class OpenSessionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'schedule_id' => ['required', 'integer', 'exists:schedules,id'],
+            'schedule_id' => ['required_without:class_id', 'integer', 'exists:schedules,id'],
+            'class_id' => ['required_without:schedule_id', 'integer', 'exists:classes,id'],
+            'date' => ['sometimes', 'nullable', 'date'],
+            'tanggal' => ['sometimes', 'nullable', 'date'],
         ];
     }
 

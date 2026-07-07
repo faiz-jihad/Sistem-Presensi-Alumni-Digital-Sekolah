@@ -8,12 +8,14 @@ use App\Enums\SessionStatus;
 use App\Models\PresensiSession;
 use App\Models\QrToken;
 use App\Models\Schedule;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\Teacher;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Jobs\SendWhatsAppNotification;
 
 class PresensiSessionService
@@ -215,7 +217,11 @@ class PresensiSessionService
             ->first();
 
         if ($existingOpen) {
-            throw new \Exception('Sesi presensi untuk jadwal ini sudah dibuka.', 422);
+            if ((int) $existingOpen->teacher_id !== (int) $teacher->id) {
+                throw new \Exception('Sesi presensi ini sedang dibuka oleh guru lain.', 403);
+            }
+
+            return $existingOpen;
         }
 
         return DB::transaction(function () use ($schedule, $today, $userId, $teacher) {
@@ -259,6 +265,80 @@ class PresensiSessionService
                     ->success()
                     ->sendToDatabase($admins);
             }
+
+            return $session->refresh();
+        });
+    }
+
+    public function openByClassDate(int $classId, string $date, int $userId): PresensiSession
+    {
+        $teacher = Teacher::where('user_id', $userId)->firstOrFail();
+        $class = SchoolClass::where('id', $classId)
+            ->where('homeroom_teacher_id', $teacher->id)
+            ->first();
+
+        if (!$class) {
+            throw new \Exception('Anda tidak memiliki akses ke kelas ini.', 403);
+        }
+
+        $dateCarbon = Carbon::parse($date);
+        $day = DayOfWeek::fromCarbon($dateCarbon);
+
+        $schedule = Schedule::with(['classHour', 'class', 'subject'])
+            ->where('teacher_id', $teacher->id)
+            ->where('class_id', $classId)
+            ->where('is_active', true)
+            ->where('day', $day->value)
+            ->first();
+
+        if (!$schedule) {
+            $schedule = Schedule::with(['classHour', 'class', 'subject'])
+                ->where('teacher_id', $teacher->id)
+                ->where('class_id', $classId)
+                ->where('is_active', true)
+                ->first();
+        }
+
+        $dateString = $dateCarbon->toDateString();
+
+        $existingOpen = PresensiSession::where('class_id', $classId)
+            ->where('date', $dateString)
+            ->where('status', SessionStatus::Open->value)
+            ->first();
+
+        if ($existingOpen) {
+            if ((int) $existingOpen->teacher_id !== (int) $teacher->id) {
+                throw new \Exception('Sesi presensi kelas ini sedang dibuka oleh guru lain.', 403);
+            }
+
+            return $existingOpen;
+        }
+
+        return DB::transaction(function () use ($schedule, $class, $dateString, $userId, $teacher) {
+            $session = PresensiSession::firstOrCreate(
+                [
+                    'class_id' => $class->id,
+                    'date' => $dateString,
+                ],
+                [
+                    'school_id' => $class->school_id,
+                    'schedule_id' => $schedule?->id,
+                    'teacher_id' => $teacher->id,
+                    'start_time' => $schedule?->classHour?->start_time,
+                    'end_time' => $schedule?->classHour?->end_time,
+                    'status' => SessionStatus::Scheduled->value,
+                ]
+            );
+
+            if (in_array($session->status, [SessionStatus::Closed, SessionStatus::Cancelled], true)) {
+                throw new \Exception('Sesi yang sudah ditutup atau dibatalkan tidak dapat dibuka kembali.', 422);
+            }
+
+            $session->update([
+                'status' => SessionStatus::Open->value,
+                'opened_by' => $userId,
+                'opened_at' => Carbon::now(),
+            ]);
 
             return $session->refresh();
         });
@@ -386,56 +466,65 @@ class PresensiSessionService
      * ═══════════════════════════════════════════════ */
 
     /**
-     * Generate QR token untuk sesi (berlaku 5 menit).
+     * Generate token QR statis untuk satu sesi.
      */
-    public function generateQrToken(PresensiSession $session): QrToken
+    public function generateQrToken(PresensiSession $session): array
     {
         if ($session->status !== SessionStatus::Open) {
             throw new \Exception('QR hanya dapat dibuat untuk sesi yang sedang berlangsung.', 422);
         }
 
-        // Invalidasi token lama yang belum digunakan
-        QrToken::where('presensi_session_id', $session->id)
-            ->where('used', false)
-            ->update(['expired_at' => Carbon::now()]);
+        $updates = [];
+        if (($session->attendance_method ?? 'manual') !== 'qr') {
+            $updates['attendance_method'] = 'qr';
+        }
+        if (empty($session->qr_token)) {
+            $updates['qr_token'] = Str::random(24);
+        }
 
-        return QrToken::create([
-            'presensi_session_id' => $session->id,
-            'token'               => Str::random(40),
-            'expired_at'          => Carbon::now()->addMinutes(5),
-            'used'                => false,
-        ]);
+        if (!empty($updates)) {
+            $session->update($updates);
+            $session->refresh();
+        }
+
+        return $this->qrPayload($session);
+    }
+
+    public function activeQrToken(PresensiSession $session): array
+    {
+        if (($session->attendance_method ?? 'manual') !== 'qr' || empty($session->qr_token)) {
+            throw new \Exception('QR Code belum digenerate untuk sesi ini.', 422);
+        }
+
+        if ($session->status !== SessionStatus::Open) {
+            throw new \Exception('Sesi sudah ditutup.', 422);
+        }
+
+        return $this->qrPayload($session);
     }
 
     /**
-     * Scan QR token — catat presensi siswa.
+     * Scan QR token - catat presensi siswa.
      */
-    public function scanQrToken(string $token, Student $student): StudentAttendance
+    public function scanQrToken(string $token, Student $student, ?int $sessionId = null): StudentAttendance
     {
-        $qrToken = QrToken::with([
-            'presensiSession.schedule.class',
-            'presensiSession.schedule.classHour',
-        ])->where('token', $token)->firstOrFail();
+        $session = $sessionId
+            ? PresensiSession::with(['class', 'schedule.class', 'schedule.classHour', 'teacher.user'])->findOrFail($sessionId)
+            : $this->resolveLegacyQrSession($token);
 
-        // Validasi token masih valid
-        if (!$qrToken->isValid()) {
-            throw new \Exception('Token QR sudah kedaluwarsa atau telah digunakan.', 422);
-        }
-
-        $session = $qrToken->presensiSession;
-
-        // Validasi sesi masih OPEN
         if ($session->status !== SessionStatus::Open) {
-            throw new \Exception('Sesi presensi ini sudah ditutup.', 422);
+            throw new \Exception('Sesi sudah ditutup.', 422);
         }
 
-        // Validasi siswa dari kelas yang benar
-        $classId = $session->schedule?->class_id;
+        if ($sessionId && !hash_equals((string) $session->qr_token, $token)) {
+            throw new \Exception('QR tidak valid.', 422);
+        }
+
+        $classId = $session->class_id ?? $session->schedule?->class_id;
         if ($classId && (int) $student->class_id !== (int) $classId) {
             throw new \Exception('Anda tidak terdaftar di kelas untuk sesi presensi ini.', 403);
         }
 
-        // Cek apakah siswa sudah presensi pada sesi ini
         $existing = StudentAttendance::where('student_id', $student->id)
             ->where('presensi_session_id', $session->id)
             ->first();
@@ -444,56 +533,79 @@ class PresensiSessionService
             throw new \Exception('Anda sudah melakukan presensi pada sesi ini.', 422);
         }
 
-        $now          = Carbon::now();
+        $now = Carbon::now();
         $startTimeRaw = $session->start_time ?? $session->schedule?->classHour?->start_time ?? '07:00:00';
-        $startCarbon  = Carbon::parse($startTimeRaw);
-        $diffMinutes  = $startCarbon->diffInMinutes($now, false);
+        $startCarbon = Carbon::parse($session->date . ' ' . $startTimeRaw);
+        $diffMinutes = $startCarbon->diffInMinutes($now, false);
 
         $status = $diffMinutes > 15 ? AttendanceStatus::Late : AttendanceStatus::Present;
-        $note   = $status === AttendanceStatus::Late
+        $note = $status === AttendanceStatus::Late
             ? "Terlambat scan QR ({$diffMinutes} menit)"
             : 'Scan QR tepat waktu';
 
-        return DB::transaction(function () use ($qrToken, $session, $student, $now, $status, $note) {
-            // Tandai token sebagai used
-            $qrToken->markAsUsed();
-
+        return DB::transaction(function () use ($session, $student, $now, $status, $note) {
             $attendance = StudentAttendance::create([
-                'school_id'           => $student->school_id,
-                'class_id'            => $student->class_id,
-                'student_id'          => $student->id,
-                'teacher_id'          => $session->teacher_id,
+                'school_id' => $student->school_id,
+                'class_id' => $student->class_id,
+                'student_id' => $student->id,
+                'teacher_id' => $session->teacher_id,
                 'presensi_session_id' => $session->id,
-                'date'                => $session->date,
-                'status'              => $status->value,
-                'check_in_time'       => $now->toTimeString(),
-                'note'                => $note,
+                'date' => $session->date,
+                'status' => $status->value,
+                'check_in_time' => $now->toTimeString(),
+                'scanned_at' => $now,
+                'note' => $note,
             ]);
 
-            // Memicu notifikasi WhatsApp ke Orang Tua
             $this->triggerWhatsAppNotification($student, $attendance);
 
-            // Memicu notifikasi database ke guru pengajar
             $teacherUser = $session->teacher?->user;
             if ($teacherUser) {
-                $className = $session->schedule?->class?->name ?? 'Kelas';
+                $className = $session->class?->name ?? $session->schedule?->class?->name ?? 'Kelas';
                 $statusLabel = $status->value === AttendanceStatus::Late->value ? 'Terlambat' : 'Hadir';
-                
+
                 $dbNotif = \Filament\Notifications\Notification::make()
                     ->title('Siswa Scan QR')
                     ->body("**{$student->name}** melakukan scan QR di kelas **{$className}** dengan status **{$statusLabel}**.");
-                
+
                 if ($status->value === AttendanceStatus::Late->value) {
                     $dbNotif->warning();
                 } else {
                     $dbNotif->success();
                 }
-                
+
                 $dbNotif->sendToDatabase($teacherUser);
             }
 
             return $attendance;
         });
+    }
+
+    private function qrPayload(PresensiSession $session): array
+    {
+        return [
+            'session_id' => $session->id,
+            'qr_token' => $session->qr_token,
+            'token' => $session->qr_token,
+            'class_id' => $session->class_id ?? $session->schedule?->class_id,
+            'tanggal' => $session->date,
+            'date' => $session->date,
+        ];
+    }
+
+    private function resolveLegacyQrSession(string $token): PresensiSession
+    {
+        $qrToken = QrToken::with([
+            'presensiSession.schedule.class',
+            'presensiSession.schedule.classHour',
+            'presensiSession.teacher.user',
+        ])->where('token', $token)->firstOrFail();
+
+        if (!$qrToken->isValid()) {
+            throw new \Exception('Token QR sudah kedaluwarsa atau telah digunakan.', 422);
+        }
+
+        return $qrToken->presensiSession;
     }
 
     /* ═══════════════════════════════════════════════
@@ -587,7 +699,11 @@ class PresensiSessionService
 
     public function canShowQr(PresensiSession $session): bool
     {
-        return $session->status === SessionStatus::Open
+        $status = $session->status instanceof \BackedEnum
+            ? $session->status->value
+            : $session->status;
+
+        return $status === SessionStatus::Open->value
             && $session->date === Carbon::today()->toDateString();
     }
 

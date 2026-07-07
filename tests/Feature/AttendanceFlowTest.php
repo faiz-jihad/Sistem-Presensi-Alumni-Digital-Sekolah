@@ -117,6 +117,10 @@ class AttendanceFlowTest extends TestCase
             'status'    => 'active',
         ]);
 
+        $this->class->update([
+            'homeroom_teacher_id' => $this->teacher->id,
+        ]);
+
         // ─── Schedule (hari ini) ──────────────────────────────
         $todayDay      = strtolower(Carbon::now()->format('l'));
         $this->schedule = Schedule::create([
@@ -220,19 +224,38 @@ class AttendanceFlowTest extends TestCase
     /* ═══════════════════════════════════════════════════════════
      *  TEST 3: Tidak bisa buka dua kali
      * ═══════════════════════════════════════════════════════════ */
-    public function test_guru_tidak_dapat_membuka_kelas_dua_kali(): void
+    public function test_guru_dapat_melanjutkan_sesi_schedule_yang_sudah_open(): void
     {
         // Buka pertama kali
-        $this->actingAs($this->teacherUser, 'sanctum')
+        $first = $this->actingAs($this->teacherUser, 'sanctum')
             ->postJson('/api/v1/attendance/open', ['schedule_id' => $this->schedule->id])
             ->assertCreated();
 
         // Coba buka lagi
-        $response = $this->actingAs($this->teacherUser, 'sanctum')
-            ->postJson('/api/v1/attendance/open', ['schedule_id' => $this->schedule->id]);
+        $second = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/open', ['schedule_id' => $this->schedule->id])
+            ->assertCreated();
 
-        $response->assertStatus(422)
-            ->assertJsonPath('success', false);
+        $this->assertSame($first->json('data.id'), $second->json('data.id'));
+    }
+
+    public function test_guru_dapat_melanjutkan_sesi_qr_class_based_yang_sudah_open(): void
+    {
+        $payload = [
+            'class_id' => $this->class->id,
+            'date' => Carbon::today()->toDateString(),
+        ];
+
+        $first = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/open', $payload)
+            ->assertCreated();
+
+        $second = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/open', $payload)
+            ->assertCreated();
+
+        $this->assertSame($first->json('data.id'), $second->json('data.id'));
+        $this->assertDatabaseCount('presensi_sessions', 1);
     }
 
     /* ═══════════════════════════════════════════════════════════
@@ -282,13 +305,50 @@ class AttendanceFlowTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonStructure([
-                'data' => ['token', 'expired_at', 'expires_in_seconds', 'session_id'],
+                'data' => ['token', 'qr_token', 'session_id', 'class_id', 'date'],
             ]);
 
-        $this->assertDatabaseHas('qr_tokens', [
-            'presensi_session_id' => $session->id,
-            'used'                => 0,
+        $token = $response->json('data.token');
+
+        $this->assertNotEmpty($token);
+        $this->assertDatabaseHas('presensi_sessions', [
+            'id' => $session->id,
+            'qr_token' => $token,
         ]);
+
+        $secondResponse = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/generate-qr', [
+                'session_id' => $session->id,
+            ]);
+
+        $secondResponse->assertCreated()
+            ->assertJsonPath('data.token', $token);
+    }
+
+    public function test_qr_statis_tetap_sukses_selama_sesi_open(): void
+    {
+        $session = $this->makeOpenSession();
+
+        $generateResponse = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/generate-qr', [
+                'session_id' => $session->id,
+            ])
+            ->assertCreated();
+
+        $token = $generateResponse->json('data.token');
+
+        Carbon::setTestNow(Carbon::now()->addMinutes(5));
+
+        $this->actingAs($this->teacherUser, 'sanctum')
+            ->getJson("/api/v1/presensi-sessions/{$session->id}/qr")
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.token', $token)
+            ->assertJsonStructure([
+                'data' => ['session_id', 'qr_token', 'token', 'status', 'date', 'start_time', 'end_time'],
+            ]);
+
+        Carbon::setTestNow();
     }
 
     /* ═══════════════════════════════════════════════════════════

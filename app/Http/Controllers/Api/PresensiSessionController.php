@@ -176,16 +176,17 @@ class PresensiSessionController extends BaseController
                 return $this->error('QR Code hanya tersedia untuk sesi hari ini yang sedang dibuka dan belum berakhir.', 400);
             }
 
-            $qrCodeString = 'session_' . $session->id;
+            $qr = $this->presensiSessionService->activeQrToken($session);
 
             return $this->success([
                 'session_id' => $session->id,
-                'qr_code' => $qrCodeString,
-                'status' => $session->status,
+                'qr_token' => $qr['qr_token'],
+                'token' => $qr['token'],
+                'status' => $session->status?->value ?? $session->status,
                 'date' => $session->date,
                 'start_time' => $session->start_time,
                 'end_time' => $session->end_time,
-            ], 'Token QR Code berhasil digenerate');
+            ], 'Token QR Code berhasil diambil');
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), $this->exceptionCode($e));
         }

@@ -15,6 +15,7 @@ class ScanQrRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'session_id' => ['sometimes', 'nullable', 'integer', 'exists:presensi_sessions,id'],
             'token' => ['required', 'string', 'min:10'],
         ];
     }

@@ -73,10 +73,17 @@ class AttendanceController extends BaseController
     public function open(OpenSessionRequest $request): JsonResponse
     {
         try {
-            $session = $this->sessionService->openBySchedule(
-                $request->validated('schedule_id'),
-                $request->user()->id
-            );
+            $validated = $request->validated();
+            $session = isset($validated['class_id'])
+                ? $this->sessionService->openByClassDate(
+                    $validated['class_id'],
+                    $validated['date'] ?? $validated['tanggal'] ?? now()->toDateString(),
+                    $request->user()->id
+                )
+                : $this->sessionService->openBySchedule(
+                    $validated['schedule_id'],
+                    $request->user()->id
+                );
 
             $session->load(['schedule.class', 'schedule.subject', 'schedule.classHour', 'teacher', 'openedBy']);
 
@@ -166,7 +173,8 @@ class AttendanceController extends BaseController
         try {
             $attendance = $this->sessionService->scanQrToken(
                 $request->validated('token'),
-                $student
+                $student,
+                $request->validated('session_id')
             );
 
             $attendance->load('student', 'presensiSession');
@@ -216,8 +224,10 @@ class AttendanceController extends BaseController
     {
         $session = PresensiSession::with([
             'schedule.class',
+            'schedule.class.students',
             'schedule.subject',
             'schedule.classHour',
+            'class.students',
             'teacher',
             'openedBy',
             'closedBy',
