@@ -44,8 +44,6 @@ class Dashboard extends BaseDashboard
 
         return [
             DashboardHeroWidget::class,
-            StatsOverview::class,
-            RealtimeAttendanceOverviewWidget::class,
             AttendanceChartWidget::class,
             AlumniStatusChartWidget::class,
             WeeklyAttendanceBarChart::class,

@@ -24,6 +24,8 @@ class AlumniResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Alumni';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationIcon(): ?string
     {
         return 'heroicon-o-users';
@@ -84,5 +86,10 @@ class AlumniResource extends Resource
         }
 
         return $user->school?->status === 'active';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'nisn', 'phone'];
     }
 }

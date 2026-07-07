@@ -62,7 +62,7 @@ class UserResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'email', 'username'];
+        return ['name', 'email'];
     }
 
     public static function form(Schema $schema): Schema
