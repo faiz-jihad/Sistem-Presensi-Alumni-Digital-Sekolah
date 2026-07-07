@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Services\AttendanceService;
 use App\Models\Student;
+use App\Models\SchoolClass;
 use App\Models\Teacher;
 use App\Models\StudentAttendance;
 use App\Http\Resources\StudentAttendanceResource;
@@ -24,7 +25,7 @@ class StudentAttendanceController extends BaseController
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $query = StudentAttendance::with(['student.class', 'teacher', 'presensiSession']);
+        $query = StudentAttendance::with(['student.class', 'class', 'teacher', 'presensiSession']);
 
         // Filter berdasarkan role
         if ($user->role === 'student') {
@@ -44,8 +45,11 @@ class StudentAttendanceController extends BaseController
             if (!$teacher) {
                 return $this->error("Data guru tidak ditemukan untuk akun ini.", 404);
             }
-            if ($user->school_id) {
-                $query->where('school_id', $user->school_id);
+            $classIds = SchoolClass::where('homeroom_teacher_id', $teacher->id)->pluck('id');
+            if ($classIds->isEmpty()) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $query->whereIn('class_id', $classIds);
             }
         } elseif (in_array($user->role, ['admin', 'super_admin'])) {
             if ($user->school_id) {
@@ -62,11 +66,37 @@ class StudentAttendanceController extends BaseController
         if ($request->has('date')) {
             $query->where('date', $request->date);
         }
+        if ($request->filled('month')) {
+            $query->whereMonth('date', (int) $request->month);
+        }
+        if ($request->filled('year')) {
+            $query->whereYear('date', (int) $request->year);
+        }
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 
         $attendances = $query->orderBy('date', 'desc')->get();
+
+        if ($user->role === 'student') {
+            return $this->success([
+                'profile' => [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'nis' => $student->nis,
+                    'nisn' => $student->nisn,
+                    'gender' => $student->gender,
+                    'birth_date' => $student->birth_date,
+                    'class' => $student->class ? [
+                        'id' => $student->class->id,
+                        'name' => $student->class->name,
+                        'grade' => $student->class->grade,
+                        'major' => $student->class->major,
+                    ] : null,
+                ],
+                'records' => StudentAttendanceResource::collection($attendances),
+            ], "Data kehadiran berhasil dimuat");
+        }
 
         return $this->success(
             StudentAttendanceResource::collection($attendances),
@@ -101,6 +131,16 @@ class StudentAttendanceController extends BaseController
         }
 
         $teacherId = $teacher ? $teacher->id : null;
+
+        if ($teacherId) {
+            $hasClassAccess = SchoolClass::where('id', $request->class_id)
+                ->where('homeroom_teacher_id', $teacherId)
+                ->exists();
+
+            if (!$hasClassAccess) {
+                return $this->forbidden("Anda tidak memiliki akses ke kelas ini.");
+            }
+        }
 
         try {
             $result = $this->attendanceService->recordClassAttendance(

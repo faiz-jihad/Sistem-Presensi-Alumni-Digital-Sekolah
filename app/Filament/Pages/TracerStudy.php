@@ -12,6 +12,12 @@ class TracerStudy extends Page
 {
     protected string $view = 'filament.pages.tracer-study';
 
+    public static function canAccess(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_tracer_study');
+    }
+
     public static function getNavigationLabel(): string
     {
         return 'Tracer Study';

@@ -15,7 +15,8 @@ class AlumniStatusChartWidget extends ChartWidget
 
     public static function canView(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_alumni');
     }
 
     protected int | string | array $columnSpan = [

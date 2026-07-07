@@ -25,16 +25,23 @@ class AuthService
         $device = $data['device_name'] ?? 'default';
         $token = $user->createToken($device)->plainTextToken;
 
+        $userData = [
+            'id'        => $user->id,
+            'name'      => $user->name,
+            'email'     => $user->email,
+            'phone'     => $user->phone,
+            'role'      => $user->role,
+            'status'    => $user->status,
+            'school_id' => $user->school_id,
+        ];
+
+        if ($user->role === 'alumni') {
+            $alumni = \App\Models\Alumni::where('user_id', $user->id)->first();
+            $userData['verification_status'] = $alumni ? $alumni->verification_status : null;
+        }
+
         return [
-            'user' => [
-                'id'        => $user->id,
-                'name'      => $user->name,
-                'email'     => $user->email,
-                'phone'     => $user->phone,
-                'role'      => $user->role,
-                'status'    => $user->status,
-                'school_id' => $user->school_id,
-            ],
+            'user' => $userData,
             'token'      => $token,
             'token_type' => 'Bearer',
         ];

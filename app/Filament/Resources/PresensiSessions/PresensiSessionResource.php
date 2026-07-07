@@ -21,7 +21,8 @@ class PresensiSessionResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
     }
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedQueueList;
@@ -37,11 +38,6 @@ class PresensiSessionResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'date';
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
 
     public static function form(Schema $schema): Schema
     {
@@ -66,5 +62,16 @@ class PresensiSessionResource extends Resource
             'edit'   => EditPresensiSession::route('/{record}/edit'),
             'qr'     => QrPresensiPage::route('/{record}/qr'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

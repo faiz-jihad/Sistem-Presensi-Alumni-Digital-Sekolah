@@ -5,6 +5,7 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -50,10 +51,11 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Relasi ke Teacher
      */
-    public function teacher()
+    public function teacher(): HasOne
     {
         return $this->hasOne(Teacher::class, 'user_id');
     }
+
 
     /**
      * Relasi ke Student (sebagai orang tua/parent)
@@ -104,9 +106,59 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        // Hanya user dengan role tertentu yang bisa akses Filament
-        $allowedRoles = ['super_admin', 'admin', 'teacher', 'alumni'];
-        return in_array($this->role, $allowedRoles);
+        if (! in_array($this->role, [
+            'super_admin',
+            'admin',
+            'teacher',
+            'alumni',
+        ])) {
+            return false;
+        }
+
+        if ($this->role === 'super_admin') {
+            return true;
+        }
+
+        if (!$this->school) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Cek apakah user memiliki akses ke fitur berdasarkan paket sekolahnya
+     */
+    public function hasFeature(string $feature): bool
+    {
+        if ($this->role === 'super_admin') {
+            return true;
+        }
+
+        if (!$this->isSchoolActive()) {
+            return false;
+        }
+
+        if (!$this->school_id) {
+            return false;
+        }
+
+        $school = $this->school;
+        if (!$school) {
+            return false;
+        }
+
+        // Jika sekolah tidak diset paketnya, default izinkan semua fitur
+        if (!$school->package_id) {
+            return true;
+        }
+
+        $package = $school->package;
+        if (!$package) {
+            return true;
+        }
+
+        return (bool) $package->{$feature};
     }
 
     /**
@@ -168,5 +220,20 @@ class User extends Authenticatable implements FilamentUser
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+
+    public function isSchoolActive(): bool
+    {
+        // Super Admin selalu dianggap aktif
+        if ($this->role === 'super_admin') {
+            return true;
+        }
+
+        // Jika tidak memiliki sekolah
+        if (! $this->school) {
+            return false;
+        }
+
+        return $this->school->status === 'active';
     }
 }

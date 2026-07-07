@@ -29,46 +29,47 @@ Route::prefix('v1')->group(function () {
     Route::post('/alumni/register', [AlumniController::class, 'register']);
     Route::get('/schools/public', function () {
         return response()->json([
-            'status' => 'success',
-            'data' => \App\Models\School::select('id', 'name')->get()
+            'status' => 'success', 
+            'data' => \App\Models\School::with('classes:id,school_id,name,major')->select('id', 'name')->get()
         ]);
     });
 
-    // ─── Protected routes (token Sanctum) ─────────────────────────
+    // ─── Protected routes (memerlukan token Sanctum) ─────────────────────────
     Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
 
         // Alumni Profile
-        Route::middleware('role:alumni')->group(function () {
+        Route::middleware(['role:alumni', 'feature:has_alumni'])->group(function () {
             Route::get('/alumni/profile', [AlumniProfileController::class, 'show']);
             Route::put('/alumni/profile', [AlumniProfileController::class, 'update']);
-
-            // Alumni Jobs
-            Route::get('/alumni/jobs', [AlumniJobController::class, 'index']);
         });
 
-        // Dashboard semua role yang sudah login bisa akses
+        // Alumni Jobs
+        Route::get('/alumni/jobs', [AlumniJobController::class, 'index'])
+            ->middleware(['role:alumni', 'feature:has_job_vacancy']);
+
+        // Dashboard — semua role yang sudah login bisa akses
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
-        // Dashboard stats hanya admin & super_admin
+        // Dashboard stats — hanya admin & super_admin
         Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
             ->middleware('role:admin,super_admin');
 
-        //  Role & Permission (hanya super_admin) ─────────────────────────
+        // ─── Role & Permission (hanya super_admin) ─────────────────────────
         Route::middleware('role:super_admin')->group(function () {
             Route::apiResource('roles', RoleController::class);
             Route::apiResource('permissions', PermissionController::class)
                 ->only(['index', 'store', 'update', 'destroy']);
         });
 
-        //  Master Data: Schools (admin & super_admin) ─────────────────────
+        // ─── Master Data: Schools (admin & super_admin) ─────────────────────
         Route::middleware('role:admin,super_admin')->group(function () {
             Route::apiResource('schools', SchoolController::class);
         });
 
-        //  Data Siswa ─────────────────────────────────────────────────────
+        // ─── Data Siswa ─────────────────────────────────────────────────────
         Route::middleware('role:admin,super_admin')->group(function () {
             Route::apiResource('students', StudentController::class);
         });
@@ -89,22 +90,22 @@ Route::prefix('v1')->group(function () {
             ->middleware('role:admin,super_admin,teacher');
 
         // ─── Data Presensi / Kehadiran ───────────────────────────────────────────
-        Route::prefix('attendances')->group(function () {
+        Route::prefix('attendances')->middleware('feature:has_presensi')->group(function () {
             // List presensi
             Route::get('/', [StudentAttendanceController::class, 'index']);
-
+            
             // Bulk input (Guru/Admin)
             Route::post('/bulk', [StudentAttendanceController::class, 'bulkStore'])
                 ->middleware('role:teacher,admin,super_admin');
-
+                
             // Presensi mandiri (Siswa) via QR Code
             Route::post('/presensi', [StudentAttendanceController::class, 'presensiMandiri'])
                 ->middleware('role:student');
-
+                
             // Ajukan izin/sakit (Siswa)
             Route::post('/izin', [StudentAttendanceController::class, 'storeIzin'])
                 ->middleware('role:student');
-
+                
             // Verifikasi izin (Admin & Guru/Wali Kelas)
             Route::post('/{id}/verify', [StudentAttendanceController::class, 'verifyIzin'])
                 ->middleware('role:admin,super_admin,teacher');
@@ -117,39 +118,41 @@ Route::prefix('v1')->group(function () {
 
         // Map Specific Attendance Routes from Screenshot
         Route::post('/attendance/submit', [StudentAttendanceController::class, 'store'])
-            ->middleware('role:teacher,admin,super_admin');
+            ->middleware(['role:teacher,admin,super_admin', 'feature:has_presensi']);
         Route::get('/attendance/daily', [ReportController::class, 'daily'])
-            ->middleware('role:admin,super_admin,teacher');
+            ->middleware(['role:admin,super_admin,teacher', 'feature:has_presensi']);
         Route::get('/attendance/monthly', [ReportController::class, 'monthly'])
-            ->middleware('role:admin,super_admin,teacher');
+            ->middleware(['role:admin,super_admin,teacher', 'feature:has_presensi']);
 
         // ─── Teacher & Attendance Flow Routes (presensi.md) ──────────────────────
-        Route::get('/teacher/today', [AttendanceController::class, 'today'])
-            ->middleware('role:teacher,admin,super_admin');
-        Route::post('/teacher/check-in', [TeacherAttendanceController::class, 'checkIn'])
-            ->middleware('role:teacher');
-        Route::post('/teacher/check-out', [TeacherAttendanceController::class, 'checkOut'])
-            ->middleware('role:teacher');
-        Route::get('/teacher-attendance/today', [TeacherAttendanceController::class, 'today'])
-            ->middleware('role:teacher');
+        Route::middleware('feature:has_presensi')->group(function () {
+            Route::get('/teacher/today', [AttendanceController::class, 'today'])
+                ->middleware('role:teacher,admin,super_admin');
+            Route::post('/teacher/check-in', [TeacherAttendanceController::class, 'checkIn'])
+                ->middleware('role:teacher');
+            Route::post('/teacher/check-out', [TeacherAttendanceController::class, 'checkOut'])
+                ->middleware('role:teacher');
+            Route::get('/teacher-attendance/today', [TeacherAttendanceController::class, 'today'])
+                ->middleware('role:teacher');
 
-        Route::post('/attendance/open', [AttendanceController::class, 'open'])
-            ->middleware('role:teacher,admin,super_admin');
-        Route::post('/attendance/manual', [AttendanceController::class, 'manual'])
-            ->middleware('role:teacher,admin,super_admin');
-        Route::post('/attendance/generate-qr', [AttendanceController::class, 'generateQr'])
-            ->middleware('role:teacher,admin,super_admin');
-        Route::post('/attendance/scan', [AttendanceController::class, 'scan'])
-            ->middleware('role:student');
-        Route::post('/attendance/close', [AttendanceController::class, 'close'])
-            ->middleware('role:teacher,admin,super_admin');
-        Route::get('/attendance/session/{id}', [AttendanceController::class, 'session'])
-            ->middleware('role:teacher,admin,super_admin');
-        Route::get('/attendance/history', [AttendanceController::class, 'history'])
-            ->middleware('role:teacher,admin,super_admin');
+            Route::post('/attendance/open', [AttendanceController::class, 'open'])
+                ->middleware('role:teacher,admin,super_admin');
+            Route::post('/attendance/manual', [AttendanceController::class, 'manual'])
+                ->middleware('role:teacher,admin,super_admin');
+            Route::post('/attendance/generate-qr', [AttendanceController::class, 'generateQr'])
+                ->middleware('role:teacher,admin,super_admin');
+            Route::post('/attendance/scan', [AttendanceController::class, 'scan'])
+                ->middleware('role:student');
+            Route::post('/attendance/close', [AttendanceController::class, 'close'])
+                ->middleware('role:teacher,admin,super_admin');
+            Route::get('/attendance/session/{id}', [AttendanceController::class, 'session'])
+                ->middleware('role:teacher,admin,super_admin');
+            Route::get('/attendance/history', [AttendanceController::class, 'history'])
+                ->middleware('role:teacher,admin,super_admin');
+        });
 
         // ─── Sesi Presensi (PresensiSession) ─────────────────────────────────────
-        Route::prefix('presensi-sessions')->middleware('role:admin,super_admin,teacher')->group(function () {
+        Route::prefix('presensi-sessions')->middleware(['role:admin,super_admin,teacher', 'feature:has_presensi'])->group(function () {
             Route::get('/', [PresensiSessionController::class, 'index']);
             Route::post('/', [PresensiSessionController::class, 'store']);
             Route::post('/{id}/close', [PresensiSessionController::class, 'close']);
@@ -158,22 +161,22 @@ Route::prefix('v1')->group(function () {
 
         // ─── Tracer Study ────────────────────────────────────────────────────────
         Route::get('/admin/alumni/tracer-study', [AlumniController::class, 'tracerStudy'])
-            ->middleware('role:admin,super_admin');
+            ->middleware(['role:admin,super_admin', 'feature:has_tracer_study']);
 
         // ─── Export Laporan Excel ────────────────────────────────────────────────
         Route::get('/export/attendance', [ExportController::class, 'attendance'])
-            ->middleware('role:admin,super_admin,teacher');
+            ->middleware(['role:admin,super_admin,teacher', 'feature:has_export']);
         Route::get('/export/alumni', [ExportController::class, 'alumni'])
-            ->middleware('role:admin,super_admin');
+            ->middleware(['role:admin,super_admin', 'feature:has_export']);
 
         // ─── Event Alumni (AlumniEvent) ──────────────────────────────────────────
-        Route::prefix('alumni-events')->group(function () {
+        Route::prefix('alumni-events')->middleware('feature:has_alumni')->group(function () {
             Route::get('/', [AlumniEventController::class, 'index']);
             Route::get('/{id}', [AlumniEventController::class, 'show']);
             Route::post('/', [AlumniEventController::class, 'store']);
             Route::post('/{id}', [AlumniEventController::class, 'update']);
             Route::delete('/{id}', [AlumniEventController::class, 'destroy']);
-
+            
             Route::post('/{id}/approve', [AlumniEventController::class, 'approve'])
                 ->middleware('role:admin,super_admin');
             Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])
@@ -181,7 +184,7 @@ Route::prefix('v1')->group(function () {
         });
 
         // ─── Verifikasi Alumni (admin & super_admin) ─────────────────────────────
-        Route::prefix('alumni/verification')->middleware('role:admin,super_admin')->group(function () {
+        Route::prefix('alumni/verification')->middleware(['role:admin,super_admin', 'feature:has_alumni'])->group(function () {
             // Daftar alumni menunggu verifikasi (pending)
             Route::get('/pending', [AlumniVerificationController::class, 'index']);
 
@@ -205,5 +208,3 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
-
-

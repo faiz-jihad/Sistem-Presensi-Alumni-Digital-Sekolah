@@ -6,6 +6,7 @@ use App\Enums\DayOfWeek;
 use App\Enums\SessionStatus;
 use App\Models\PresensiSession;
 use App\Models\Schedule;
+use App\Models\Teacher;
 use Carbon\Carbon;
 use Filament\Widgets\Widget;
 
@@ -17,7 +18,8 @@ class RealtimeAttendanceOverviewWidget extends Widget
 
     public static function canView(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
     }
 
     protected int | string | array $columnSpan = 'full';

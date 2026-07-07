@@ -22,6 +22,13 @@ class AttendanceReport extends Page
 {
     protected string $view = 'filament.pages.attendance-report';
 
+    public static function canAccess(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi')
+            && auth()->user()->hasFeature('has_export');
+    }
+
     protected static ?string $navigationLabel = 'Rekap Bulanan';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Laporan & Monitoring';

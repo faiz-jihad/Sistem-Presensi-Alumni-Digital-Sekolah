@@ -16,6 +16,12 @@ class ClassHourResource extends Resource
 {
     protected static ?string $model = ClassHour::class;
     
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
+    }
+    
     protected static ?string $recordTitleAttribute = 'code';
 
     public static function getNavigationIcon(): string
@@ -48,11 +54,6 @@ class ClassHourResource extends Resource
         return 6;
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
-
     public static function form(Schema $schema): Schema
     {
         return ClassHourForm::configure($schema);
@@ -77,5 +78,16 @@ class ClassHourResource extends Resource
             'create' => CreateClassHour::route('/create'),
             'edit' => EditClassHour::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

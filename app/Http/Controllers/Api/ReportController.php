@@ -14,6 +14,30 @@ class ReportController extends BaseController
         private readonly ReportService $reportService
     ) {}
 
+    private function denyIfCannotAccessClass(Request $request): ?JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'teacher') {
+            return null;
+        }
+
+        $teacherId = \App\Models\Teacher::where('user_id', $user->id)->value('id');
+        if (!$teacherId) {
+            return $this->error("Data guru tidak ditemukan untuk akun ini.", 404);
+        }
+
+        $hasClassAccess = \App\Models\SchoolClass::where('id', $request->class_id)
+            ->where('homeroom_teacher_id', $teacherId)
+            ->exists();
+
+        if (!$hasClassAccess) {
+            return $this->forbidden("Anda tidak memiliki hak akses ke kelas ini.");
+        }
+
+        return null;
+    }
+
     /**
      * Rekap Harian Kehadiran Kelas
      */
@@ -32,6 +56,10 @@ class ReportController extends BaseController
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
+        }
+
+        if ($forbidden = $this->denyIfCannotAccessClass($request)) {
+            return $forbidden;
         }
 
         $date = $request->date ?? Carbon::today()->toDateString();
@@ -73,6 +101,10 @@ class ReportController extends BaseController
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
+        }
+
+        if ($forbidden = $this->denyIfCannotAccessClass($request)) {
+            return $forbidden;
         }
 
         $schoolId = $user->school_id;
@@ -150,4 +182,3 @@ class ReportController extends BaseController
         }
     }
 }
-

@@ -14,17 +14,21 @@ class StudentAttendanceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $status = $this->status instanceof \BackedEnum
+            ? $this->status->value
+            : $this->status;
+
         return [
             'id'                   => $this->id,
             'date'                 => $this->date,
-            'status'               => $this->status,
-            'status_label'         => match ($this->status) {
+            'status'               => $status,
+            'status_label'         => match ($status) {
                 'present'    => 'Hadir',
                 'late'       => 'Terlambat',
                 'permission' => 'Izin',
                 'sick'       => 'Sakit',
                 'absent'     => 'Alpha',
-                default      => $this->status,
+                default      => $status,
             },
             'check_in_time'        => $this->check_in_time,
             'check_out_time'       => $this->check_out_time,
@@ -41,14 +45,18 @@ class StudentAttendanceResource extends JsonResource
                 'end_time'   => $this->presensiSession->end_time,
             ]),
             'student'              => $this->whenLoaded('student', fn () => [
-                'id'   => $this->student->id,
-                'name' => $this->student->name,
-                'nis'  => $this->student->nis,
+                'id'         => $this->student->id,
+                'name'       => $this->student->name,
+                'nis'        => $this->student->nis,
+                'nisn'       => $this->student->nisn,
+                'gender'     => $this->student->gender,
+                'birth_date' => $this->student->birth_date,
             ]),
             'class'                => $this->whenLoaded('class', fn () => [
                 'id'    => $this->class->id,
                 'name'  => $this->class->name,
                 'grade' => $this->class->grade,
+                'major' => $this->class->major,
             ]),
             'teacher'              => $this->whenLoaded('teacher', fn () => [
                 'id'   => $this->teacher->id,

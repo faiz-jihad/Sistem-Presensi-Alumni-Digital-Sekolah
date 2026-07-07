@@ -73,6 +73,14 @@ class SchoolsTable
                     ->label('Email')
                     ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('package.name')
+                    ->label('Paket Langganan')
+                    ->badge()
+                    ->color('primary')
+                    ->sortable()
+                    ->searchable()
+                    ->default('—'),
                     
                 TextColumn::make('created_at')
                     ->label('Dibuat')

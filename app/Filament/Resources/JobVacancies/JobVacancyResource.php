@@ -22,7 +22,8 @@ class JobVacancyResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_job_vacancy');
     }
 
     protected static ?string $modelLabel = 'Lowongan Kerja';
@@ -96,5 +97,16 @@ class JobVacancyResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('is_active', true)->count();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

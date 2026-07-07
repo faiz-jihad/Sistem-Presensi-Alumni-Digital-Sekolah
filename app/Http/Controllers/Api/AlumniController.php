@@ -17,6 +17,14 @@ class AlumniController extends BaseController
      */
     public function register(Request $request): JsonResponse
     {
+        $school = \App\Models\School::find($request->school_id);
+        if ($school && $school->package_id) {
+            $package = $school->package;
+            if ($package && !$package->has_alumni) {
+                return $this->error('Sekolah pilihan Anda tidak berlangganan paket yang mendukung fitur alumni.', 403);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
