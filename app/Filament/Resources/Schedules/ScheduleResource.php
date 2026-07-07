@@ -15,6 +15,12 @@ use Filament\Tables\Table;
 class ScheduleResource extends Resource
 {
     protected static ?string $model = Schedule::class;
+
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
+    }
     
     public static function getRecordTitle(?\Illuminate\Database\Eloquent\Model $record): string|\Illuminate\Contracts\Support\Htmlable|null
     {
@@ -59,13 +65,6 @@ class ScheduleResource extends Resource
         return 1;
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
-
-
-
     public static function form(Schema $schema): Schema
     {
         return ScheduleForm::configure($schema);
@@ -90,5 +89,16 @@ class ScheduleResource extends Resource
             'create' => CreateSchedule::route('/create'),
             'edit' => EditSchedule::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

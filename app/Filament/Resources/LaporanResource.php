@@ -16,7 +16,8 @@ class LaporanResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_export');
     }
 
     protected static ?string $modelLabel = 'Laporan Alumni';
@@ -60,5 +61,16 @@ class LaporanResource extends Resource
             'create' => Pages\CreateLaporan::route('/create'),
             'view' => Pages\ViewLaporan::route('/{record}'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

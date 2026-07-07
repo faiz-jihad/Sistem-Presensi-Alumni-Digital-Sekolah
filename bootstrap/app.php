@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Daftarkan middleware alias
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'feature' => \App\Http\Middleware\CheckPackageFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -12,7 +12,8 @@ class AlumniStatsWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin'])
+            && auth()->user()->hasFeature('has_alumni');
     }
 
     protected function getStats(): array

@@ -219,4 +219,15 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
             $this->sendNotifAction(),
         ];
     }
+
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
+    }
 }

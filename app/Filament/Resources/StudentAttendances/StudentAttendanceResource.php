@@ -20,7 +20,8 @@ class StudentAttendanceResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
     }
 
     protected static string|BackedEnum|null $navigationIcon = null;
@@ -64,5 +65,16 @@ class StudentAttendanceResource extends Resource
             'create' => CreateStudentAttendance::route('/create'),
             'edit'   => EditStudentAttendance::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

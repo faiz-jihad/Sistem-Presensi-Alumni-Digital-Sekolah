@@ -174,8 +174,7 @@
         flex-shrink: 0;
     }
     .dark .ts-list-count { background: #27272a; color: #d1d5db; }
-
-    /* Grid layouts */
+    
     .ts-two-col {
         display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
     }

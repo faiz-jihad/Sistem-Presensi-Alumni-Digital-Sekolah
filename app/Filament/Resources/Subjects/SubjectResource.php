@@ -18,6 +18,12 @@ class SubjectResource extends Resource
 {
     protected static ?string $model = Subject::class;
     
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
+    }
+    
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationIcon(): string
@@ -48,11 +54,6 @@ class SubjectResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return 5;
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -93,4 +94,15 @@ class SubjectResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+    return $user->school?->status === 'active';
+}
 }

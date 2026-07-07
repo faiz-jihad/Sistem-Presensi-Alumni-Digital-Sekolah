@@ -23,6 +23,12 @@ class TeacherSubjectResource extends Resource
 {
     protected static ?string $model = Teacher::class;
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin'])
+            && auth()->user()->hasFeature('has_presensi');
+    }
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static ?string $navigationLabel = 'Pembagian Tugas Guru';
@@ -34,12 +40,7 @@ class TeacherSubjectResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'Presensi & Kehadiran';
 
     protected static ?int $navigationSort = 3;
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
-
+    
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -104,5 +105,16 @@ class TeacherSubjectResource extends Resource
             'create' => CreateTeacherSubject::route('/create'),
             'edit'   => EditTeacherSubject::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

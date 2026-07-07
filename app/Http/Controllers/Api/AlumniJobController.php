@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobVacancy;
 use Illuminate\Http\Request;
 
-class AlumniJobController extends Controller
+class AlumniJobController extends BaseController
 {
     /**
      * Get a list of active job vacancies for alumni.
