@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Filament\Resources\PackageResource\Pages;
+
+use App\Filament\Resources\PackageResource\PackageResource;
+use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\DeleteAction;
+
+class EditPackage extends EditRecord
+{
+    protected static string $resource = PackageResource::class;
+
+    public function getTitle(): string
+    {
+        return 'Edit Paket: ' . $this->record->name;
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make()
+                ->before(function () {
+                    $this->record->schools()->update(['package_id' => null]);
+                }),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

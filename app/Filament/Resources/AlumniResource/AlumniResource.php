@@ -16,12 +16,15 @@ class AlumniResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_alumni');
     }
 
     protected static ?string $modelLabel = 'Alumni';
 
     protected static ?string $pluralModelLabel = 'Alumni';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationIcon(): ?string
     {
@@ -72,5 +75,21 @@ class AlumniResource extends Resource
             'create' => Pages\CreateAlumni::route('/create'),
             'edit' => Pages\EditAlumni::route('/{record}/edit'),
         ];
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'nisn', 'phone'];
     }
 }

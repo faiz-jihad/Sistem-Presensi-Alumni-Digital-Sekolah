@@ -24,7 +24,8 @@ class AlumniEventResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher', 'alumni']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher', 'alumni'])
+            && auth()->user()->hasFeature('has_alumni');
     }
 
     protected static ?string $recordTitleAttribute = 'title';
@@ -120,5 +121,16 @@ class AlumniEventResource extends Resource
         }
 
         return null;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user->role === 'super_admin') {
+            return true;
+        }
+
+        return $user->school?->status === 'active';
     }
 }

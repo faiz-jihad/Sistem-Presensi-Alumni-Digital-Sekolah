@@ -1,0 +1,1230 @@
+{
+	"info": {
+		"_postman_id": "7dfffb04-5bf0-4827-b1d3-86dfcf9e0664",
+		"name": "Sistem Presensi Alumni Digital Sekolah",
+		"description": "Postman collection untuk testing semua API presensi, alumni, ekspor, dan event alumni.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Autentikasi & Profil",
+			"item": [
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data && jsonData.data.token) {",
+									"    pm.globals.set(\"auth_token\", jsonData.data.token);",
+									"    console.log(\"Token saved successfully: \" + jsonData.data.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"superadmin@gmail.com\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						},
+						"description": "Gunakan endpoint ini untuk login dan generate token Sanctum. Token akan otomatis disimpan ke variabel global {{auth_token}}."
+					},
+					"response": []
+				},
+				{
+					"name": "Ambil Data User Login (Me)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Data Kelas & Siswa",
+			"item": [
+				{
+					"name": "Daftar Kelas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/classes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Daftar Siswa Berdasarkan Kelas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/classes/1/students",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"classes",
+								"1",
+								"students"
+							]
+						},
+						"description": "Ganti angka 1 dengan ID kelas yang valid."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Presensi Kehadiran",
+			"item": [
+				{
+					"name": "Simpan Presensi Siswa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"student_id\": 1,\n    \"class_id\": 1,\n    \"status\": \"present\",\n    \"date\": \"2026-07-06\",\n    \"check_in_time\": \"08:00:00\",\n    \"note\": \"Hadir tepat waktu\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/submit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"attendance",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rekap Presensi Harian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/daily?class_id=1&date=2026-07-06",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"attendance",
+								"daily"
+							],
+							"query": [
+								{
+									"key": "class_id",
+									"value": "1"
+								},
+								{
+									"key": "date",
+									"value": "2026-07-06"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rekap Presensi Bulanan",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/monthly?class_id=1&month=7&year=2026",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"attendance",
+								"monthly"
+							],
+							"query": [
+								{
+									"key": "class_id",
+									"value": "1"
+								},
+								{
+									"key": "month",
+									"value": "7"
+								},
+								{
+									"key": "year",
+									"value": "2026"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Alumni & Tracer Study",
+			"item": [
+				{
+					"name": "Registrasi Alumni",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"school_id\": 1,\n    \"name\": \"Budi Alumni Baru\",\n    \"email\": \"budialumni@gmail.com\",\n    \"phone\": \"08987654321\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\",\n    \"nisn\": \"1234567890\",\n    \"gender\": \"male\",\n    \"graduation_year\": 2024,\n    \"class_name\": \"XII RPL 1\",\n    \"major\": \"Rekayasa Perangkat Lunak\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ambil Profil Alumni Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profil Alumni Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"current_status\": \"working\",\n    \"company_name\": \"Google Indonesia\",\n    \"job_position\": \"Software Engineer\",\n    \"city\": \"Jakarta Selatan\",\n    \"province\": \"DKI Jakarta\",\n    \"whatsapp\": \"08987654321\",\n    \"linkedin_url\": \"https://linkedin.com/in/budi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Statistik Tracer Study Alumni (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/admin/alumni/tracer-study?school_id=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"alumni",
+								"tracer-study"
+							],
+							"query": [
+								{
+									"key": "school_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Ekspor Excel",
+			"item": [
+				{
+					"name": "Export Presensi Excel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/export/attendance?class_id=1&type=daily&date=2026-07-06",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"export",
+								"attendance"
+							],
+							"query": [
+								{
+									"key": "class_id",
+									"value": "1"
+								},
+								{
+									"key": "type",
+									"value": "daily"
+								},
+								{
+									"key": "date",
+									"value": "2026-07-06"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Alumni Excel",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/export/alumni?graduation_year=2024",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"export",
+								"alumni"
+							],
+							"query": [
+								{
+									"key": "graduation_year",
+									"value": "2024"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Event Alumni",
+			"item": [
+				{
+					"name": "Daftar Event Alumni",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail Event Alumni",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buat/Ajukan Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Temu Kangen RPL 2026\",\n    \"description\": \"Reuni khusus alumni kompetensi keahlian Rekayasa Perangkat Lunak.\",\n    \"event_date\": \"2026-08-20 10:00:00\",\n    \"location\": \"Aula Utama Sekolah\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event (POST Method)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Temu Kangen RPL 2026 (Updated)\",\n    \"description\": \"Reuni khusus alumni kompetensi keahlian Rekayasa Perangkat Lunak - update jam.\",\n    \"event_date\": \"2026-08-20 13:00:00\",\n    \"location\": \"Aula Utama Sekolah\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hapus Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Setujui Event (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events/1/approve",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events",
+								"1",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tolak Event (Admin Only)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni-events/1/reject",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"alumni-events",
+								"1",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Verifikasi Alumni (Admin & Super Admin)",
+			"item": [
+				{
+					"name": "Daftar Alumni Pending (Menunggu Verifikasi)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/pending",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification",
+								"pending"
+							]
+						},
+						"description": "Daftar semua alumni dengan status PENDING yang menunggu verifikasi admin. Admin hanya melihat sekolahnya sendiri, super_admin melihat semua."
+					},
+					"response": []
+				},
+				{
+					"name": "Daftar Semua Alumni (Semua Status)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification?status=pending",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "pending",
+									"description": "Filter: pending | verified | rejected (kosongkan untuk semua)"
+								}
+							]
+						},
+						"description": "Daftar semua alumni dengan filter opsional status verifikasi. Ganti query ?status=pending|verified|rejected atau hilangkan untuk semua."
+					},
+					"response": []
+				},
+				{
+					"name": "Detail Alumni",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification",
+								"1"
+							]
+						},
+						"description": "Ambil detail lengkap satu data alumni berdasarkan ID. Ganti angka 1 dengan ID alumni yang sesuai."
+					},
+					"response": []
+				},
+				{
+					"name": "Statistik Verifikasi Alumni",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/stats/summary",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification",
+								"stats",
+								"summary"
+							]
+						},
+						"description": "Statistik ringkasan: total, pending, verified, rejected. Admin hanya melihat sekolahnya sendiri."
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Setujui (Approve) Alumni",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1/approve",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification",
+								"1",
+								"approve"
+							]
+						},
+						"description": "Setujui (verifikasi) akun alumni dengan ID 1. Alumni akan mendapatkan notifikasi database bahwa akunnya telah disetujui. Hanya alumni dengan status PENDING yang bisa disetujui."
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Tolak (Reject) Alumni",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Data NISN tidak valid atau tidak sesuai dengan arsip sekolah. Mohon periksa kembali dan hubungi admin.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1/reject",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification",
+								"1",
+								"reject"
+							]
+						},
+						"description": "Tolak pendaftaran alumni dengan menyertakan alasan penolakan. Alumni akan mendapatkan notifikasi database dengan alasan penolakannya. Field 'reason' opsional, default: 'Tidak ada alasan yang diberikan.'"
+					},
+					"response": []
+				},
+				{
+					"name": "🔄 Reset Alumni ke Pending",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/verification/1/reset",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"verification",
+								"1",
+								"reset"
+							]
+						},
+						"description": "Reset status alumni yang sebelumnya DITOLAK kembali ke PENDING. Berguna jika admin ingin memberi kesempatan alumni memperbaiki data. Hanya bisa dilakukan pada alumni berstatus 'rejected'."
+					},
+					"response": []
+				},
+				{
+					"name": "📝 Registrasi Alumni Baru",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Budi Santoso\",\n    \"email\": \"budi.santoso@gmail.com\",\n    \"password\": \"password123\",\n    \"phone\": \"08123456789\",\n    \"school_id\": 1,\n    \"nisn\": \"0012345678\",\n    \"graduation_year\": 2023,\n    \"class_name\": \"XII RPL 1\",\n    \"major\": \"Rekayasa Perangkat Lunak\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/alumni/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"alumni",
+								"register"
+							]
+						},
+						"description": "Endpoint publik (tanpa token) untuk registrasi akun alumni baru. Setelah registrasi, status akan 'pending' dan admin akan menerima notifikasi di panel Filament. Uji alur: 1) Register → 2) Login sebagai admin → 3) Approve/Reject."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		}
+	]
+}

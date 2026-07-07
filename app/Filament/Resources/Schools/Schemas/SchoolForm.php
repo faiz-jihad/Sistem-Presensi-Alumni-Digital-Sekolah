@@ -120,6 +120,19 @@ class SchoolForm
                     ])
                     ->default('active')
                     ->native(false),
+
+                Select::make('package_id')
+                    ->label('Paket Langganan')
+                    ->relationship('package', 'name', fn ($query) => $query->where('is_active', true))
+                    ->nullable()
+                    ->native(false)
+                    ->placeholder('Pilih Paket')
+                    ->disabled(fn () => auth()->user()->role !== 'super_admin')
+                    ->helperText(
+                        auth()->user()->role === 'super_admin'
+                            ? 'Tentukan paket langganan untuk sekolah ini.'
+                            : 'Hanya Super Admin yang dapat mengubah paket langganan.'
+                    ),
             ]);
     }
 }

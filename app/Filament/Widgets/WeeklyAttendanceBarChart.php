@@ -8,10 +8,16 @@ use Carbon\Carbon;
 
 class WeeklyAttendanceBarChart extends ChartWidget
 {
-    protected ?string $heading = '📊 Presensi Harian — 7 Hari Terakhir';
+    protected ?string $heading = 'Presensi Harian — 7 Hari Terakhir';
     protected ?string $description = 'Jumlah siswa hadir setiap hari';
 
     protected static ?int $sort = 4;
+
+    public static function canView(): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi');
+    }
 
     protected int | string | array $columnSpan = [
         'default' => 12,

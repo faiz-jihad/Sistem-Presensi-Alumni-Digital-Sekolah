@@ -756,7 +756,8 @@ class PresensiSessionService
         }
 
         $dateFormatted = Carbon::parse($attendance->date)->translatedFormat('d F Y');
-        $statusIndonesian = match ($attendance->status) {
+        $statusRaw = is_string($attendance->status) ? $attendance->status : ($attendance->status->value ?? '');
+        $statusIndonesian = match ($statusRaw) {
             'present' => 'Hadir',
             'late' => 'Terlambat',
             'permission' => 'Izin',
@@ -776,6 +777,6 @@ class PresensiSessionService
 
         $message .= "\nTerima kasih.\nSistem Presensi Sekolah SIMPAD";
 
-        dispatch(new SendWhatsAppNotification($phone, $message));
+        SendWhatsAppNotification::dispatchAfterResponse($phone, $message);
     }
 }

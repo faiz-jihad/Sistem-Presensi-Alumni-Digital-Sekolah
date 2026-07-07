@@ -76,6 +76,77 @@ endpoints:
     custom: []
     httpMethods:
       - POST
+    uri: api/v1/auth/login
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: ':Attribute harus berupa alamat surel yang valid. :Attribute maksimal berisi 255 karakter.'
+        required: true
+        example: gbailey@example.net
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: ':Attribute minimal berisi 6 karakter. :Attribute maksimal berisi 100 karakter.'
+        required: true
+        example: '+-0pBNvYgxwmi/#iw'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      device_name:
+        custom: []
+        name: device_name
+        description: ':Attribute maksimal berisi 255 karakter.'
+        required: false
+        example: u
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      email: gbailey@example.net
+      password: '+-0pBNvYgxwmi/#iw'
+      device_name: u
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
     uri: api/v1/alumni/register
     metadata:
       custom: []
@@ -207,6 +278,50 @@ endpoints:
       major: c
     fileParameters: []
     responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/schools/public
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"status":"success","data":[{"id":1,"name":"SMK Negeri 1 Digital Prestasi Indonesia"}]}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
     responseFields: []
     auth:
       - headers
@@ -367,20 +482,21 @@ endpoints:
         name: current_status
         description: ''
         required: true
-        example: entrepreneur
+        example: unemployed
         type: string
         enumValues:
           - working
           - studying
           - entrepreneur
           - unemployed
+          - studying_working
         exampleWasSpecified: false
         nullable: false
         deprecated: false
       university_name:
         custom: []
         name: university_name
-        description: 'This field is required when <code>current_status</code> is <code>studying</code>. :Attribute maksimal berisi 255 karakter.'
+        description: 'This field is required when <code>current_status</code> is <code>studying</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter.'
         required: false
         example: b
         type: string
@@ -391,7 +507,7 @@ endpoints:
       study_program:
         custom: []
         name: study_program
-        description: 'This field is required when <code>current_status</code> is <code>studying</code>. :Attribute maksimal berisi 255 karakter.'
+        description: 'This field is required when <code>current_status</code> is <code>studying</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter.'
         required: false
         example: 'n'
         type: string
@@ -402,7 +518,7 @@ endpoints:
       company_name:
         custom: []
         name: company_name
-        description: 'This field is required when <code>current_status</code> is <code>working</code>. :Attribute maksimal berisi 255 karakter.'
+        description: 'This field is required when <code>current_status</code> is <code>working</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter.'
         required: false
         example: g
         type: string
@@ -413,7 +529,7 @@ endpoints:
       job_position:
         custom: []
         name: job_position
-        description: 'This field is required when <code>current_status</code> is <code>working</code>. :Attribute maksimal berisi 255 karakter.'
+        description: 'This field is required when <code>current_status</code> is <code>working</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter.'
         required: false
         example: z
         type: string
@@ -477,7 +593,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      current_status: entrepreneur
+      current_status: unemployed
       university_name: b
       study_program: 'n'
       company_name: g
@@ -489,6 +605,50 @@ endpoints:
       linkedin_url: 'https://www.hirthe.com/commodi-incidunt-iure-odit'
     fileParameters: []
     responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/alumni/jobs
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get a list of active job vacancies for alumni.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
     responseFields: []
     auth:
       - headers
@@ -1317,14 +1477,14 @@ endpoints:
         name: id
         description: 'The ID of the school.'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1374,14 +1534,14 @@ endpoints:
         name: id
         description: 'The ID of the school.'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1481,14 +1641,14 @@ endpoints:
         name: id
         description: 'The ID of the school.'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1633,7 +1793,7 @@ endpoints:
         name: birth_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:51'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1667,7 +1827,7 @@ endpoints:
       nisn: ykcmyuwpwl
       name: v
       gender: female
-      birth_date: '2026-07-06T11:45:34'
+      birth_date: '2026-07-07T13:44:51'
       parent_name: q
       parent_phone: wrsitcpscqldzsnr
     fileParameters: []
@@ -1822,7 +1982,7 @@ endpoints:
         name: gender
         description: ''
         required: true
-        example: male
+        example: female
         type: string
         enumValues:
           - male
@@ -1835,7 +1995,7 @@ endpoints:
         name: birth_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:51'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1846,7 +2006,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: graduated
+        example: transferred
         type: string
         enumValues:
           - active
@@ -1860,9 +2020,9 @@ endpoints:
     cleanBodyParameters:
       school_id: architecto
       name: 'n'
-      gender: male
-      birth_date: '2026-07-06T11:45:34'
-      status: graduated
+      gender: female
+      birth_date: '2026-07-07T13:44:51'
+      status: transferred
     fileParameters: []
     responses: []
     responseFields: []
@@ -2387,7 +2547,7 @@ endpoints:
         name: date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:51'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2429,7 +2589,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      date: '2026-07-06T11:45:34'
+      date: '2026-07-07T13:44:51'
       status: sick
       note: architecto
     fileParameters:
@@ -2638,7 +2798,7 @@ endpoints:
         name: date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:51'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2683,7 +2843,7 @@ endpoints:
         name: 'attendances[].status'
         description: ''
         required: true
-        example: late
+        example: present
         type: string
         enumValues:
           - present
@@ -2707,10 +2867,10 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       class_id: architecto
-      date: '2026-07-06T11:45:34'
+      date: '2026-07-07T13:44:51'
       attendances:
         - student_id: architecto
-          status: late
+          status: present
           note: 'n'
     fileParameters: []
     responses: []
@@ -2762,7 +2922,7 @@ endpoints:
         name: date
         description: ':Attribute bukan tanggal yang valid.'
         required: false
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:51'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2770,7 +2930,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       class_id: architecto
-      date: '2026-07-06T11:45:34'
+      date: '2026-07-07T13:44:51'
     fileParameters: []
     responses:
       -
@@ -3198,7 +3358,7 @@ endpoints:
         name: 'attendances[].status'
         description: ''
         required: true
-        example: present
+        example: late
         type: string
         enumValues:
           - present
@@ -3225,7 +3385,7 @@ endpoints:
         name: 'attendances[].check_in_time'
         description: 'Must be a valid date in the format <code>H:i:s</code>.'
         required: false
-        example: '11:45:34'
+        example: '13:44:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3235,9 +3395,9 @@ endpoints:
       session_id: 16
       attendances:
         - student_id: 16
-          status: present
+          status: late
           note: 'n'
-          check_in_time: '11:45:34'
+          check_in_time: '13:44:52'
     fileParameters: []
     responses: []
     responseFields: []
@@ -3866,7 +4026,7 @@ endpoints:
         name: event_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3897,7 +4057,7 @@ endpoints:
     cleanBodyParameters:
       title: b
       description: 'Eius et animi quos velit et.'
-      event_date: '2026-07-06T11:45:34'
+      event_date: '2026-07-07T13:44:52'
       location: v
     fileParameters:
       banner_image: null
@@ -3973,7 +4133,7 @@ endpoints:
         name: event_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-06T11:45:34'
+        example: '2026-07-07T13:44:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4006,7 +4166,7 @@ endpoints:
         name: is_active
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -4015,9 +4175,9 @@ endpoints:
     cleanBodyParameters:
       title: b
       description: 'Eius et animi quos velit et.'
-      event_date: '2026-07-06T11:45:34'
+      event_date: '2026-07-07T13:44:52'
       location: v
-      is_active: true
+      is_active: false
     fileParameters:
       banner_image: null
     responses: []
@@ -4147,6 +4307,347 @@ endpoints:
         custom: []
         name: id
         description: 'The ID of the alumni event.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/alumni/verification/pending
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Daftar alumni menunggu verifikasi (pending).'
+      description: 'Akses: admin (sekolahnya sendiri), super_admin (semua sekolah).'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/alumni/verification
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Daftar semua alumni dengan filter status verifikasi.'
+      description: 'Akses: admin, super_admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/alumni/verification/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Detail satu data alumni.'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the verification.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/alumni/verification/stats/summary
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Statistik ringkasan verifikasi alumni.'
+      description: 'Akses: admin, super_admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/alumni/verification/{id}/approve'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Setujui (verifikasi) akun alumni.'
+      description: 'Akses: admin, super_admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the verification.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/alumni/verification/{id}/reject'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Tolak akun alumni dengan alasan.'
+      description: 'Akses: admin, super_admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the verification.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        custom: []
+        name: reason
+        description: ':Attribute maksimal berisi 500 karakter.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/alumni/verification/{id}/reset'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Reset status alumni yang ditolak kembali ke pending.'
+      description: 'Akses: admin, super_admin.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the verification.'
         required: true
         example: architecto
         type: string

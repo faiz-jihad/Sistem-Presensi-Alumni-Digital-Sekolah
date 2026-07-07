@@ -25,10 +25,11 @@ class School extends Model
         'level',
         'accreditation',
         'status',
+        'package_id',
     ];
 
     protected $casts = [
-        'status' => 'boolean',
+        'status' => 'string',
     ];
 
     /**
@@ -77,5 +78,13 @@ class School extends Model
     public function classes()
     {
         return $this->hasMany(SchoolClass::class);
+    }
+
+    /**
+     * Relasi ke Paket Langganan Sekolah
+     */
+    public function package(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Package::class);
     }
 }

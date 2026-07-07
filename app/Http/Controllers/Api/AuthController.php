@@ -37,7 +37,7 @@ class AuthController extends BaseController
     {
         $user = $request->user()->load('school');
 
-        return $this->success([
+        $userData = [
             'id'          => $user->id,
             'name'        => $user->name,
             'email'       => $user->email,
@@ -47,6 +47,13 @@ class AuthController extends BaseController
             'school_id'   => $user->school_id,
             'school_name' => $user->school?->name,
             'created_at'  => $user->created_at->format('Y-m-d H:i:s'),
-        ], 'Data user berhasil diambil');
+        ];
+
+        if ($user->role === 'alumni') {
+            $alumni = \App\Models\Alumni::where('user_id', $user->id)->first();
+            $userData['verification_status'] = $alumni ? $alumni->verification_status : null;
+        }
+
+        return $this->success($userData, 'Data user berhasil diambil');
     }
 }
