@@ -23,8 +23,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
 
-// ─── Public routes ──────────────────────────────────────────────────────
+    // ─── Public routes ──────────────────────────────────────────────────────
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
     Route::get('/schools/public', function () {
         return response()->json([
@@ -33,8 +34,8 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
-// ─── Protected routes (memerlukan token Sanctum) ─────────────────────────
-Route::middleware('auth:sanctum')->group(function () {
+    // ─── Protected routes (memerlukan token Sanctum) ─────────────────────────
+    Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
@@ -43,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('role:alumni')->group(function () {
             Route::get('/alumni/profile', [AlumniProfileController::class, 'show']);
             Route::put('/alumni/profile', [AlumniProfileController::class, 'update']);
-            
+
             // Alumni Jobs
             Route::get('/alumni/jobs', [AlumniJobController::class, 'index']);
         });
@@ -51,9 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Dashboard — semua role yang sudah login bisa akses
         Route::get('/dashboard', [DashboardController::class, 'index']);
 
-    // Dashboard stats — hanya admin & super_admin
-    Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
-        ->middleware('role:admin,super_admin');
+        // Dashboard stats — hanya admin & super_admin
+        Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
+            ->middleware('role:admin,super_admin');
 
         // ─── Role & Permission (hanya super_admin) ─────────────────────────
         Route::middleware('role:super_admin')->group(function () {
@@ -67,17 +68,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::apiResource('schools', SchoolController::class);
         });
 
-    // ─── Data Siswa ─────────────────────────────────────────────────────
-    Route::middleware('role:admin,super_admin')->group(function () {
-        Route::apiResource('students', StudentController::class);
-    });
+        // ─── Data Siswa ─────────────────────────────────────────────────────
+        Route::middleware('role:admin,super_admin')->group(function () {
+            Route::apiResource('students', StudentController::class);
+        });
 
-    // ─── Data Kelas ─────────────────────────────────────────────────────
-    Route::middleware('role:admin,super_admin,teacher')->group(function () {
-        Route::get('/classes', [ClassController::class, 'index']);
-        Route::get('/classes/{id}', [ClassController::class, 'show']);
-        Route::get('/classes/{id}/students', [ClassController::class, 'students']);
-    });
+        // ─── Data Kelas ─────────────────────────────────────────────────────
+        Route::middleware('role:admin,super_admin,teacher')->group(function () {
+            Route::get('/classes', [ClassController::class, 'index']);
+            Route::get('/classes/{id}', [ClassController::class, 'show']);
+            Route::get('/classes/{id}/students', [ClassController::class, 'students']);
+        });
 
         // ─── Data Guru ───────────────────────────────────────────────────────
         Route::get('/teachers', [TeacherController::class, 'index'])
@@ -87,26 +88,26 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/teachers/{id}/classes', [TeacherController::class, 'classes'])
             ->middleware('role:admin,super_admin,teacher');
 
-    // ─── Data Presensi / Kehadiran ───────────────────────────────────────────
-    Route::prefix('attendances')->group(function () {
-        // List presensi
-        Route::get('/', [StudentAttendanceController::class, 'index']);
-        
-        // Bulk input (Guru/Admin)
-        Route::post('/bulk', [StudentAttendanceController::class, 'bulkStore'])
-            ->middleware('role:teacher,admin,super_admin');
-            
-        // Presensi mandiri (Siswa) via QR Code
-        Route::post('/presensi', [StudentAttendanceController::class, 'presensiMandiri'])
-            ->middleware('role:student');
-            
-        // Ajukan izin/sakit (Siswa)
-        Route::post('/izin', [StudentAttendanceController::class, 'storeIzin'])
-            ->middleware('role:student');
-            
-        // Verifikasi izin (Admin & Guru/Wali Kelas)
-        Route::post('/{id}/verify', [StudentAttendanceController::class, 'verifyIzin'])
-            ->middleware('role:admin,super_admin,teacher');
+        // ─── Data Presensi / Kehadiran ───────────────────────────────────────────
+        Route::prefix('attendances')->group(function () {
+            // List presensi
+            Route::get('/', [StudentAttendanceController::class, 'index']);
+
+            // Bulk input (Guru/Admin)
+            Route::post('/bulk', [StudentAttendanceController::class, 'bulkStore'])
+                ->middleware('role:teacher,admin,super_admin');
+
+            // Presensi mandiri (Siswa) via QR Code
+            Route::post('/presensi', [StudentAttendanceController::class, 'presensiMandiri'])
+                ->middleware('role:student');
+
+            // Ajukan izin/sakit (Siswa)
+            Route::post('/izin', [StudentAttendanceController::class, 'storeIzin'])
+                ->middleware('role:student');
+
+            // Verifikasi izin (Admin & Guru/Wali Kelas)
+            Route::post('/{id}/verify', [StudentAttendanceController::class, 'verifyIzin'])
+                ->middleware('role:admin,super_admin,teacher');
 
             Route::post('/report/send-daily', [ReportController::class, 'sendDailyRecap'])
                 ->middleware('role:admin,super_admin,teacher');
@@ -165,19 +166,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/export/alumni', [ExportController::class, 'alumni'])
             ->middleware('role:admin,super_admin');
 
-    // ─── Event Alumni (AlumniEvent) ──────────────────────────────────────────
-    Route::prefix('alumni-events')->group(function () {
-        Route::get('/', [AlumniEventController::class, 'index']);
-        Route::get('/{id}', [AlumniEventController::class, 'show']);
-        Route::post('/', [AlumniEventController::class, 'store']);
-        Route::post('/{id}', [AlumniEventController::class, 'update']);
-        Route::delete('/{id}', [AlumniEventController::class, 'destroy']);
-        
-        Route::post('/{id}/approve', [AlumniEventController::class, 'approve'])
-            ->middleware('role:admin,super_admin');
-        Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])
-            ->middleware('role:admin,super_admin');
-    });
+        // ─── Event Alumni (AlumniEvent) ──────────────────────────────────────────
+        Route::prefix('alumni-events')->group(function () {
+            Route::get('/', [AlumniEventController::class, 'index']);
+            Route::get('/{id}', [AlumniEventController::class, 'show']);
+            Route::post('/', [AlumniEventController::class, 'store']);
+            Route::post('/{id}', [AlumniEventController::class, 'update']);
+            Route::delete('/{id}', [AlumniEventController::class, 'destroy']);
+
+            Route::post('/{id}/approve', [AlumniEventController::class, 'approve'])
+                ->middleware('role:admin,super_admin');
+            Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])
+                ->middleware('role:admin,super_admin');
+        });
 
         // ─── Verifikasi Alumni (admin & super_admin) ─────────────────────────────
         Route::prefix('alumni/verification')->middleware('role:admin,super_admin')->group(function () {
@@ -202,7 +203,5 @@ Route::middleware('auth:sanctum')->group(function () {
             // Reset alumni yang ditolak kembali ke pending
             Route::post('/{id}/reset', [AlumniVerificationController::class, 'resetToPending']);
         });
+    });
 });
-});
-
-
