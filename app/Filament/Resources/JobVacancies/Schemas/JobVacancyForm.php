@@ -49,6 +49,11 @@ class JobVacancyForm
                     ->label('Persyaratan')
                     ->columnSpanFull()
                     ->required(),
+                TextInput::make('link')
+                    ->label('Tautan (LinkedIn, Web, dll)')
+                    ->url()
+                    ->columnSpanFull()
+                    ->nullable(),
                 TextInput::make('location')
                     ->label('Lokasi')
                     ->required(),
