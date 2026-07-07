@@ -20,9 +20,9 @@ class LaporanResource extends Resource
             && auth()->user()->hasFeature('has_export');
     }
 
-    protected static ?string $modelLabel = 'Laporan Alumni';
+    protected static ?string $modelLabel = 'Laporan';
 
-    protected static ?string $pluralModelLabel = 'Laporan Alumni';
+    protected static ?string $pluralModelLabel = 'Laporan';
 
     public static function getNavigationIcon(): ?string
     {
@@ -31,7 +31,7 @@ class LaporanResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Laporan Alumni';
+        return 'Laporan';
     }
 
     public static function getNavigationGroup(): ?string

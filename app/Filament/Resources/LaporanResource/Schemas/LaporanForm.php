@@ -47,7 +47,7 @@ class LaporanForm
                     ])
                     ->columns(3),
 
-                Section::make('Filter Laporan Alumni')
+                Section::make('Filter Laporan')
                     ->schema([
                         // Ubah dari TextInput ke Select
                         Select::make('filters.graduation_year')
