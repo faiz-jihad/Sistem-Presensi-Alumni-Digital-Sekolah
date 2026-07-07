@@ -14,6 +14,7 @@ class PresensiSession extends Model
 
     protected $fillable = [
         'school_id',
+        'class_id',
         'schedule_id',
         'teacher_id',
         'opened_by',
@@ -22,6 +23,8 @@ class PresensiSession extends Model
         'start_time',
         'end_time',
         'status',
+        'attendance_method',
+        'qr_token',
         'material_topic',
         'notes',
         'latitude',
@@ -51,6 +54,11 @@ class PresensiSession extends Model
     public function schedule(): BelongsTo
     {
         return $this->belongsTo(Schedule::class);
+    }
+
+    public function class(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
     public function teacher(): BelongsTo

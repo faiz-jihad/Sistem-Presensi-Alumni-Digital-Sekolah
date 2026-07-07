@@ -21,6 +21,7 @@ class AttendanceRecordResource extends JsonResource
             'status_label'    => $this->status?->label(),
             'status_color'    => $this->status?->color(),
             'check_in_time'   => $this->check_in_time,
+            'scanned_at'      => $this->scanned_at?->toDateTimeString(),
             'note'            => $this->note,
             'date'            => $this->date,
             'verification_status' => $this->verification_status,

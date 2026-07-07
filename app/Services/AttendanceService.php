@@ -64,6 +64,7 @@ class AttendanceService
                 // Unique constraint DB adalah (student_id, date) — satu record per siswa per hari.
                 // presensi_session_id pada record ini selalu diperbarui ke sesi terbaru.
                 $attendance = $this->safeUpdateOrCreateAttendance(
+                $attendance = StudentAttendance::updateOrCreate(
                     [
                         'student_id' => $studentId,
                         'date'       => $date,
@@ -111,7 +112,10 @@ class AttendanceService
 
         $session = PresensiSession::with(['schedule.classHour'])->findOrFail($sessionId);
 
-        if ($session->status !== 'open') {
+        $sessionStatus = $session->status instanceof \BackedEnum
+            ? $session->status->value
+            : $session->status;
+        if ($sessionStatus !== 'open') {
             throw new \Exception('Sesi presensi ini sedang tidak dibuka.');
         }
 
@@ -236,7 +240,10 @@ class AttendanceService
         $student    = Student::findOrFail($attendance->student_id);
 
         // Hanya bisa verifikasi jika status attendance adalah izin atau sakit
-        if (!in_array($attendance->status, ['permission', 'sick'], true)) {
+        $attendanceStatus = $attendance->status instanceof \BackedEnum
+            ? $attendance->status->value
+            : $attendance->status;
+        if (!in_array($attendanceStatus, ['permission', 'sick'], true)) {
             throw new \Exception('Hanya pengajuan izin atau sakit yang dapat diverifikasi.');
         }
 
@@ -271,6 +278,10 @@ class AttendanceService
         }
 
         $dateFormatted = Carbon::parse($attendance->date)->translatedFormat('d F Y');
+        $attendanceStatus = $attendance->status instanceof \BackedEnum
+            ? $attendance->status->value
+            : $attendance->status;
+        $statusIndonesian = match ($attendanceStatus) {
         $statusRaw = is_string($attendance->status) ? $attendance->status : ($attendance->status->value ?? '');
         $statusIndonesian = match ($statusRaw) {
             'present' => 'Hadir',

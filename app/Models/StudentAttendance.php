@@ -20,6 +20,7 @@ class StudentAttendance extends Model
         'date',
         'status',
         'check_in_time',
+        'scanned_at',
         'check_out_time',
         'note',
         'attachment',
@@ -30,6 +31,7 @@ class StudentAttendance extends Model
 
     protected $casts = [
         'status'      => AttendanceStatus::class,
+        'scanned_at'  => 'datetime',
         'verified_at' => 'datetime',
     ];
 
