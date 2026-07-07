@@ -23,7 +23,7 @@ class StudentAttendanceResource extends Resource
         return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
     }
 
-    protected static string|BackedEnum|null $navigationIcon = null;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?string $navigationLabel = 'Rekap Harian';
 

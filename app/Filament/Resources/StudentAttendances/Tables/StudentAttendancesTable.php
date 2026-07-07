@@ -56,7 +56,8 @@ class StudentAttendancesTable
                         default      => (string) $state,
                     }),
                  TextColumn::make('check_in_time')
-                    ->label('🚪 Jam Masuk')
+                    ->label('Jam Masuk')
+                    ->icon('heroicon-m-clock')
                     ->color('success')
                     ->time('H:i')
                     ->placeholder('-'),
@@ -112,10 +113,11 @@ class StudentAttendancesTable
             ])
             ->actions([
                 EditAction::make()
-                    ->label('✏️ Edit')
-                    ->icon(null),
+                    ->label('Edit')
+                    ->icon('heroicon-m-pencil-square'),
                 Action::make('send_whatsapp_notif')
-                    ->label('💬 Kirim WA')
+                    ->label('Kirim WA')
+                    ->icon('heroicon-m-chat-bubble-left-right')
                     ->color('success')
                     ->requiresConfirmation()
                     ->modalHeading('Kirim Notifikasi WhatsApp')
@@ -173,7 +175,8 @@ class StudentAttendancesTable
                             ->send();
                     }),
                 Action::make('approve')
-                    ->label('✅ Setujui')
+                    ->label('Setujui')
+                    ->icon('heroicon-m-check-circle')
                     ->color('success')
                     ->visible(fn ($record) => in_array($record->verification_status, ['pending', null], true) || empty($record->verification_status))
                     ->action(function ($record) {
@@ -203,7 +206,8 @@ class StudentAttendancesTable
                         }
                     }),
                 Action::make('reject')
-                    ->label('❌ Tolak')
+                    ->label('Tolak')
+                    ->icon('heroicon-m-x-circle')
                     ->color('danger')
                     ->visible(fn ($record) => in_array($record->verification_status, ['pending', null], true) || empty($record->verification_status))
                     ->requiresConfirmation()
@@ -225,7 +229,8 @@ class StudentAttendancesTable
             ])
             ->headerActions([
                 Action::make('verify_all_class_today')
-                    ->label('⚡ 1 Klik Verifikasi Semua (Per Kelas)')
+                    ->label('1 Klik Verifikasi Semua (Per Kelas)')
+                    ->icon('heroicon-m-bolt')
                     ->color('success')
                     ->form([
                         \Filament\Forms\Components\Select::make('class_id')
@@ -295,7 +300,8 @@ class StudentAttendancesTable
                     DeleteBulkAction::make()
                         ->icon(null),
                     \Filament\Actions\BulkAction::make('verify_bulk')
-                        ->label('⚡ Verifikasi Semua Terpilih (1 Klik)')
+                        ->label('Verifikasi Semua Terpilih (1 Klik)')
+                        ->icon('heroicon-m-bolt')
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Verifikasi Presensi Terpilih')

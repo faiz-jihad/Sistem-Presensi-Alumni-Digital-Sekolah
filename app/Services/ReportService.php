@@ -178,13 +178,14 @@ class ReportService
             $note = '-';
 
             if ($attendance) {
-                $statusLabel = match ($attendance->status) {
+                $statusRaw = is_string($attendance->status) ? $attendance->status : ($attendance->status->value ?? '');
+                $statusLabel = match ($statusRaw) {
                     'present'    => 'Hadir',
                     'late'       => 'Terlambat',
                     'permission' => 'Izin',
                     'sick'       => 'Sakit',
                     'absent'     => 'Alpha',
-                    default      => $attendance->status,
+                    default      => $statusRaw,
                 };
                 $checkIn = $attendance->check_in_time ? Carbon::parse($attendance->check_in_time)->format('H:i') : '-';
                 $note = $attendance->note ?? '-';
@@ -203,7 +204,7 @@ class ReportService
                 . "Terima kasih.\n"
                 . "SIMPAD";
 
-            dispatch(new \App\Jobs\SendWhatsAppNotification($phone, $message));
+            \App\Jobs\SendWhatsAppNotification::dispatchAfterResponse($phone, $message);
             $sentCount++;
         }
 
@@ -271,7 +272,7 @@ class ReportService
                 . "Terima kasih.\n"
                 . "SIMPAD";
 
-            dispatch(new \App\Jobs\SendWhatsAppNotification($phone, $message));
+            \App\Jobs\SendWhatsAppNotification::dispatchAfterResponse($phone, $message);
             $sentCount++;
         }
 

@@ -57,6 +57,7 @@ class EditStudent extends EditRecord
                     'name'  => $parentName,
                     'phone' => $parentPhone,
                 ]);
+                $student->update(['parent_phone' => $parentPhone]);
             } else {
                 // Buat parent baru dan hubungkan ke siswa
                 $parent = User::firstOrCreate(

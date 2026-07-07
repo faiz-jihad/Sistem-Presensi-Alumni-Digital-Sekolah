@@ -47,13 +47,19 @@ class WhatsAppService
         try {
             $response = Http::withHeaders([
                 'Authorization' => $this->apiToken,
-            ])->post($this->apiUrl, [
+            ])->asForm()->post($this->apiUrl, [
                 'target' => $to,
                 'message' => $message,
+                'countryCode' => '62',
             ]);
 
             if ($response->successful()) {
-                Log::info("WhatsApp sent successfully to {$to}");
+                $responseData = $response->json();
+                if (isset($responseData['status']) && $responseData['status'] === false) {
+                    Log::error("WhatsApp Fonnte failed to {$to}: " . ($responseData['reason'] ?? $response->body()));
+                    return false;
+                }
+                Log::info("WhatsApp sent successfully to {$to}. Response: " . $response->body());
                 return true;
             }
 

@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class AttendanceChartWidget extends ChartWidget
 {
-    protected ?string $heading = '📈 Tren Kehadiran (30 Hari Terakhir)';
+    protected ?string $heading = 'Tren Kehadiran (30 Hari Terakhir)';
     protected ?string $description = 'Persentase siswa hadir per hari';
 
     protected static ?int $sort = 5;

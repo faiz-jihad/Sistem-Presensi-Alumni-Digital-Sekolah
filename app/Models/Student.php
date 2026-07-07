@@ -22,6 +22,7 @@ class Student extends Model
         'school_id',
         'class_id',
         'parent_user_id',
+        'parent_phone',
         'nis',
         'nisn',
         'name',

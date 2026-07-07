@@ -74,8 +74,14 @@
                                                     <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-login">
                                 <a href="#endpoints-POSTapi-v1-login">POST api/v1/login</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-auth-login">
+                                <a href="#endpoints-POSTapi-v1-auth-login">POST api/v1/auth/login</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-alumni-register">
                                 <a href="#endpoints-POSTapi-v1-alumni-register">Registrasi alumni baru (verification_status = pending)</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-schools-public">
+                                <a href="#endpoints-GETapi-v1-schools-public">GET api/v1/schools/public</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-logout">
                                 <a href="#endpoints-POSTapi-v1-logout">POST api/v1/logout</a>
@@ -88,6 +94,9 @@
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-PUTapi-v1-alumni-profile">
                                 <a href="#endpoints-PUTapi-v1-alumni-profile">Perbarui profil alumni yang sedang login</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-alumni-jobs">
+                                <a href="#endpoints-GETapi-v1-alumni-jobs">Get a list of active job vacancies for alumni.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-dashboard">
                                 <a href="#endpoints-GETapi-v1-dashboard">Dashboard utama — data disesuaikan berdasarkan role user yang login.</a>
@@ -269,6 +278,27 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-alumni-events--id--reject">
                                 <a href="#endpoints-POSTapi-v1-alumni-events--id--reject">Tolak pengajuan event (Admin & Super Admin)</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-alumni-verification-pending">
+                                <a href="#endpoints-GETapi-v1-alumni-verification-pending">Daftar alumni menunggu verifikasi (pending).</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-alumni-verification">
+                                <a href="#endpoints-GETapi-v1-alumni-verification">Daftar semua alumni dengan filter status verifikasi.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-alumni-verification--id-">
+                                <a href="#endpoints-GETapi-v1-alumni-verification--id-">Detail satu data alumni.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-alumni-verification-stats-summary">
+                                <a href="#endpoints-GETapi-v1-alumni-verification-stats-summary">Statistik ringkasan verifikasi alumni.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-alumni-verification--id--approve">
+                                <a href="#endpoints-POSTapi-v1-alumni-verification--id--approve">Setujui (verifikasi) akun alumni.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-alumni-verification--id--reject">
+                                <a href="#endpoints-POSTapi-v1-alumni-verification--id--reject">Tolak akun alumni dengan alasan.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-alumni-verification--id--reset">
+                                <a href="#endpoints-POSTapi-v1-alumni-verification--id--reset">Reset status alumni yang ditolak kembali ke pending.</a>
+                            </li>
                                                                         </ul>
                             </ul>
             </div>
@@ -280,7 +310,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: July 6, 2026</li>
+        <li>Last updated: July 7, 2026</li>
     </ul>
 </div>
 
@@ -473,6 +503,181 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="device_name"                data-endpoint="POSTapi-v1-login"
+               value="u"
+               data-component="body">
+    <br>
+<p>:Attribute maksimal berisi 255 karakter. Example: <code>u</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-POSTapi-v1-auth-login">POST api/v1/auth/login</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-auth-login">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/v1/auth/login" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"email\": \"gbailey@example.net\",
+    \"password\": \"+-0pBNvYgxwmi\\/#iw\",
+    \"device_name\": \"u\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/auth/login"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "email": "gbailey@example.net",
+    "password": "+-0pBNvYgxwmi\/#iw",
+    "device_name": "u"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-auth-login">
+</span>
+<span id="execution-results-POSTapi-v1-auth-login" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-auth-login"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-auth-login"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-auth-login" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-auth-login">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-auth-login" data-method="POST"
+      data-path="api/v1/auth/login"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-auth-login', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-auth-login"
+                    onclick="tryItOut('POSTapi-v1-auth-login');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-auth-login"
+                    onclick="cancelTryOut('POSTapi-v1-auth-login');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-auth-login"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/auth/login</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-auth-login"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-auth-login"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-auth-login"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="email"                data-endpoint="POSTapi-v1-auth-login"
+               value="gbailey@example.net"
+               data-component="body">
+    <br>
+<p>:Attribute harus berupa alamat surel yang valid. :Attribute maksimal berisi 255 karakter. Example: <code>gbailey@example.net</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="password"                data-endpoint="POSTapi-v1-auth-login"
+               value="+-0pBNvYgxwmi/#iw"
+               data-component="body">
+    <br>
+<p>:Attribute minimal berisi 6 karakter. :Attribute maksimal berisi 100 karakter. Example: <code>+-0pBNvYgxwmi/#iw</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>device_name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="device_name"                data-endpoint="POSTapi-v1-auth-login"
                value="u"
                data-component="body">
     <br>
@@ -738,6 +943,154 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>:Attribute maksimal berisi 100 karakter. Example: <code>c</code></p>
         </div>
         </form>
+
+                    <h2 id="endpoints-GETapi-v1-schools-public">GET api/v1/schools/public</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-schools-public">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/schools/public" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/schools/public"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-schools-public">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;status&quot;: &quot;success&quot;,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;SMK Negeri 1 Digital Prestasi Indonesia&quot;
+        }
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-schools-public" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-schools-public"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-schools-public"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-schools-public" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-schools-public">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-schools-public" data-method="GET"
+      data-path="api/v1/schools/public"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-schools-public', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-schools-public"
+                    onclick="tryItOut('GETapi-v1-schools-public');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-schools-public"
+                    onclick="cancelTryOut('GETapi-v1-schools-public');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-schools-public"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/schools/public</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-schools-public"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-schools-public"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-schools-public"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
 
                     <h2 id="endpoints-POSTapi-v1-logout">POST api/v1/logout</h2>
 
@@ -1168,7 +1521,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"current_status\": \"entrepreneur\",
+    \"current_status\": \"unemployed\",
     \"university_name\": \"b\",
     \"study_program\": \"n\",
     \"company_name\": \"g\",
@@ -1194,7 +1547,7 @@ const headers = {
 };
 
 let body = {
-    "current_status": "entrepreneur",
+    "current_status": "unemployed",
     "university_name": "b",
     "study_program": "n",
     "company_name": "g",
@@ -1307,12 +1660,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="current_status"                data-endpoint="PUTapi-v1-alumni-profile"
-               value="entrepreneur"
+               value="unemployed"
                data-component="body">
     <br>
-<p>Example: <code>entrepreneur</code></p>
+<p>Example: <code>unemployed</code></p>
 Must be one of:
-<ul style="list-style-type: square;"><li><code>working</code></li> <li><code>studying</code></li> <li><code>entrepreneur</code></li> <li><code>unemployed</code></li></ul>
+<ul style="list-style-type: square;"><li><code>working</code></li> <li><code>studying</code></li> <li><code>entrepreneur</code></li> <li><code>unemployed</code></li> <li><code>studying_working</code></li></ul>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>university_name</code></b>&nbsp;&nbsp;
@@ -1324,7 +1677,7 @@ Must be one of:
                value="b"
                data-component="body">
     <br>
-<p>This field is required when <code>current_status</code> is <code>studying</code>. :Attribute maksimal berisi 255 karakter. Example: <code>b</code></p>
+<p>This field is required when <code>current_status</code> is <code>studying</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter. Example: <code>b</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>study_program</code></b>&nbsp;&nbsp;
@@ -1336,7 +1689,7 @@ Must be one of:
                value="n"
                data-component="body">
     <br>
-<p>This field is required when <code>current_status</code> is <code>studying</code>. :Attribute maksimal berisi 255 karakter. Example: <code>n</code></p>
+<p>This field is required when <code>current_status</code> is <code>studying</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter. Example: <code>n</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>company_name</code></b>&nbsp;&nbsp;
@@ -1348,7 +1701,7 @@ Must be one of:
                value="g"
                data-component="body">
     <br>
-<p>This field is required when <code>current_status</code> is <code>working</code>. :Attribute maksimal berisi 255 karakter. Example: <code>g</code></p>
+<p>This field is required when <code>current_status</code> is <code>working</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter. Example: <code>g</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>job_position</code></b>&nbsp;&nbsp;
@@ -1360,7 +1713,7 @@ Must be one of:
                value="z"
                data-component="body">
     <br>
-<p>This field is required when <code>current_status</code> is <code>working</code>. :Attribute maksimal berisi 255 karakter. Example: <code>z</code></p>
+<p>This field is required when <code>current_status</code> is <code>working</code> or <code>studying_working</code>. :Attribute maksimal berisi 255 karakter. Example: <code>z</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>business_name</code></b>&nbsp;&nbsp;
@@ -1423,6 +1776,148 @@ Must be one of:
 <p>Must be a valid URL. :Attribute maksimal berisi 255 karakter. Example: <code>https://www.hirthe.com/commodi-incidunt-iure-odit</code></p>
         </div>
         </form>
+
+                    <h2 id="endpoints-GETapi-v1-alumni-jobs">Get a list of active job vacancies for alumni.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-alumni-jobs">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/alumni/jobs" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/jobs"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-alumni-jobs">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-alumni-jobs" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-alumni-jobs"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-alumni-jobs"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-alumni-jobs" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-alumni-jobs">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-alumni-jobs" data-method="GET"
+      data-path="api/v1/alumni/jobs"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-alumni-jobs', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-alumni-jobs"
+                    onclick="tryItOut('GETapi-v1-alumni-jobs');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-alumni-jobs"
+                    onclick="cancelTryOut('GETapi-v1-alumni-jobs');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-alumni-jobs"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/alumni/jobs</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-alumni-jobs"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-alumni-jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-alumni-jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
 
                     <h2 id="endpoints-GETapi-v1-dashboard">Dashboard utama — data disesuaikan berdasarkan role user yang login.</h2>
 
@@ -3542,7 +4037,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v1/schools/architecto" \
+    --get "http://localhost:8000/api/v1/schools/1" \
     --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -3550,7 +4045,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/schools/architecto"
+    "http://localhost:8000/api/v1/schools/1"
 );
 
 const headers = {
@@ -3671,15 +4166,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="text" style="display: none"
-                              name="id"                data-endpoint="GETapi-v1-schools--id-"
-               value="architecto"
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-v1-schools--id-"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the school. Example: <code>architecto</code></p>
+<p>The ID of the school. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -3697,7 +4192,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost:8000/api/v1/schools/architecto" \
+    "http://localhost:8000/api/v1/schools/1" \
     --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -3713,7 +4208,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/schools/architecto"
+    "http://localhost:8000/api/v1/schools/1"
 );
 
 const headers = {
@@ -3830,15 +4325,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="text" style="display: none"
-                              name="id"                data-endpoint="PUTapi-v1-schools--id-"
-               value="architecto"
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="PUTapi-v1-schools--id-"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the school. Example: <code>architecto</code></p>
+<p>The ID of the school. Example: <code>1</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -3917,7 +4412,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/v1/schools/architecto" \
+    "http://localhost:8000/api/v1/schools/1" \
     --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -3925,7 +4420,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/schools/architecto"
+    "http://localhost:8000/api/v1/schools/1"
 );
 
 const headers = {
@@ -4030,15 +4525,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="text" style="display: none"
-                              name="id"                data-endpoint="DELETEapi-v1-schools--id-"
-               value="architecto"
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="DELETEapi-v1-schools--id-"
+               value="1"
                data-component="url">
     <br>
-<p>The ID of the school. Example: <code>architecto</code></p>
+<p>The ID of the school. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -4208,7 +4703,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"nisn\": \"ykcmyuwpwl\",
     \"name\": \"v\",
     \"gender\": \"female\",
-    \"birth_date\": \"2026-07-06T11:45:34\",
+    \"birth_date\": \"2026-07-07T13:44:51\",
     \"parent_name\": \"q\",
     \"parent_phone\": \"wrsitcpscqldzsnr\"
 }"
@@ -4232,7 +4727,7 @@ let body = {
     "nisn": "ykcmyuwpwl",
     "name": "v",
     "gender": "female",
-    "birth_date": "2026-07-06T11:45:34",
+    "birth_date": "2026-07-07T13:44:51",
     "parent_name": "q",
     "parent_phone": "wrsitcpscqldzsnr"
 };
@@ -4400,10 +4895,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="birth_date"                data-endpoint="POSTapi-v1-students"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:51"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>parent_name</code></b>&nbsp;&nbsp;
@@ -4607,9 +5102,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"school_id\": \"architecto\",
     \"name\": \"n\",
-    \"gender\": \"male\",
-    \"birth_date\": \"2026-07-06T11:45:34\",
-    \"status\": \"graduated\"
+    \"gender\": \"female\",
+    \"birth_date\": \"2026-07-07T13:44:51\",
+    \"status\": \"transferred\"
 }"
 </code></pre></div>
 
@@ -4628,9 +5123,9 @@ const headers = {
 let body = {
     "school_id": "architecto",
     "name": "n",
-    "gender": "male",
-    "birth_date": "2026-07-06T11:45:34",
-    "status": "graduated"
+    "gender": "female",
+    "birth_date": "2026-07-07T13:44:51",
+    "status": "transferred"
 };
 
 fetch(url, {
@@ -4799,10 +5294,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="gender"                data-endpoint="PUTapi-v1-students--id-"
-               value="male"
+               value="female"
                data-component="body">
     <br>
-<p>Example: <code>male</code></p>
+<p>Example: <code>female</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>male</code></li> <li><code>female</code></li></ul>
         </div>
@@ -4813,10 +5308,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="birth_date"                data-endpoint="PUTapi-v1-students--id-"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:51"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -4825,10 +5320,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PUTapi-v1-students--id-"
-               value="graduated"
+               value="transferred"
                data-component="body">
     <br>
-<p>Example: <code>graduated</code></p>
+<p>Example: <code>transferred</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>active</code></li> <li><code>inactive</code></li> <li><code>graduated</code></li> <li><code>transferred</code></li> <li><code>dropout</code></li></ul>
         </div>
@@ -6310,10 +6805,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "date=2026-07-06T11:45:34"\
+    --form "date=2026-07-07T13:44:51"\
     --form "status=sick"\
     --form "note=architecto"\
-    --form "attachment=@C:\Users\LENOVO\AppData\Local\Temp\phpA53D.tmp" </code></pre></div>
+    --form "attachment=@C:\Users\LENOVO\AppData\Local\Temp\php3878.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -6328,7 +6823,7 @@ const headers = {
 };
 
 const body = new FormData();
-body.append('date', '2026-07-06T11:45:34');
+body.append('date', '2026-07-07T13:44:51');
 body.append('status', 'sick');
 body.append('note', 'architecto');
 body.append('attachment', document.querySelector('input[name="attachment"]').files[0]);
@@ -6434,10 +6929,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v1-attendances-izin"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:51"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -6475,7 +6970,7 @@ Must be one of:
                value=""
                data-component="body">
     <br>
-<p>Must be a file. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\phpA53D.tmp</code></p>
+<p>Must be a file. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php3878.tmp</code></p>
         </div>
         </form>
 
@@ -6948,11 +7443,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"class_id\": \"architecto\",
-    \"date\": \"2026-07-06T11:45:34\",
+    \"date\": \"2026-07-07T13:44:51\",
     \"attendances\": [
         {
             \"student_id\": \"architecto\",
-            \"status\": \"late\",
+            \"status\": \"present\",
             \"note\": \"n\"
         }
     ]
@@ -6973,11 +7468,11 @@ const headers = {
 
 let body = {
     "class_id": "architecto",
-    "date": "2026-07-06T11:45:34",
+    "date": "2026-07-07T13:44:51",
     "attendances": [
         {
             "student_id": "architecto",
-            "status": "late",
+            "status": "present",
             "note": "n"
         }
     ]
@@ -7096,10 +7591,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v1-attendance-submit"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:51"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>presensi_session_id</code></b>&nbsp;&nbsp;
@@ -7142,10 +7637,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="attendances.0.status"                data-endpoint="POSTapi-v1-attendance-submit"
-               value="late"
+               value="present"
                data-component="body">
     <br>
-<p>Example: <code>late</code></p>
+<p>Example: <code>present</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>present</code></li> <li><code>late</code></li> <li><code>permission</code></li> <li><code>sick</code></li> <li><code>absent</code></li></ul>
                     </div>
@@ -7185,7 +7680,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"class_id\": \"architecto\",
-    \"date\": \"2026-07-06T11:45:34\"
+    \"date\": \"2026-07-07T13:44:51\"
 }"
 </code></pre></div>
 
@@ -7203,7 +7698,7 @@ const headers = {
 
 let body = {
     "class_id": "architecto",
-    "date": "2026-07-06T11:45:34"
+    "date": "2026-07-07T13:44:51"
 };
 
 fetch(url, {
@@ -7335,10 +7830,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="GETapi-v1-attendance-daily"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:51"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
         </div>
         </form>
 
@@ -7695,7 +8190,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "latitude=4326.41688"\
     --form "longitude=4326.41688"\
-    --form "photo=@C:\Users\LENOVO\AppData\Local\Temp\phpA5FA.tmp" </code></pre></div>
+    --form "photo=@C:\Users\LENOVO\AppData\Local\Temp\php38E6.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -7842,7 +8337,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\phpA5FA.tmp</code></p>
+<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php38E6.tmp</code></p>
         </div>
         </form>
 
@@ -8319,9 +8814,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"attendances\": [
         {
             \"student_id\": 16,
-            \"status\": \"present\",
+            \"status\": \"late\",
             \"note\": \"n\",
-            \"check_in_time\": \"11:45:34\"
+            \"check_in_time\": \"13:44:52\"
         }
     ]
 }"
@@ -8344,9 +8839,9 @@ let body = {
     "attendances": [
         {
             "student_id": 16,
-            "status": "present",
+            "status": "late",
             "note": "n",
-            "check_in_time": "11:45:34"
+            "check_in_time": "13:44:52"
         }
     ]
 };
@@ -8486,10 +8981,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="attendances.0.status"                data-endpoint="POSTapi-v1-attendance-manual"
-               value="present"
+               value="late"
                data-component="body">
     <br>
-<p>Example: <code>present</code></p>
+<p>Example: <code>late</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>present</code></li> <li><code>late</code></li> <li><code>permission</code></li> <li><code>sick</code></li> <li><code>absent</code></li></ul>
                     </div>
@@ -8512,10 +9007,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="attendances.0.check_in_time"                data-endpoint="POSTapi-v1-attendance-manual"
-               value="11:45:34"
+               value="13:44:52"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>11:45:34</code></p>
+<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>13:44:52</code></p>
                     </div>
                                     </details>
         </div>
@@ -10280,9 +10775,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "title=b"\
     --form "description=Eius et animi quos velit et."\
-    --form "event_date=2026-07-06T11:45:34"\
+    --form "event_date=2026-07-07T13:44:52"\
     --form "location=v"\
-    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\phpA704.tmp" </code></pre></div>
+    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\php39A2.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -10299,7 +10794,7 @@ const headers = {
 const body = new FormData();
 body.append('title', 'b');
 body.append('description', 'Eius et animi quos velit et.');
-body.append('event_date', '2026-07-06T11:45:34');
+body.append('event_date', '2026-07-07T13:44:52');
 body.append('location', 'v');
 body.append('banner_image', document.querySelector('input[name="banner_image"]').files[0]);
 
@@ -10428,10 +10923,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="event_date"                data-endpoint="POSTapi-v1-alumni-events"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:52"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:52</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
@@ -10455,7 +10950,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\phpA704.tmp</code></p>
+<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php39A2.tmp</code></p>
         </div>
         </form>
 
@@ -10479,10 +10974,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "title=b"\
     --form "description=Eius et animi quos velit et."\
-    --form "event_date=2026-07-06T11:45:34"\
+    --form "event_date=2026-07-07T13:44:52"\
     --form "location=v"\
-    --form "is_active=1"\
-    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\phpA705.tmp" </code></pre></div>
+    --form "is_active="\
+    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\php39B3.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -10499,9 +10994,9 @@ const headers = {
 const body = new FormData();
 body.append('title', 'b');
 body.append('description', 'Eius et animi quos velit et.');
-body.append('event_date', '2026-07-06T11:45:34');
+body.append('event_date', '2026-07-07T13:44:52');
 body.append('location', 'v');
-body.append('is_active', '1');
+body.append('is_active', '');
 body.append('banner_image', document.querySelector('input[name="banner_image"]').files[0]);
 
 fetch(url, {
@@ -10642,10 +11137,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="event_date"                data-endpoint="POSTapi-v1-alumni-events--id-"
-               value="2026-07-06T11:45:34"
+               value="2026-07-07T13:44:52"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-06T11:45:34</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:52</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
@@ -10669,7 +11164,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\phpA705.tmp</code></p>
+<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php39B3.tmp</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_active</code></b>&nbsp;&nbsp;
@@ -10691,7 +11186,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -11109,6 +11604,1025 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="url">
     <br>
 <p>The ID of the alumni event. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v1-alumni-verification-pending">Daftar alumni menunggu verifikasi (pending).</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Akses: admin (sekolahnya sendiri), super_admin (semua sekolah).</p>
+
+<span id="example-requests-GETapi-v1-alumni-verification-pending">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/alumni/verification/pending" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification/pending"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-alumni-verification-pending">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-alumni-verification-pending" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-alumni-verification-pending"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-alumni-verification-pending"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-alumni-verification-pending" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-alumni-verification-pending">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-alumni-verification-pending" data-method="GET"
+      data-path="api/v1/alumni/verification/pending"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-alumni-verification-pending', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-alumni-verification-pending"
+                    onclick="tryItOut('GETapi-v1-alumni-verification-pending');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-alumni-verification-pending"
+                    onclick="cancelTryOut('GETapi-v1-alumni-verification-pending');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-alumni-verification-pending"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/alumni/verification/pending</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-alumni-verification-pending"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-alumni-verification-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-alumni-verification-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-v1-alumni-verification">Daftar semua alumni dengan filter status verifikasi.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Akses: admin, super_admin.</p>
+
+<span id="example-requests-GETapi-v1-alumni-verification">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/alumni/verification" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-alumni-verification">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-alumni-verification" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-alumni-verification"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-alumni-verification"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-alumni-verification" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-alumni-verification">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-alumni-verification" data-method="GET"
+      data-path="api/v1/alumni/verification"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-alumni-verification', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-alumni-verification"
+                    onclick="tryItOut('GETapi-v1-alumni-verification');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-alumni-verification"
+                    onclick="cancelTryOut('GETapi-v1-alumni-verification');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-alumni-verification"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/alumni/verification</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-alumni-verification"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-alumni-verification"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-alumni-verification"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-GETapi-v1-alumni-verification--id-">Detail satu data alumni.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-alumni-verification--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/alumni/verification/architecto" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification/architecto"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-alumni-verification--id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-alumni-verification--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-alumni-verification--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-alumni-verification--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-alumni-verification--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-alumni-verification--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-alumni-verification--id-" data-method="GET"
+      data-path="api/v1/alumni/verification/{id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-alumni-verification--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-alumni-verification--id-"
+                    onclick="tryItOut('GETapi-v1-alumni-verification--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-alumni-verification--id-"
+                    onclick="cancelTryOut('GETapi-v1-alumni-verification--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-alumni-verification--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/alumni/verification/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-alumni-verification--id-"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-alumni-verification--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-alumni-verification--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-alumni-verification--id-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the verification. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v1-alumni-verification-stats-summary">Statistik ringkasan verifikasi alumni.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Akses: admin, super_admin.</p>
+
+<span id="example-requests-GETapi-v1-alumni-verification-stats-summary">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/alumni/verification/stats/summary" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification/stats/summary"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-alumni-verification-stats-summary">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+access-control-allow-origin: *
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-alumni-verification-stats-summary" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-alumni-verification-stats-summary"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-alumni-verification-stats-summary"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-alumni-verification-stats-summary" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-alumni-verification-stats-summary">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-alumni-verification-stats-summary" data-method="GET"
+      data-path="api/v1/alumni/verification/stats/summary"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-alumni-verification-stats-summary', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-alumni-verification-stats-summary"
+                    onclick="tryItOut('GETapi-v1-alumni-verification-stats-summary');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-alumni-verification-stats-summary"
+                    onclick="cancelTryOut('GETapi-v1-alumni-verification-stats-summary');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-alumni-verification-stats-summary"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/alumni/verification/stats/summary</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-alumni-verification-stats-summary"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-alumni-verification-stats-summary"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-alumni-verification-stats-summary"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="endpoints-POSTapi-v1-alumni-verification--id--approve">Setujui (verifikasi) akun alumni.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Akses: admin, super_admin.</p>
+
+<span id="example-requests-POSTapi-v1-alumni-verification--id--approve">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/v1/alumni/verification/architecto/approve" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification/architecto/approve"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-alumni-verification--id--approve">
+</span>
+<span id="execution-results-POSTapi-v1-alumni-verification--id--approve" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-alumni-verification--id--approve"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-alumni-verification--id--approve"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-alumni-verification--id--approve" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-alumni-verification--id--approve">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-alumni-verification--id--approve" data-method="POST"
+      data-path="api/v1/alumni/verification/{id}/approve"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-alumni-verification--id--approve', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-alumni-verification--id--approve"
+                    onclick="tryItOut('POSTapi-v1-alumni-verification--id--approve');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-alumni-verification--id--approve"
+                    onclick="cancelTryOut('POSTapi-v1-alumni-verification--id--approve');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-alumni-verification--id--approve"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/alumni/verification/{id}/approve</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-alumni-verification--id--approve"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-alumni-verification--id--approve"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-alumni-verification--id--approve"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="POSTapi-v1-alumni-verification--id--approve"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the verification. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-POSTapi-v1-alumni-verification--id--reject">Tolak akun alumni dengan alasan.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Akses: admin, super_admin.</p>
+
+<span id="example-requests-POSTapi-v1-alumni-verification--id--reject">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/v1/alumni/verification/architecto/reject" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"reason\": \"b\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification/architecto/reject"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "reason": "b"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-alumni-verification--id--reject">
+</span>
+<span id="execution-results-POSTapi-v1-alumni-verification--id--reject" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-alumni-verification--id--reject"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-alumni-verification--id--reject"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-alumni-verification--id--reject" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-alumni-verification--id--reject">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-alumni-verification--id--reject" data-method="POST"
+      data-path="api/v1/alumni/verification/{id}/reject"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-alumni-verification--id--reject', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-alumni-verification--id--reject"
+                    onclick="tryItOut('POSTapi-v1-alumni-verification--id--reject');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-alumni-verification--id--reject"
+                    onclick="cancelTryOut('POSTapi-v1-alumni-verification--id--reject');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-alumni-verification--id--reject"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/alumni/verification/{id}/reject</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-alumni-verification--id--reject"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-alumni-verification--id--reject"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-alumni-verification--id--reject"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="POSTapi-v1-alumni-verification--id--reject"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the verification. Example: <code>architecto</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>reason</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="reason"                data-endpoint="POSTapi-v1-alumni-verification--id--reject"
+               value="b"
+               data-component="body">
+    <br>
+<p>:Attribute maksimal berisi 500 karakter. Example: <code>b</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-POSTapi-v1-alumni-verification--id--reset">Reset status alumni yang ditolak kembali ke pending.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Akses: admin, super_admin.</p>
+
+<span id="example-requests-POSTapi-v1-alumni-verification--id--reset">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost:8000/api/v1/alumni/verification/architecto/reset" \
+    --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/alumni/verification/architecto/reset"
+);
+
+const headers = {
+    "Authorization": "Bearer 6g43cv8PD1aE5beadkZfhV6",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-alumni-verification--id--reset">
+</span>
+<span id="execution-results-POSTapi-v1-alumni-verification--id--reset" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v1-alumni-verification--id--reset"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-alumni-verification--id--reset"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-alumni-verification--id--reset" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-alumni-verification--id--reset">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v1-alumni-verification--id--reset" data-method="POST"
+      data-path="api/v1/alumni/verification/{id}/reset"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-alumni-verification--id--reset', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-alumni-verification--id--reset"
+                    onclick="tryItOut('POSTapi-v1-alumni-verification--id--reset');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-alumni-verification--id--reset"
+                    onclick="cancelTryOut('POSTapi-v1-alumni-verification--id--reset');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-alumni-verification--id--reset"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/alumni/verification/{id}/reset</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="POSTapi-v1-alumni-verification--id--reset"
+               value="Bearer 6g43cv8PD1aE5beadkZfhV6"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer 6g43cv8PD1aE5beadkZfhV6</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-alumni-verification--id--reset"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-alumni-verification--id--reset"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="POSTapi-v1-alumni-verification--id--reset"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the verification. Example: <code>architecto</code></p>
             </div>
                     </form>
 
