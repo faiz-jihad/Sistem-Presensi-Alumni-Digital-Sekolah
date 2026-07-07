@@ -29,8 +29,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/alumni/register', [AlumniController::class, 'register']);
     Route::get('/schools/public', function () {
         return response()->json([
-            'status' => 'success',
-            'data' => \App\Models\School::select('id', 'name')->get()
+            'status' => 'success', 
+            'data' => \App\Models\School::with('classes:id,school_id,name,major')->select('id', 'name')->get()
         ]);
     });
 

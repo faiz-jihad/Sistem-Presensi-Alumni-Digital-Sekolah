@@ -20,6 +20,7 @@ class JobVacancy extends Model
     'company_logo',
     'description',
     'requirements',
+    'link',
     'location',
     'salary_min',
     'salary_max',
