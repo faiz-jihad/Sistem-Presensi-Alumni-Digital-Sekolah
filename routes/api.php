@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
 
 // ─── Public routes ──────────────────────────────────────────────────────
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
     Route::get('/schools/public', function () {
         return response()->json([

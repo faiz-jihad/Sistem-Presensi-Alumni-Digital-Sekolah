@@ -27,10 +27,6 @@ class School extends Model
         'status',
     ];
 
-    protected $casts = [
-        'status' => 'boolean',
-    ];
-
     /**
      * Relasi ke semua Users di sekolah ini
      */
