@@ -36,7 +36,8 @@ class StudentForm
                     ->label('Nomor WhatsApp Orang Tua')
                     ->tel()
                     ->placeholder('Contoh: 628123456789')
-                    ->dehydrated(false),
+                    ->dehydrated(false)
+                    ->maxLength(20),
 
                 // ── Data Siswa ────────────────────────────────────────────
                 TextInput::make('nis')

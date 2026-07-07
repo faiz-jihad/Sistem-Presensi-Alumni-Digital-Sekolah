@@ -28,7 +28,8 @@ class UserForm
                 TextInput::make('phone')
                     ->label('Nomor Telepon')
                     ->placeholder('Contoh: 08123456789')
-                    ->tel(),
+                    ->tel()
+                    ->maxLength(20),
                     
                 TextInput::make('password')
                     ->label('Kata Sandi')
