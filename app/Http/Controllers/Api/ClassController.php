@@ -32,11 +32,7 @@ class ClassController extends BaseController
 
             $classes = SchoolClass::where('school_id', $schoolId)
                 ->when($teacher, function ($query) use ($teacher) {
-                    $scheduledClassIds = \App\Models\Schedule::where('teacher_id', $teacher->id)->pluck('class_id')->unique();
-                    $query->where(function ($q) use ($teacher, $scheduledClassIds) {
-                        $q->where('homeroom_teacher_id', $teacher->id)
-                          ->orWhereIn('id', $scheduledClassIds);
-                    });
+                    $query->where('homeroom_teacher_id', $teacher->id);
                 })
                 ->with(['homeroomTeacher' => function ($query) {
                     $query->select('id', 'name');
@@ -67,7 +63,8 @@ class ClassController extends BaseController
                     $query->select('id', 'name', 'nip');
                 },
                 'students' => function ($query) {
-                    $query->select('id', 'class_id', 'nis', 'nisn', 'name', 'gender', 'status')
+                    $query->select('id', 'class_id', 'parent_user_id', 'nis', 'nisn', 'name', 'gender', 'birth_date', 'status')
+                        ->with(['parent:id,name,phone'])
                         ->orderBy('name');
                 }
             ])->find($id);
@@ -76,12 +73,11 @@ class ClassController extends BaseController
                 return $this->notFound('Kelas tidak ditemukan');
             }
 
-            // Cek akses (admin atau guru wali kelas / pengajar)
+            // Cek akses (admin atau guru wali kelas)
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 if ($user->role === 'teacher') {
-                    $teacherId = $user->teacher?->id;
-                    $isScheduled = \App\Models\Schedule::where('teacher_id', $teacherId)->where('class_id', $class->id)->exists();
-                    if ($class->homeroom_teacher_id !== $teacherId && !$isScheduled) {
+                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
+                    if (!$teacherId || (int) $class->homeroom_teacher_id !== (int) $teacherId) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
                 } else {
@@ -114,9 +110,8 @@ class ClassController extends BaseController
             // Cek akses
             if ($user->role !== 'admin' && $user->role !== 'super_admin') {
                 if ($user->role === 'teacher') {
-                    $teacherId = $user->teacher?->id;
-                    $isScheduled = \App\Models\Schedule::where('teacher_id', $teacherId)->where('class_id', $class->id)->exists();
-                    if ($class->homeroom_teacher_id !== $teacherId && !$isScheduled) {
+                    $teacherId = Teacher::where('user_id', $user->id)->value('id');
+                    if (!$teacherId || (int) $class->homeroom_teacher_id !== (int) $teacherId) {
                         return $this->forbidden('Anda tidak memiliki akses ke kelas ini');
                     }
                 } else {
@@ -127,7 +122,8 @@ class ClassController extends BaseController
             $date = $request->query('date');
             
             $studentsQuery = $class->students()
-                ->select('id', 'class_id', 'nis', 'nisn', 'name', 'gender', 'status')
+                ->select('id', 'class_id', 'parent_user_id', 'nis', 'nisn', 'name', 'gender', 'birth_date', 'status')
+                ->with(['parent:id,name,phone'])
                 ->orderBy('name');
 
             if ($date) {
@@ -138,14 +134,26 @@ class ClassController extends BaseController
 
             $students = $studentsQuery->get()->map(function ($student) use ($date) {
                 $att = $date ? $student->attendances->first() : null;
+                $attendanceStatus = $att && $att->status instanceof \BackedEnum
+                    ? $att->status->value
+                    : $att?->status;
+
                 return [
                     'id' => $student->id,
                     'nis' => $student->nis,
                     'nisn' => $student->nisn,
                     'name' => $student->name,
                     'gender' => $student->gender,
+                    'birth_date' => $student->birth_date,
+                    'parent' => $student->parent ? [
+                        'id' => $student->parent->id,
+                        'name' => $student->parent->name,
+                        'phone' => $student->parent->phone,
+                    ] : null,
+                    'parent_name' => $student->parent?->name,
+                    'parent_phone' => $student->parent?->phone,
                     'status' => $student->status,
-                    'attendance_status' => $att ? $att->status : null,
+                    'attendance_status' => $attendanceStatus,
                     'attendance_note' => $att ? $att->note : null,
                 ];
             });

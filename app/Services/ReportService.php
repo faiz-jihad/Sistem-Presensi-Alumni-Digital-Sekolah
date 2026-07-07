@@ -10,6 +10,15 @@ use Carbon\Carbon;
 
 class ReportService
 {
+    private function attendanceStatusValue(mixed $status): string
+    {
+        if ($status instanceof \BackedEnum) {
+            return (string) $status->value;
+        }
+
+        return (string) $status;
+    }
+
     /**
      * Rekap Harian Kehadiran Kelas
      */
@@ -44,7 +53,7 @@ class ReportService
 
         foreach ($students as $student) {
             $att = $attendances->get($student->id);
-            $status = $att ? $att->status : 'not_recorded';
+            $status = $att ? $this->attendanceStatusValue($att->status) : 'not_recorded';
 
             if (array_key_exists($status, $summary)) {
                 $summary[$status]++;
@@ -113,8 +122,9 @@ class ReportService
             ];
 
             foreach ($studentAtts as $att) {
-                if (array_key_exists($att->status, $counts)) {
-                    $counts[$att->status]++;
+                $status = $this->attendanceStatusValue($att->status);
+                if (array_key_exists($status, $counts)) {
+                    $counts[$status]++;
                 }
             }
 
@@ -178,13 +188,14 @@ class ReportService
             $note = '-';
 
             if ($attendance) {
-                $statusLabel = match ($attendance->status) {
+                $status = $this->attendanceStatusValue($attendance->status);
+                $statusLabel = match ($status) {
                     'present'    => 'Hadir',
                     'late'       => 'Terlambat',
                     'permission' => 'Izin',
                     'sick'       => 'Sakit',
                     'absent'     => 'Alpha',
-                    default      => $attendance->status,
+                    default      => $status,
                 };
                 $checkIn = $attendance->check_in_time ? Carbon::parse($attendance->check_in_time)->format('H:i') : '-';
                 $note = $attendance->note ?? '-';
@@ -245,8 +256,9 @@ class ReportService
             ];
 
             foreach ($attendances as $att) {
-                if (array_key_exists($att->status, $counts)) {
-                    $counts[$att->status]++;
+                $status = $this->attendanceStatusValue($att->status);
+                if (array_key_exists($status, $counts)) {
+                    $counts[$status]++;
                 }
             }
 
