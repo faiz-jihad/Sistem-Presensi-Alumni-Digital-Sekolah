@@ -349,7 +349,7 @@
                             @forelse($report['students'] as $idx => $student)
                                 <tr>
                                     <td style="text-align: center; font-weight: 500;">{{ $idx + 1 }}</td>
-                                    <td style="font-weight: 600; color: #0f172a;" class="dark:text-white">
+                                    <td style="font-weight: 600;" class="text-slate-900 dark:text-white">
                                         {{ $student['name'] }}
                                     </td>
                                     <td>{{ $student['nis'] }}</td>

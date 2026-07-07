@@ -63,7 +63,6 @@ class AttendanceService
                 // Gunakan updateOrCreate dengan kunci (student_id, date).
                 // Unique constraint DB adalah (student_id, date) — satu record per siswa per hari.
                 // presensi_session_id pada record ini selalu diperbarui ke sesi terbaru.
-                $attendance = $this->safeUpdateOrCreateAttendance(
                 $attendance = StudentAttendance::updateOrCreate(
                     [
                         'student_id' => $studentId,
@@ -79,9 +78,10 @@ class AttendanceService
                         'check_in_time'      => in_array($status, ['present', 'late'], true)
                             ? ($att['check_in_time'] ?? Carbon::now()->toTimeString())
                             : null,
-                        'verification_status' => 'approved', // Guru langsung diisi approved
                     ]
-                );$recordedCount++;
+                );
+
+                $recordedCount++;
                 $this->triggerWhatsAppNotification($student, $attendance);
             }
         });
@@ -112,10 +112,7 @@ class AttendanceService
 
         $session = PresensiSession::with(['schedule.classHour'])->findOrFail($sessionId);
 
-        $sessionStatus = $session->status instanceof \BackedEnum
-            ? $session->status->value
-            : $session->status;
-        if ($sessionStatus !== 'open') {
+        if ($session->status !== 'open') {
             throw new \Exception('Sesi presensi ini sedang tidak dibuka.');
         }
 
@@ -169,8 +166,8 @@ class AttendanceService
             ? 'Terlambat scan QR (' . $diffInMinutes . ' menit)'
             : 'Scan QR tepat waktu';
 
-        // Gunakan safeUpdateOrCreateAttendance agar aman dari race condition / double submit
-        $attendance = $this->safeUpdateOrCreateAttendance(
+        // Gunakan updateOrCreate agar aman dari race condition / double submit
+        $attendance = StudentAttendance::updateOrCreate(
             [
                 'student_id' => $studentId,
                 'date'       => $today,
@@ -215,7 +212,7 @@ class AttendanceService
         $student = Student::findOrFail($studentId);
         $date = $data['date'] ?? Carbon::today()->toDateString();
 
-        $attendance = $this->safeUpdateOrCreateAttendance(
+        $attendance = StudentAttendance::updateOrCreate(
             [
                 'student_id' => $studentId,
                 'date' => $date,
@@ -240,10 +237,7 @@ class AttendanceService
         $student    = Student::findOrFail($attendance->student_id);
 
         // Hanya bisa verifikasi jika status attendance adalah izin atau sakit
-        $attendanceStatus = $attendance->status instanceof \BackedEnum
-            ? $attendance->status->value
-            : $attendance->status;
-        if (!in_array($attendanceStatus, ['permission', 'sick'], true)) {
+        if (!in_array($attendance->status, ['permission', 'sick'], true)) {
             throw new \Exception('Hanya pengajuan izin atau sakit yang dapat diverifikasi.');
         }
 
@@ -278,10 +272,6 @@ class AttendanceService
         }
 
         $dateFormatted = Carbon::parse($attendance->date)->translatedFormat('d F Y');
-        $attendanceStatus = $attendance->status instanceof \BackedEnum
-            ? $attendance->status->value
-            : $attendance->status;
-        $statusIndonesian = match ($attendanceStatus) {
         $statusRaw = is_string($attendance->status) ? $attendance->status : ($attendance->status->value ?? '');
         $statusIndonesian = match ($statusRaw) {
             'present' => 'Hadir',
@@ -304,27 +294,5 @@ class AttendanceService
         $message .= "\nTerima kasih.\nSistem Presensi Sekolah SIMPAD";
 
         SendWhatsAppNotification::dispatchAfterResponse($phone, $message);
-    }
-
-    /**
-     * Update or create attendance records safely, handling race conditions / concurrent inserts.
-     */
-    private function safeUpdateOrCreateAttendance(array $attributes, array $values): StudentAttendance
-    {
-        try {
-            return StudentAttendance::updateOrCreate($attributes, $values);
-        } catch (\Illuminate\Database\UniqueConstraintViolationException|\Illuminate\Database\QueryException $e) {
-            // Check if it's a unique constraint violation (SQLSTATE 23000)
-            if ($e instanceof \Illuminate\Database\QueryException && $e->getCode() !== '23000' && $e->getCode() !== 23000) {
-                throw $e;
-            }
-
-            $attendance = StudentAttendance::where($attributes)->first();
-            if ($attendance) {
-                $attendance->update($values);
-                return $attendance;
-            }
-            throw $e;
-        }
     }
 }
