@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class AlumniStatusChartWidget extends ChartWidget
 {
-    protected ?string $heading = '🎓 Status Alumni';
+    protected ?string $heading = 'Status Alumni';
     protected ?string $description = 'Distribusi status alumni terkini';
 
     protected static ?int $sort = 7;

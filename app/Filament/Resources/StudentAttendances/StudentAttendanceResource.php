@@ -24,7 +24,7 @@ class StudentAttendanceResource extends Resource
             && auth()->user()->hasFeature('has_presensi');
     }
 
-    protected static string|BackedEnum|null $navigationIcon = null;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?string $navigationLabel = 'Rekap Harian';
 

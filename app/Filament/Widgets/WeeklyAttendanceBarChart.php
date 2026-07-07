@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class WeeklyAttendanceBarChart extends ChartWidget
 {
-    protected ?string $heading = '📊 Presensi Harian — 7 Hari Terakhir';
+    protected ?string $heading = 'Presensi Harian — 7 Hari Terakhir';
     protected ?string $description = 'Jumlah siswa hadir setiap hari';
 
     protected static ?int $sort = 4;
