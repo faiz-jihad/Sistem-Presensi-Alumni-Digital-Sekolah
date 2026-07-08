@@ -27,6 +27,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
+    Route::post('/auth/google', [\App\Http\Controllers\Api\GoogleAuthController::class, 'login']);
     Route::get('/schools/public', function () {
         return response()->json([
             'status' => 'success', 
@@ -39,6 +40,12 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/device-token', [\App\Http\Controllers\Api\FcmTokenController::class, 'register']);
+        Route::get('/test-fcm', function (\Illuminate\Http\Request $request) {
+            $service = app(\App\Services\FirebaseNotificationService::class);
+            $result = $service->sendPushNotification($request->user(), 'Test Notifikasi', 'Ini adalah notifikasi uji coba dari Firebase!');
+            return response()->json($result);
+        });
 
         // Alumni Profile
         Route::middleware(['role:alumni', 'feature:has_alumni'])->group(function () {

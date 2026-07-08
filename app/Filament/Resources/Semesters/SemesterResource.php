@@ -30,12 +30,20 @@ class SemesterResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Master Data';
+        return 'Akademik';
     }
 
     public static function getNavigationSort(): ?int
     {
         return 3;
+    }
+
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, [
+            'super_admin',
+            'admin',
+        ]);
     }
 
     public static function form(Schema $schema): Schema

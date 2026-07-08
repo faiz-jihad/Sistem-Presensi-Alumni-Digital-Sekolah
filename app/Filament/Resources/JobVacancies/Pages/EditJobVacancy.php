@@ -16,6 +16,23 @@ class EditJobVacancy extends EditRecord
         return 'Edit Lowongan Kerja';
     }
 
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
+    }
+
+    protected function getSaveFormAction(): \Filament\Actions\Action
+    {
+        return parent::getSaveFormAction()
+            ->label('Simpan');
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Kembali');
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (auth()->user()->role !== 'super_admin') {

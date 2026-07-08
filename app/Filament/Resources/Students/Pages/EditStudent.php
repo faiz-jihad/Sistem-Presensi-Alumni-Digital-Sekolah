@@ -16,6 +16,23 @@ class EditStudent extends EditRecord
         return 'Edit Siswa';
     }
 
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
+    }
+
+    protected function getSaveFormAction(): \Filament\Actions\Action
+    {
+        return parent::getSaveFormAction()
+            ->label('Simpan');
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Kembali');
+    }    
+
     protected function getHeaderActions(): array
     {
         return [

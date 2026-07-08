@@ -13,7 +13,9 @@ class ListSemesters extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Semester')
+                ->icon('heroicon-o-plus'),  
         ];
     }
 }

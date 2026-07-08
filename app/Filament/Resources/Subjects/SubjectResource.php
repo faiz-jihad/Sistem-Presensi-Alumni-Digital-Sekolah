@@ -26,7 +26,7 @@ class SubjectResource extends Resource
 
     protected static ?string $navigationLabel = 'Mata Pelajaran';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
+    protected static string|\UnitEnum|null $navigationGroup = 'Akademik';
 
     protected static ?int $navigationSort = 5;
 

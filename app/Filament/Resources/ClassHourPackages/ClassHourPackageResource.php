@@ -26,7 +26,7 @@ class ClassHourPackageResource extends Resource
 
     protected static ?string $navigationLabel = 'Paket Jam Pelajaran';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
+    protected static string|\UnitEnum|null $navigationGroup = 'Akademik';
 
     protected static ?int $navigationSort = 4;
 
@@ -37,8 +37,10 @@ class ClassHourPackageResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
-            && auth()->user()->hasFeature('has_presensi');
+        return in_array(auth()->user()->role, [
+            'super_admin',
+            'admin',
+        ]);
     }
 
     public static function shouldRegisterNavigation(): bool
