@@ -5,26 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ClassHour extends Model
+class ClassHourPackage extends Model
 {
     use HasFactory;
 
+    protected $table = 'class_hour_packages';
+
     protected $fillable = [
         'school_id',
-        'class_hour_package_id',
-        'code',
-        'start_time',
-        'end_time',
-        'duration_minutes',
-        'order',
-        'is_break',
-        'shift',
+        'name',
         'status',
-    ];
-
-    protected $casts = [
-        'is_break' => 'boolean',
     ];
 
     /**
@@ -36,10 +28,10 @@ class ClassHour extends Model
     }
 
     /**
-     * Relasi ke ClassHourPackage
+     * Relasi ke ClassHours
      */
-    public function classHourPackage(): BelongsTo
+    public function classHours(): HasMany
     {
-        return $this->belongsTo(ClassHourPackage::class, 'class_hour_package_id');
+        return $this->hasMany(ClassHour::class, 'class_hour_package_id');
     }
 }

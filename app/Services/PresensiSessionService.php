@@ -15,6 +15,7 @@ use App\Models\Teacher;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Jobs\SendWhatsAppNotification;
 
@@ -405,15 +406,16 @@ class PresensiSessionService
         }
 
         $schedule = $session->schedule()->with('class')->first();
-        $classId  = $schedule?->class_id;
+        $classId  = $session->class_id ?? $schedule?->class_id;
 
         if (!$classId) {
-            throw new \Exception('Kelas tidak ditemukan pada jadwal ini.', 422);
+            throw new \Exception('Kelas tidak ditemukan pada sesi ini.', 422);
         }
 
         $recordedCount = 0;
+        $notificationTargets = [];
 
-        DB::transaction(function () use ($session, $attendances, $classId, $schedule, &$recordedCount) {
+        DB::transaction(function () use ($session, $attendances, $classId, &$recordedCount, &$notificationTargets) {
             foreach ($attendances as $att) {
                 $studentId = $att['student_id'] ?? null;
                 $status    = $att['status'] ?? AttendanceStatus::Present->value;
@@ -428,31 +430,58 @@ class PresensiSessionService
 
                 if (!$student) continue;
 
+                $attendance = StudentAttendance::where('presensi_session_id', $session->id)
+                    ->where('student_id', $studentId)
+                    ->first();
+
+                $values = [
+                    'school_id'  => $student->school_id,
+                    'class_id'   => $classId,
+                    'teacher_id' => $session->teacher_id,
+                    'date'       => $session->date,
+                    'status'     => $status,
+                    'note'       => $note,
+                ];
+
+                $needsCheckInTime = in_array($status, [
+                    AttendanceStatus::Present->value,
+                    AttendanceStatus::Late->value,
+                ], true);
+
+                if ($needsCheckInTime) {
+                    if (array_key_exists('check_in_time', $att)) {
+                        $values['check_in_time'] = $att['check_in_time'];
+                    } elseif (!$attendance || empty($attendance->check_in_time)) {
+                        $values['check_in_time'] = Carbon::now()->toTimeString();
+                    }
+                } else {
+                    $values['check_in_time'] = null;
+                }
+
                 $attendance = StudentAttendance::updateOrCreate(
                     [
                         'student_id'          => $studentId,
                         'presensi_session_id' => $session->id,
                     ],
-                    [
-                        'school_id'     => $student->school_id,
-                        'class_id'      => $classId,
-                        'teacher_id'    => $session->teacher_id,
-                        'date'          => $session->date,
-                        'status'        => $status,
-                        'note'          => $note,
-                        'check_in_time' => in_array($status, [
-                            AttendanceStatus::Present->value,
-                            AttendanceStatus::Late->value,
-                        ], true) ? ($att['check_in_time'] ?? Carbon::now()->toTimeString()) : null,
-                    ]
+                    $values
                 );
 
                 $recordedCount++;
-                
-                // Memicu notifikasi WhatsApp ke Orang Tua
-                $this->triggerWhatsAppNotification($student, $attendance);
+                $notificationTargets[] = [$student, $attendance];
             }
         });
+
+        foreach ($notificationTargets as [$student, $attendance]) {
+            try {
+                $this->triggerWhatsAppNotification($student, $attendance);
+            } catch (\Throwable $e) {
+                Log::warning('Gagal mengirim notifikasi presensi manual.', [
+                    'student_id' => $student->id,
+                    'attendance_id' => $attendance->id,
+                    'message' => $e->getMessage(),
+                ]);
+            }
+        }
 
         return [
             'success'   => true,
@@ -526,11 +555,17 @@ class PresensiSessionService
         }
 
         $existing = StudentAttendance::where('student_id', $student->id)
-            ->where('presensi_session_id', $session->id)
+            ->where(function ($query) use ($session, $classId) {
+                $query->where('presensi_session_id', $session->id)
+                    ->orWhere(function ($fallbackQuery) use ($session, $classId) {
+                        $fallbackQuery->where('date', $session->date)
+                            ->where('class_id', $classId);
+                    });
+            })
             ->first();
 
         if ($existing) {
-            throw new \Exception('Anda sudah melakukan presensi pada sesi ini.', 422);
+            throw new \Exception('Anda sudah melakukan presensi.', 422);
         }
 
         $now = Carbon::now();
