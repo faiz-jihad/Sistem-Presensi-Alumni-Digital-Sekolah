@@ -20,7 +20,7 @@ class AcademicYearResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher']);
+        return in_array(auth()->user()->role, ['super_admin', 'admin']);
     }
 
     protected static ?string $modelLabel = 'Tahun Akademik';

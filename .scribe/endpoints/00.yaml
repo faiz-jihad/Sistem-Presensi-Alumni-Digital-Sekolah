@@ -316,7 +316,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"status":"success","data":[{"id":1,"name":"SMK Negeri 1 Digital Prestasi Indonesia"}]}'
+        content: '{"status":"success","data":[{"id":1,"name":"SMK Negeri 1 Digital Prestasi Indonesia","classes":[{"id":1,"school_id":1,"name":"X RPL 1","major":"RPL"},{"id":2,"school_id":1,"name":"X RPL 2","major":"RPL"},{"id":3,"school_id":1,"name":"X TKJ 1","major":"TKJ"},{"id":4,"school_id":1,"name":"XI RPL 1","major":"RPL"},{"id":5,"school_id":1,"name":"XI TKJ 1","major":"TKJ"},{"id":6,"school_id":1,"name":"XII RPL 1","major":"RPL"},{"id":7,"school_id":1,"name":"XII RPL 2","major":"RPL"},{"id":8,"school_id":1,"name":"XII TKJ 1","major":"TKJ"}]}]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1780,7 +1780,7 @@ endpoints:
         name: gender
         description: ''
         required: true
-        example: female
+        example: male
         type: string
         enumValues:
           - male
@@ -1793,7 +1793,7 @@ endpoints:
         name: birth_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-07T13:44:51'
+        example: '2026-07-08T08:04:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1826,8 +1826,8 @@ endpoints:
       nis: ngzmiyvdljnikhwa
       nisn: ykcmyuwpwl
       name: v
-      gender: female
-      birth_date: '2026-07-07T13:44:51'
+      gender: male
+      birth_date: '2026-07-08T08:04:52'
       parent_name: q
       parent_phone: wrsitcpscqldzsnr
     fileParameters: []
@@ -1995,7 +1995,7 @@ endpoints:
         name: birth_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-07T13:44:51'
+        example: '2026-07-08T08:04:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2021,7 +2021,7 @@ endpoints:
       school_id: architecto
       name: 'n'
       gender: female
-      birth_date: '2026-07-07T13:44:51'
+      birth_date: '2026-07-08T08:04:52'
       status: transferred
     fileParameters: []
     responses: []
@@ -2547,7 +2547,7 @@ endpoints:
         name: date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-07T13:44:51'
+        example: '2026-07-08T08:04:52'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2558,7 +2558,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: sick
+        example: permission
         type: string
         enumValues:
           - permission
@@ -2589,8 +2589,8 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      date: '2026-07-07T13:44:51'
-      status: sick
+      date: '2026-07-08T08:04:52'
+      status: permission
       note: architecto
     fileParameters:
       attachment: null
@@ -2644,7 +2644,7 @@ endpoints:
         name: verification_status
         description: ''
         required: true
-        example: rejected
+        example: approved
         type: string
         enumValues:
           - approved
@@ -2653,7 +2653,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      verification_status: rejected
+      verification_status: approved
     fileParameters: []
     responses: []
     responseFields: []
@@ -2798,7 +2798,7 @@ endpoints:
         name: date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-07T13:44:51'
+        example: '2026-07-08T08:04:53'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2843,7 +2843,7 @@ endpoints:
         name: 'attendances[].status'
         description: ''
         required: true
-        example: present
+        example: late
         type: string
         enumValues:
           - present
@@ -2867,10 +2867,10 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       class_id: architecto
-      date: '2026-07-07T13:44:51'
+      date: '2026-07-08T08:04:53'
       attendances:
         - student_id: architecto
-          status: present
+          status: late
           note: 'n'
     fileParameters: []
     responses: []
@@ -2922,7 +2922,7 @@ endpoints:
         name: date
         description: ':Attribute bukan tanggal yang valid.'
         required: false
-        example: '2026-07-07T13:44:51'
+        example: '2026-07-08T08:04:53'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2930,7 +2930,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       class_id: architecto
-      date: '2026-07-07T13:44:51'
+      date: '2026-07-08T08:04:53'
     fileParameters: []
     responses:
       -
@@ -3275,16 +3275,52 @@ endpoints:
       schedule_id:
         custom: []
         name: schedule_id
-        description: 'Must match an existing stored value.'
-        required: true
+        description: 'This field is required when <code>class_id</code> is not present. Must match an existing stored value.'
+        required: false
         example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      class_id:
+        custom: []
+        name: class_id
+        description: 'This field is required when <code>schedule_id</code> is not present. Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date:
+        custom: []
+        name: date
+        description: ':Attribute bukan tanggal yang valid.'
+        required: false
+        example: '2026-07-08T08:04:53'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tanggal:
+        custom: []
+        name: tanggal
+        description: ':Attribute bukan tanggal yang valid.'
+        required: false
+        example: '2026-07-08T08:04:53'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       schedule_id: 16
+      class_id: 16
+      date: '2026-07-08T08:04:53'
+      tanggal: '2026-07-08T08:04:53'
     fileParameters: []
     responses: []
     responseFields: []
@@ -3385,7 +3421,7 @@ endpoints:
         name: 'attendances[].check_in_time'
         description: 'Must be a valid date in the format <code>H:i:s</code>.'
         required: false
-        example: '13:44:52'
+        example: '08:04:53'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3397,7 +3433,7 @@ endpoints:
         - student_id: 16
           status: late
           note: 'n'
-          check_in_time: '13:44:52'
+          check_in_time: '08:04:53'
     fileParameters: []
     responses: []
     responseFields: []
@@ -3479,19 +3515,31 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
+      session_id:
+        custom: []
+        name: session_id
+        description: 'Must match an existing stored value.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       token:
         custom: []
         name: token
         description: ':Attribute minimal berisi 10 karakter.'
         required: true
-        example: bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs
+        example: ngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzsn
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      token: bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs
+      session_id: 16
+      token: ngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzsn
     fileParameters: []
     responses: []
     responseFields: []
@@ -4026,7 +4074,7 @@ endpoints:
         name: event_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-07T13:44:52'
+        example: '2026-07-08T08:04:54'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4057,7 +4105,7 @@ endpoints:
     cleanBodyParameters:
       title: b
       description: 'Eius et animi quos velit et.'
-      event_date: '2026-07-07T13:44:52'
+      event_date: '2026-07-08T08:04:54'
       location: v
     fileParameters:
       banner_image: null
@@ -4133,7 +4181,7 @@ endpoints:
         name: event_date
         description: ':Attribute bukan tanggal yang valid.'
         required: true
-        example: '2026-07-07T13:44:52'
+        example: '2026-07-08T08:04:54'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -4166,7 +4214,7 @@ endpoints:
         name: is_active
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -4175,9 +4223,9 @@ endpoints:
     cleanBodyParameters:
       title: b
       description: 'Eius et animi quos velit et.'
-      event_date: '2026-07-07T13:44:52'
+      event_date: '2026-07-08T08:04:54'
       location: v
-      is_active: false
+      is_active: true
     fileParameters:
       banner_image: null
     responses: []
