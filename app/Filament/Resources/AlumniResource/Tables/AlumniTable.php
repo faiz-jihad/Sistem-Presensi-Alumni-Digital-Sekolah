@@ -86,7 +86,7 @@ class AlumniTable
                     })
                     ->searchable(), // Tambahkan searchable untuk status
                 Tables\Columns\TextColumn::make('verified_at')
-                    ->label('Terverifikasi Tgl')
+                    ->label('Tanggal Verifikasi')
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

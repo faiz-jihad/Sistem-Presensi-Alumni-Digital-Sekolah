@@ -29,7 +29,7 @@ class AlumniForm
                             ->required(),
 
                         Select::make('user_id')
-                            ->label('User')
+                            ->label('Akun Pengguna')
                             ->relationship('user', 'name')
                             ->searchable()
                             ->preload(),
@@ -69,7 +69,7 @@ class AlumniForm
                             ->email(),
 
                         TextInput::make('phone')
-                            ->label('No HP'),
+                            ->label('Nomor Telepon / WhatsApp'),
 
                     ])
                     ->columns(2),
@@ -82,7 +82,7 @@ class AlumniForm
                             ->required()
                             ->default('pending')
                             ->options([
-                                'pending' => 'Menunggu',
+                                'pending' => 'Menunggu Verifikasi',
                                 'verified' => 'Terverifikasi',
                                 'rejected' => 'Ditolak',
                             ]),

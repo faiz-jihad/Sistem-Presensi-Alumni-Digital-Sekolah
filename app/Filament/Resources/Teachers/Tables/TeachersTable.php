@@ -30,12 +30,12 @@ class TeachersTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('user.name')
-                    ->label('Akun User')
+                    ->label('Akun Pengguna')
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('gender')
-                    ->label('JK')
+                    ->label('Jenis Kelamin')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state === 'male' ? 'L' : 'P')
                     ->sortable(),
@@ -80,7 +80,7 @@ class TeachersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('join_date')
-                    ->label('Tgl Bergabung')
+                    ->label('Tanggal Bergabung')
                     ->date('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -120,7 +120,8 @@ class TeachersTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Edit'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

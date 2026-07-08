@@ -37,7 +37,7 @@ class LaporanTable
                         $year = $filters['graduation_year'] ?? 'Semua Tahun';
                         $status = match ($filters['verification_status'] ?? '') {
                             'verified' => 'Terverifikasi',
-                            'pending' => 'Menunggu',
+                            'pending' => 'Menunggu Verifikasi',
                             'rejected' => 'Ditolak',
                             default => 'Semua Status'
                         };
@@ -65,7 +65,7 @@ class LaporanTable
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'pending' => 'Menunggu',
+                        'pending' => 'Menunggu Verifikasi',
                         'processing' => 'Diproses',
                         'completed' => 'Selesai',
                         'failed' => 'Gagal',
@@ -96,14 +96,14 @@ class LaporanTable
                             } 
                             else {
                                 Notification::make()
-                                    ->title('File tidak ditemukan')
-                                    ->body('File laporan tidak tersedia di server')
+                                    ->title('Berkas tidak ditemukan')
+                                    ->body('Berkas laporan tidak tersedia di server')
                                     ->danger()
                                     ->send();
                             }
                         } catch (\Exception $e) {
                             Notification::make()
-                                ->title('Gagal mengunduh file')
+                                ->title('Gagal mengunduh berkas')
                                 ->body('Terjadi kesalahan: ' . $e->getMessage())
                                 ->danger()
                                 ->send();

@@ -26,6 +26,7 @@ class ExportController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'class_id' => 'required|exists:classes,id',
+            'student_id' => 'nullable|exists:students,id',
             'type' => 'nullable|in:daily,monthly',
             'date' => 'nullable|date',
             'month' => 'nullable|integer|between:1,12',
@@ -42,24 +43,38 @@ class ExportController extends BaseController
         $type = $request->type ?? 'daily';
 
         try {
+            $studentId = $request->student_id;
+
             if ($type === 'daily') {
                 $date = $request->date ?? Carbon::today()->toDateString();
-                $report = $this->reportService->getDailyReport($date, $classId, $schoolId);
+                $report = $this->reportService->getDailyReport($date, $classId, $schoolId, $studentId);
                 
                 $filename = "rekap_harian_{$class->name}_{$date}.xlsx";
                 return Excel::download(
-                    new DailyAttendanceExport($report['students'], "Harian {$class->name}"),
+                    new DailyAttendanceExport(
+                        $report['students'],
+                        "Harian {$class->name}",
+                        $report['school_name'] ?? $class->school?->name ?? 'Sekolah',
+                        $class->name,
+                        Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
+                    ),
                     $filename
                 );
             } else {
                 $month = (int) ($request->month ?? now()->month);
                 $year = (int) ($request->year ?? now()->year);
-                $report = $this->reportService->getMonthlyReport($month, $year, $classId, $schoolId);
+                $report = $this->reportService->getMonthlyReport($month, $year, $classId, $schoolId, $studentId);
 
                 $monthName = Carbon::createFromDate($year, $month, 1)->format('M');
                 $filename = "rekap_bulanan_{$class->name}_{$monthName}_{$year}.xlsx";
                 return Excel::download(
-                    new MonthlyAttendanceExport($report['students'], "Bulanan {$class->name}"),
+                    new MonthlyAttendanceExport(
+                        $report['students'],
+                        "Bulanan {$class->name}",
+                        $report['school_name'] ?? $class->school?->name ?? 'Sekolah',
+                        $class->name,
+                        Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y')
+                    ),
                     $filename
                 );
             }

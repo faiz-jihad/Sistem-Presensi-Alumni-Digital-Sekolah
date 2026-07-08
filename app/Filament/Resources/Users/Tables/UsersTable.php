@@ -62,16 +62,20 @@ class UsersTable
                         'admin' => 'Admin',
                         'teacher' => 'Guru',
                         'student' => 'Siswa',
+                        'parent' => 'Orang Tua / Wali',
+                        'alumni' => 'Alumni',
                     ]),
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',
+                        'suspended' => 'Ditangguhkan',
                     ]),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Edit'),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

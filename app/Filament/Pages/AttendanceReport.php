@@ -29,7 +29,9 @@ class AttendanceReport extends Page
             && auth()->user()->hasFeature('has_export');
     }
 
-    protected static ?string $navigationLabel = 'Rekap Bulanan';
+    protected static ?string $title = 'Laporan Presensi';
+
+    protected static ?string $navigationLabel = 'Laporan Presensi';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Laporan & Monitoring';
 
@@ -77,7 +79,18 @@ class AttendanceReport extends Page
                             ->searchable()
                             ->native(false)
                             ->live()
-                            ->required(),
+                            ->required()
+                            ->afterStateUpdated(fn ($state, callable $set) => $set('student_id', null)),
+
+                        Select::make('student_id')
+                            ->label('Siswa')
+                            ->options(fn (callable $get) => \App\Models\Student::where('class_id', $get('class_id'))->orderBy('name')->pluck('name', 'id'))
+                            ->placeholder('Semua Siswa')
+                            ->searchable()
+                            ->native(false)
+                            ->live()
+                            ->nullable()
+                            ->visible(fn(callable $get) => $get('type') === 'monthly' && filled($get('class_id')) && in_array(auth()->user()->role, ['super_admin', 'admin'])),
 
                         DatePicker::make('date')
                             ->label('Tanggal')
@@ -139,7 +152,8 @@ class AttendanceReport extends Page
             } else {
                 $month = (int) ($this->data['month'] ?? now()->month);
                 $year = (int) ($this->data['year'] ?? now()->year);
-                return $service->getMonthlyReport($month, $year, $classId, $schoolId);
+                $studentId = $this->data['student_id'] ?? null;
+                return $service->getMonthlyReport($month, $year, $classId, $schoolId, $studentId);
             }
         } catch (\Exception $e) {
             return null;
@@ -160,14 +174,26 @@ class AttendanceReport extends Page
             $date = $report['date'];
             $filename = "rekap_harian_{$className}_{$date}.xlsx";
             return Excel::download(
-                new DailyAttendanceExport($report['students'], "Harian {$className}"),
+                new DailyAttendanceExport(
+                    $report['students'],
+                    "Harian {$className}",
+                    $report['school_name'] ?? 'Nama Sekolah',
+                    $className,
+                    Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
+                ),
                 $filename
             );
         } else {
             $monthName = Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->format('M');
             $filename = "rekap_bulanan_{$className}_{$monthName}_{$this->data['year']}.xlsx";
             return Excel::download(
-                new MonthlyAttendanceExport($report['students'], "Bulanan {$className}"),
+                new MonthlyAttendanceExport(
+                    $report['students'],
+                    "Bulanan {$className}",
+                    $report['school_name'] ?? 'Nama Sekolah',
+                    $className,
+                    Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->locale('id')->isoFormat('MMMM Y')
+                ),
                 $filename
             );
         }

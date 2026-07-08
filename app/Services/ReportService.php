@@ -22,9 +22,9 @@ class ReportService
     /**
      * Rekap Harian Kehadiran Kelas
      */
-    public function getDailyReport(string $date, int $classId, int $schoolId): array
+    public function getDailyReport(string $date, int $classId, int $schoolId, ?int $studentId = null): array
     {
-        $class = StudentClass::where('id', $classId)->where('school_id', $schoolId)->first();
+        $class = StudentClass::with('school')->where('id', $classId)->where('school_id', $schoolId)->first();
         if (!$class) {
             throw new \Exception("Kelas tidak ditemukan.");
         }
@@ -33,6 +33,7 @@ class ReportService
         $students = Student::where('class_id', $classId)
             ->where('school_id', $schoolId)
             ->where('status', 'active')
+            ->when($studentId, fn($query) => $query->where('id', $studentId))
             ->orderBy('name')
             ->get();
 
@@ -76,6 +77,7 @@ class ReportService
                 'grade' => $class->grade,
                 'major' => $class->major,
             ],
+            'school_name' => $class->school?->name ?? 'Sekolah',
             'date' => $date,
             'summary' => $summary,
             'students' => $reportData,
@@ -85,9 +87,9 @@ class ReportService
     /**
      * Rekap Bulanan Kehadiran Kelas
      */
-    public function getMonthlyReport(int $month, int $year, int $classId, int $schoolId): array
+    public function getMonthlyReport(int $month, int $year, int $classId, int $schoolId, ?int $studentId = null): array
     {
-        $class = StudentClass::where('id', $classId)->where('school_id', $schoolId)->first();
+        $class = StudentClass::with('school')->where('id', $classId)->where('school_id', $schoolId)->first();
         if (!$class) {
             throw new \Exception("Kelas tidak ditemukan.");
         }
@@ -98,6 +100,7 @@ class ReportService
         $students = Student::where('class_id', $classId)
             ->where('school_id', $schoolId)
             ->where('status', 'active')
+            ->when($studentId, fn($query) => $query->where('id', $studentId))
             ->orderBy('name')
             ->get();
 
@@ -151,6 +154,7 @@ class ReportService
                 'grade' => $class->grade,
                 'major' => $class->major,
             ],
+            'school_name' => $class->school?->name ?? 'Sekolah',
             'month' => $month,
             'year' => $year,
             'total_students' => $students->count(),

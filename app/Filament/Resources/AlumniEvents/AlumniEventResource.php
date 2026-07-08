@@ -18,9 +18,9 @@ class AlumniEventResource extends Resource
 {
     protected static ?string $model = AlumniEvent::class;
 
-    protected static ?string $modelLabel = 'Event Alumni';
+    protected static ?string $modelLabel = 'Kegiatan Alumni';
 
-    protected static ?string $pluralModelLabel = 'Event Alumni';
+    protected static ?string $pluralModelLabel = 'Kegiatan Alumni';
 
     public static function canViewAny(): bool
     {
@@ -62,7 +62,7 @@ class AlumniEventResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Event Alumni';
+        return 'Kegiatan Alumni';
     }
 
     public static function getNavigationGroup(): ?string
