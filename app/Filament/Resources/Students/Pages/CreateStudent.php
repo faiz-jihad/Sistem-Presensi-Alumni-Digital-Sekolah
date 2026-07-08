@@ -62,4 +62,9 @@ class CreateStudent extends CreateRecord
             'status'    => 'active',
         ]);
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
