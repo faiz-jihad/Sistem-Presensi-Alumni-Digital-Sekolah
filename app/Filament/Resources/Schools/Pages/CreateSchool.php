@@ -8,6 +8,12 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateSchool extends CreateRecord
 {
     protected static string $resource = SchoolResource::class;
+
+    public function getTitle(): string
+    {
+        return 'Tambah Sekolah';
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
@@ -15,6 +21,6 @@ class CreateSchool extends CreateRecord
 
     protected function getCreatedNotificationTitle(): ?string
     {
-        return 'Sekolah berhasil dibuat!';
+        return 'Sekolah berhasil ditambahkan!';
     }
 }

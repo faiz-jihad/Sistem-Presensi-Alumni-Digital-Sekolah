@@ -10,6 +10,11 @@ class EditSchool extends EditRecord
 {
     protected static string $resource = SchoolResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Sekolah';
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
@@ -17,7 +22,7 @@ class EditSchool extends EditRecord
 
     protected function getSavedNotificationTitle(): ?string
     {
-        return 'Sekolah berhasil diperbarui!';
+        return 'Sekolah berhasil disimpan!';
     }
 
     protected function getHeaderActions(): array

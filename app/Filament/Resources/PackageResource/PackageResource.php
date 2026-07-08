@@ -44,12 +44,12 @@ class PackageResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Paket';
+        return 'Paket Langganan';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Daftar Paket';
+        return 'Daftar Paket Langganan';
     }
 
     public static function getNavigationGroup(): ?string

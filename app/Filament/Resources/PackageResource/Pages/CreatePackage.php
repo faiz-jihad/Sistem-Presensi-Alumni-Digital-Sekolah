@@ -11,7 +11,7 @@ class CreatePackage extends CreateRecord
 
     public function getTitle(): string
     {
-        return 'Tambah Paket Baru';
+        return 'Tambah Paket Langganan';
     }
 
     protected function getRedirectUrl(): string

@@ -12,7 +12,7 @@ class EditPackage extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Edit Paket: ' . $this->record->name;
+        return 'Edit Paket Langganan';
     }
 
     protected function getHeaderActions(): array

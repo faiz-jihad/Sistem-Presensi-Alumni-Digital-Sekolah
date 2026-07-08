@@ -55,7 +55,7 @@ class UserForm
                         }
                         
                         return [
-                            'super_admin' => 'Super Admin (Global)',
+                            'super_admin' => 'Super Admin',
                             'admin' => 'Admin Sekolah',
                             'teacher' => 'Guru',
                             'student' => 'Siswa',

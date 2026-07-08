@@ -10,6 +10,11 @@ class CreateStudent extends CreateRecord
 {
     protected static string $resource = StudentResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Siswa';
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Hapus field virtual agar tidak masuk ke INSERT students

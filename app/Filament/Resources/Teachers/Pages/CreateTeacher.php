@@ -9,6 +9,11 @@ class CreateTeacher extends CreateRecord
 {
     protected static string $resource = TeacherResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Guru';
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {

@@ -31,6 +31,11 @@ class AppServiceProvider extends ServiceProvider
         // Set Carbon ke Bahasa Indonesia agar tanggal tampil dalam format Indonesia
         Carbon::setLocale('id');
 
+        // Configure FileUpload placeholder globally
+        \Filament\Forms\Components\FileUpload::configureUsing(function (\Filament\Forms\Components\FileUpload $component) {
+            $component->placeholder('<span class="filepond--label-action">unggah</span> atau drop file anda');
+        });
+
         // ─── Policy Registration ────────────────────────────────────────────
         Gate::policy(PresensiSession::class, AttendanceSessionPolicy::class);
         Gate::policy(\App\Models\Schedule::class, \App\Policies\MasterDataPolicy::class);

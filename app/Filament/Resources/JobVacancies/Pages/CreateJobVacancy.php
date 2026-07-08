@@ -10,6 +10,11 @@ class CreateJobVacancy extends CreateRecord
 {
     protected static string $resource = JobVacancyResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Lowongan Kerja';
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['posted_by'] = auth()->id();

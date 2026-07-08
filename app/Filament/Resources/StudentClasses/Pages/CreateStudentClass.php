@@ -9,6 +9,11 @@ class CreateStudentClass extends CreateRecord
 {
     protected static string $resource = StudentClassResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Kelas';
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

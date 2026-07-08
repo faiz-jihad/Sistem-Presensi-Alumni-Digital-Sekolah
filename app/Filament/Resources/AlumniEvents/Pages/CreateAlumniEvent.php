@@ -10,6 +10,11 @@ class CreateAlumniEvent extends CreateRecord
 {
     protected static string $resource = AlumniEventResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Kegiatan Alumni';
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['posted_by'] = auth()->id();
@@ -30,7 +35,7 @@ class CreateAlumniEvent extends CreateRecord
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
-            ->title('Event alumni berhasil ditambahkan')
+            ->title('Kegiatan alumni berhasil ditambahkan')
             ->success();
     }
 }

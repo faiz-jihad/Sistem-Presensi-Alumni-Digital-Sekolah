@@ -90,7 +90,7 @@ class AttendanceReport extends Page
                             ->native(false)
                             ->live()
                             ->nullable()
-                            ->visible(fn(callable $get) => $get('type') === 'monthly' && filled($get('class_id')) && in_array(auth()->user()->role, ['super_admin', 'admin'])),
+                            ->visible(fn(callable $get) => $get('type') === 'monthly' && filled($get('class_id'))),
 
                         DatePicker::make('date')
                             ->label('Tanggal')
@@ -212,18 +212,12 @@ class AttendanceReport extends Page
         if ($this->data['type'] === 'daily') {
             $date = $report['date'];
             $pdf = Pdf::loadView('pdf.daily-attendance', $report);
-            return response()->streamDownload(
-                fn() => print($pdf->output()),
-                "rekap_harian_{$className}_{$date}.pdf"
-            );
+            return $pdf->download("rekap_harian_{$className}_{$date}.pdf");
         } else {
             $month = $this->data['month'];
             $year = $this->data['year'];
             $pdf = Pdf::loadView('pdf.monthly-attendance', $report);
-            return response()->streamDownload(
-                fn() => print($pdf->output()),
-                "rekap_bulanan_{$className}_{$month}_{$year}.pdf"
-            );
+            return $pdf->download("rekap_bulanan_{$className}_{$month}_{$year}.pdf");
         }
     }
 }

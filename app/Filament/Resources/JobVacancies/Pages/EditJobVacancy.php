@@ -11,6 +11,11 @@ class EditJobVacancy extends EditRecord
 {
     protected static string $resource = JobVacancyResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Lowongan Kerja';
+    }
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (auth()->user()->role !== 'super_admin') {
@@ -30,7 +35,7 @@ class EditJobVacancy extends EditRecord
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
-            ->title('Lowongan kerja berhasil diperbarui')
+            ->title('Lowongan kerja berhasil disimpan')
             ->success();
     }
 }

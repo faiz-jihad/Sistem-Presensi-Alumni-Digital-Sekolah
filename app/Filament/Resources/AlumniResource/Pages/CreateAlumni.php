@@ -10,6 +10,11 @@ class CreateAlumni extends CreateRecord
 {
     protected static string $resource = AlumniResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Tambah Alumni';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

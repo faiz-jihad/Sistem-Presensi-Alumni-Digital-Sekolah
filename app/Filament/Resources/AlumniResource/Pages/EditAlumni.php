@@ -11,6 +11,11 @@ class EditAlumni extends EditRecord
 {
     protected static string $resource = AlumniResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Alumni';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

@@ -10,6 +10,11 @@ class EditStudentAttendance extends EditRecord
 {
     protected static string $resource = StudentAttendanceResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Presensi Siswa';
+    }
+
     protected function getHeaderActions(): array
     {
         return [
