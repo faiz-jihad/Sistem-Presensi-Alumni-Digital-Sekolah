@@ -9,10 +9,10 @@ return [
                 'label' => 'Batal',
             ],
             'create' => [
-                'label' => 'Tambah',
+                'label' => 'Simpan',
             ],
             'create_another' => [
-                'label' => 'Tambah & tambah lainnya',
+                'label' => 'Simpan & Buat Lagi',
             ],
         ],
     ],

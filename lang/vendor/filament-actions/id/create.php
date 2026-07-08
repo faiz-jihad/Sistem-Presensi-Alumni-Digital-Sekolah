@@ -7,10 +7,10 @@ return [
             'heading' => 'Tambah :label',
             'actions' => [
                 'create' => [
-                    'label' => 'Tambah',
+                    'label' => 'Simpan',
                 ],
                 'create_another' => [
-                    'label' => 'Tambah & tambah lainnya',
+                    'label' => 'Simpan & Buat Lagi',
                 ],
             ],
         ],
