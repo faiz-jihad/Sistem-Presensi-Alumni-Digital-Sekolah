@@ -6,6 +6,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -28,6 +29,7 @@ class User extends Authenticatable implements FilamentUser
         'role', // super_admin, admin, teacher, student, alumni
         'school_id',
         'status',
+        'google_id',
     ];
 
     protected $hidden = [
@@ -235,5 +237,10 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return $this->school->status === 'active';
+    }
+
+    public function fcmTokens(): HasMany
+    {
+        return $this->hasMany(FcmToken::class);
     }
 }

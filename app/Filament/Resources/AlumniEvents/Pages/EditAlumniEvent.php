@@ -32,6 +32,12 @@ class EditAlumniEvent extends EditRecord
         ];
     }
 
+    protected function getSaveFormAction(): \Filament\Actions\Action
+    {
+        return parent::getSaveFormAction()
+            ->label('Simpan');
+    }
+
     protected function getCancelFormAction(): \Filament\Actions\Action
     {
         return parent::getCancelFormAction()
