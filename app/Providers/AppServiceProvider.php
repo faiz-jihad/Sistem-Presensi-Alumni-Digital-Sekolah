@@ -197,47 +197,7 @@ class AppServiceProvider extends ServiceProvider
         // ─── Desktop Browser Native Notifications Hook ───────────────────────
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::BODY_END,
-            fn () => new \Illuminate\Support\HtmlString("
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        console.log('[FCM Web Debug] Script loaded. Permission status:', typeof Notification !== 'undefined' ? Notification.permission : 'Not supported');
-
-                        const requestNotificationPermission = () => {
-                            if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
-                                console.log('[FCM Web Debug] Requesting notification permission...');
-                                Notification.requestPermission().then(permission => {
-                                    console.log('[FCM Web Debug] Permission response:', permission);
-                                });
-                            }
-                        };
-                        document.addEventListener('click', requestNotificationPermission, { once: true });
-                        document.addEventListener('keydown', requestNotificationPermission, { once: true });
-
-                        window.addEventListener('notificationSent', (event) => {
-                            const notification = event.detail.notification;
-                            if (!notification) return;
-
-                            console.log('[FCM Web Debug] Notification event captured:', notification);
-
-                            const title = notification.title || 'Notifikasi Baru';
-                            const body = notification.body || '';
-
-                            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-                                try {
-                                    console.log('[FCM Web Debug] Triggering OS native desktop notification...');
-                                    new Notification(title, {
-                                        body: body
-                                    });
-                                } catch (e) {
-                                    console.error('[FCM Web Debug] Failed to trigger desktop notification:', e);
-                                }
-                            } else {
-                                console.warn('[FCM Web Debug] Notification permission is not granted. Current state:', typeof Notification !== 'undefined' ? Notification.permission : 'Not supported');
-                            }
-                        });
-                    });
-                </script>
-            ")
+            fn () => view('filament.components.firebase-script')
         );
     }
 }

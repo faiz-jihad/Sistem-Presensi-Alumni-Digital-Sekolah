@@ -29,3 +29,27 @@ Route::get('/storage/{filename}', function ($filename) {
     return $response;
 })->where('filename', '.*');
 
+Route::post('/admin/device-token', function (Illuminate\Http\Request $request) {
+    $request->validate([
+        'token' => 'required|string',
+    ]);
+
+    if (!auth()->check()) {
+        return response()->json(['message' => 'Unauthenticated.'], 401);
+    }
+
+    $fcmToken = \App\Models\FcmToken::updateOrCreate(
+        ['token' => $request->token],
+        [
+            'user_id' => auth()->id(),
+            'device_type' => 'web',
+        ]
+    );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Web FCM token registered successfully.',
+        'data' => $fcmToken
+    ]);
+})->middleware(['web', 'auth']);
+
