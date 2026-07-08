@@ -38,6 +38,14 @@ class SemesterResource extends Resource
         return 3;
     }
 
+    public static function canViewAny(): bool
+    {
+        return in_array(auth()->user()->role, [
+            'super_admin',
+            'admin',
+        ]);
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SemesterForm::configure($schema);
