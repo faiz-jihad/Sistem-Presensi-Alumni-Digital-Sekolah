@@ -16,6 +16,17 @@ class EditAlumni extends EditRecord
         return 'Edit Alumni';
     }
 
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Kembali');
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
+    }
+
     protected function getHeaderActions(): array
     {
         return [

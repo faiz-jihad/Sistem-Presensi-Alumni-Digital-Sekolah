@@ -294,6 +294,148 @@ class AttendanceFlowTest extends TestCase
     /* ═══════════════════════════════════════════════════════════
      *  TEST 5: POST /attendance/generate-qr
      * ═══════════════════════════════════════════════════════════ */
+    public function test_presensi_manual_tidak_mengubah_check_in_time_siswa_lain(): void
+    {
+        $session = $this->makeOpenSession();
+
+        StudentAttendance::create([
+            'school_id' => $this->school->id,
+            'class_id' => $this->class->id,
+            'student_id' => $this->student1->id,
+            'teacher_id' => $this->teacher->id,
+            'presensi_session_id' => $session->id,
+            'date' => $session->date,
+            'status' => AttendanceStatus::Present->value,
+            'check_in_time' => '07:01:00',
+        ]);
+
+        StudentAttendance::create([
+            'school_id' => $this->school->id,
+            'class_id' => $this->class->id,
+            'student_id' => $this->student2->id,
+            'teacher_id' => $this->teacher->id,
+            'presensi_session_id' => $session->id,
+            'date' => $session->date,
+            'status' => AttendanceStatus::Present->value,
+            'check_in_time' => '07:02:00',
+        ]);
+
+        $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/manual', [
+                'session_id' => $session->id,
+                'attendances' => [
+                    ['student_id' => $this->student1->id, 'status' => AttendanceStatus::Late->value],
+                    ['student_id' => $this->student2->id, 'status' => AttendanceStatus::Present->value],
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('student_attendances', [
+            'student_id' => $this->student1->id,
+            'presensi_session_id' => $session->id,
+            'status' => AttendanceStatus::Late->value,
+            'check_in_time' => '07:01:00',
+        ]);
+
+        $this->assertDatabaseHas('student_attendances', [
+            'student_id' => $this->student2->id,
+            'presensi_session_id' => $session->id,
+            'status' => AttendanceStatus::Present->value,
+            'check_in_time' => '07:02:00',
+        ]);
+    }
+
+    public function test_qr_ditolak_jika_siswa_sudah_dipresensi_manual(): void
+    {
+        $session = $this->makeOpenSession();
+
+        $generateResponse = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/generate-qr', [
+                'session_id' => $session->id,
+            ])
+            ->assertCreated();
+
+        $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/manual', [
+                'session_id' => $session->id,
+                'attendances' => [
+                    ['student_id' => $this->student1->id, 'status' => AttendanceStatus::Present->value],
+                ],
+            ])
+            ->assertOk();
+
+        $studentUser = User::create([
+            'name' => $this->student1->name,
+            'email' => 'siswa.manual@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'student',
+            'school_id' => $this->school->id,
+        ]);
+
+        $this->actingAs($studentUser, 'sanctum')
+            ->postJson('/api/v1/attendance/scan', [
+                'session_id' => $session->id,
+                'token' => $generateResponse->json('data.token'),
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Anda sudah melakukan presensi.');
+
+        $this->assertSame(
+            1,
+            StudentAttendance::where('presensi_session_id', $session->id)
+                ->where('student_id', $this->student1->id)
+                ->count()
+        );
+    }
+    public function test_qr_ditolak_setelah_presensi_manual_bulk_tanpa_session_id(): void
+    {
+        $session = $this->makeOpenSession();
+
+        $generateResponse = $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendance/generate-qr', [
+                'session_id' => $session->id,
+            ])
+            ->assertCreated();
+
+        $this->actingAs($this->teacherUser, 'sanctum')
+            ->postJson('/api/v1/attendances/bulk', [
+                'class_id' => $this->class->id,
+                'date' => $session->date,
+                'attendances' => [
+                    ['student_id' => $this->student1->id, 'status' => AttendanceStatus::Present->value],
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('student_attendances', [
+            'student_id' => $this->student1->id,
+            'presensi_session_id' => $session->id,
+            'status' => AttendanceStatus::Present->value,
+        ]);
+
+        $studentUser = User::create([
+            'name' => $this->student1->name,
+            'email' => 'siswa.bulk.manual@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'student',
+            'school_id' => $this->school->id,
+        ]);
+
+        $this->actingAs($studentUser, 'sanctum')
+            ->postJson('/api/v1/attendance/scan', [
+                'session_id' => $session->id,
+                'token' => $generateResponse->json('data.token'),
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('message', 'Anda sudah melakukan presensi.');
+
+        $this->assertSame(
+            1,
+            StudentAttendance::where('student_id', $this->student1->id)
+                ->where('date', $session->date)
+                ->count()
+        );
+    }
     public function test_guru_dapat_generate_qr_token(): void
     {
         $session = $this->makeOpenSession();
@@ -483,3 +625,5 @@ class AttendanceFlowTest extends TestCase
             ->assertJsonPath('success', false);
     }
 }
+
+

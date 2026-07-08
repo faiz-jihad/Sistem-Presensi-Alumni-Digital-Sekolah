@@ -10,6 +10,7 @@ use App\Models\StudentAttendance;
 use App\Http\Resources\StudentAttendanceResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
@@ -153,6 +154,14 @@ class StudentAttendanceController extends BaseController
 
             return $this->success($result, "Presensi kelas berhasil disimpan.");
         } catch (\Exception $e) {
+            Log::error('Gagal simpan presensi kelas.', [
+                'class_id' => $request->class_id,
+                'date' => $request->date,
+                'user_id' => $request->user()?->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return $this->error($e->getMessage(), 500);
         }
     }

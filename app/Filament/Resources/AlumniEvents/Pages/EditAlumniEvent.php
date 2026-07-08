@@ -32,11 +32,22 @@ class EditAlumniEvent extends EditRecord
         ];
     }
 
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Kembali');
+    }
+
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
             ->title('Kegiatan alumni berhasil disimpan')
             ->success();
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
     }
 
     protected function getRedirectUrl(): string

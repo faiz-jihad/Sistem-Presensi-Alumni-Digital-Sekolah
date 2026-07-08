@@ -18,6 +18,7 @@ class Schedule extends Model
         'subject_id',
         'teacher_id',
         'class_hour_id',
+        'class_hour_package_id',
         'semester_id',
         'day',
         'room',
@@ -58,6 +59,11 @@ class Schedule extends Model
     public function classHour(): BelongsTo
     {
         return $this->belongsTo(ClassHour::class);
+    }
+
+    public function classHourPackage(): BelongsTo
+    {
+        return $this->belongsTo(ClassHourPackage::class, 'class_hour_package_id');
     }
 
     public function semester(): BelongsTo

@@ -15,6 +15,17 @@ class EditSchool extends EditRecord
         return 'Edit Sekolah';
     }
 
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Kembali');
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

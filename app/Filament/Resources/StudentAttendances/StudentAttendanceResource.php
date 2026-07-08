@@ -26,11 +26,11 @@ class StudentAttendanceResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationLabel = 'Rekap Harian';
+    protected static ?string $navigationLabel = 'Presensi Harian';
 
     protected static ?string $modelLabel = 'Presensi Siswa';
 
-    protected static ?string $pluralModelLabel = 'Rekap Harian';
+    protected static ?string $pluralModelLabel = 'Presensi Harian';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Presensi';
 
