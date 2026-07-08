@@ -17,7 +17,7 @@ class EditStudentClass extends EditRecord
         return 'Edit Kelas';
     }
 
-    protected function getBreadcrumb(): string
+    public function getBreadcrumb(): string
     {
         return 'Edit';
     }
