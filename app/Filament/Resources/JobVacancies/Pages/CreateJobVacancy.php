@@ -32,4 +32,9 @@ class CreateJobVacancy extends CreateRecord
             ->title('Lowongan kerja berhasil ditambahkan')
             ->success();
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

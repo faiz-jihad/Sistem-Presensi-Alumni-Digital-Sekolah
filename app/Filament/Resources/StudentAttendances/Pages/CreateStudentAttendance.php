@@ -13,4 +13,9 @@ class CreateStudentAttendance extends CreateRecord
     {
         return 'Tambah Presensi Siswa';
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

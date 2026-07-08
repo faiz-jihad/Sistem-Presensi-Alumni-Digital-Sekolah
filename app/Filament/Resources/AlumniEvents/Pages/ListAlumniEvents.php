@@ -13,7 +13,9 @@ class ListAlumniEvents extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label('Tambah Kegiatan Alumni')
+                ->icon('heroicon-o-plus'),
         ];
     }
 }

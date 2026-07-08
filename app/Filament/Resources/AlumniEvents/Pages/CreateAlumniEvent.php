@@ -38,4 +38,9 @@ class CreateAlumniEvent extends CreateRecord
             ->title('Kegiatan alumni berhasil ditambahkan')
             ->success();
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

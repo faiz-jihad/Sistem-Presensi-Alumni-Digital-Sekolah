@@ -38,4 +38,9 @@ class EditJobVacancy extends EditRecord
             ->title('Lowongan kerja berhasil disimpan')
             ->success();
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -38,4 +38,9 @@ class EditAlumniEvent extends EditRecord
             ->title('Kegiatan alumni berhasil disimpan')
             ->success();
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

@@ -14,7 +14,7 @@ class ListPackages extends ListRecords
     {
         return [
             CreateAction::make()
-                ->label('Tambah Paket')
+                ->label('Tambah Paket Langganan')
                 ->icon('heroicon-o-plus'),
         ];
     }
