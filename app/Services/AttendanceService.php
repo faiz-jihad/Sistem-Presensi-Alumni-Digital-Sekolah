@@ -275,10 +275,6 @@ class AttendanceService
         }
 
         $dateFormatted = Carbon::parse($attendance->date)->translatedFormat('d F Y');
-        $attendanceStatus = $attendance->status instanceof \BackedEnum
-            ? $attendance->status->value
-            : $attendance->status;
-        $statusIndonesian = match ($attendanceStatus) {
         $statusRaw = is_string($attendance->status) ? $attendance->status : ($attendance->status->value ?? '');
         $statusIndonesian = match ($statusRaw) {
             'present' => 'Hadir',
