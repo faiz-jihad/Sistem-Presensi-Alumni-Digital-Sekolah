@@ -37,7 +37,7 @@ class LaporanForm
                             ->required(),
 
                         Select::make('file_type')
-                            ->label('Format File')
+                            ->label('Format Berkas')
                             ->options([
                                 'xlsx' => 'Excel (.xlsx)',
                                 'pdf' => 'PDF (.pdf)',

@@ -71,9 +71,9 @@ class JobVacancyForm
                 Select::make('job_type')
                     ->label('Tipe Pekerjaan')
                     ->options([
-                        'full_time' => 'Full Time',
-                        'part_time' => 'Part Time',
-                        'freelance' => 'Freelance',
+                        'full_time' => 'Penuh Waktu',
+                        'part_time' => 'Paruh Waktu',
+                        'freelance' => 'Pekerja Lepas',
                         'internship' => 'Magang',
                     ])
                     ->required(),

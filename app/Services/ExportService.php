@@ -50,13 +50,21 @@ class ExportService
                     throw new \Exception("Kelas harus ditentukan untuk laporan presensi.");
                 }
 
+                $studentId = $filters['student_id'] ?? null;
+
                 if ($attendanceType === 'daily') {
                     $date = $filters['date'] ?? now()->toDateString();
-                    $reportData = $this->reportService->getDailyReport($date, $classId, $schoolId);
+                    $reportData = $this->reportService->getDailyReport($date, $classId, $schoolId, $studentId);
 
                     if ($export->file_type === 'xlsx') {
                         Excel::store(
-                            new DailyAttendanceExport($reportData['students'], "Harian {$className}"),
+                            new DailyAttendanceExport(
+                                $reportData['students'],
+                                "Harian {$className}",
+                                $reportData['school_name'] ?? $schoolName,
+                                $className,
+                                Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
+                            ),
                             $filePath,
                             'public'
                         );
@@ -68,11 +76,17 @@ class ExportService
                 } else {
                     $month = (int) ($filters['month'] ?? now()->month);
                     $year = (int) ($filters['year'] ?? now()->year);
-                    $reportData = $this->reportService->getMonthlyReport($month, $year, $classId, $schoolId);
+                    $reportData = $this->reportService->getMonthlyReport($month, $year, $classId, $schoolId, $studentId);
 
                     if ($export->file_type === 'xlsx') {
                         Excel::store(
-                            new MonthlyAttendanceExport($reportData['students'], "Bulanan {$className}"),
+                            new MonthlyAttendanceExport(
+                                $reportData['students'],
+                                "Bulanan {$className}",
+                                $reportData['school_name'] ?? $schoolName,
+                                $className,
+                                Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y')
+                            ),
                             $filePath,
                             'public'
                         );

@@ -35,7 +35,7 @@ class StudentsTable
                     ->badge()
                     ->color('primary'),
                 TextColumn::make('gender')
-                    ->label('L/P')
+                    ->label('Jenis Kelamin')
                     ->badge()
                     ->color(fn ($state) => $state === 'male' ? 'info' : 'danger')
                     ->formatStateUsing(fn ($state) => $state === 'male' ? 'L' : 'P'),
@@ -43,7 +43,7 @@ class StudentsTable
                     ->label('Orang Tua / Wali')
                     ->searchable(),
                 TextColumn::make('parent.phone')
-                    ->label('No. WA Orang Tua')
+                    ->label('Nomor WA Orang Tua')
                     ->searchable()
                     ->copyable()
                     ->placeholder('— Belum diisi —')
@@ -97,7 +97,8 @@ class StudentsTable
                 TrashedFilter::make()->label('Keranjang Sampah'),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Edit'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

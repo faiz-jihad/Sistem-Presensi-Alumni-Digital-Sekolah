@@ -82,7 +82,7 @@ class UserForm
                     ->label('Status Akun')
                     ->options([
                         'active' => 'Aktif',
-                        'inactive' => 'Nonaktif',
+                        'inactive' => 'Tidak Aktif',
                         'suspended' => 'Ditangguhkan',
                     ])
                     ->default('active')

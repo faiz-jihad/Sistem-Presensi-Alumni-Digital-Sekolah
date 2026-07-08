@@ -7,14 +7,23 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class MonthlyAttendanceExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles
+class MonthlyAttendanceExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles, WithCustomStartCell
 {
     public function __construct(
         private array $data,
-        private string $title
+        private string $title,
+        private string $schoolName,
+        private string $className,
+        private string $period
     ) {}
+
+    public function startCell(): string
+    {
+        return 'A6';
+    }
 
     public function array(): array
     {
@@ -60,8 +69,18 @@ class MonthlyAttendanceExport implements FromArray, WithHeadings, WithTitle, Sho
 
     public function styles(Worksheet $sheet)
     {
+        // Tulis Kop Asal Sekolah
+        $sheet->setCellValue('A1', 'LAPORAN REKAPITULASI PRESENSI BULANAN');
+        $sheet->setCellValue('A2', 'Asal Sekolah: ' . $this->schoolName);
+        $sheet->setCellValue('A3', 'Kelas       : ' . $this->className);
+        $sheet->setCellValue('A4', 'Periode     : ' . $this->period);
+
+        // Styling Kop
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A2:A4')->getFont()->setBold(true);
+
         return [
-            1 => [
+            6 => [
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,

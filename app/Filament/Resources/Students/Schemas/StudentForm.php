@@ -107,9 +107,9 @@ class StudentForm
                     ),
 
                 TextInput::make('password')
-                    ->label('Password Akun Siswa')
+                    ->label('Kata Sandi Akun Siswa')
                     ->password()
-                    ->placeholder('Masukkan password untuk login mobile')
+                    ->placeholder('Masukkan kata sandi untuk login mobile')
                     ->dehydrated(false)
                     ->required(fn (string $context): bool => $context === 'create'),
             ]);

@@ -66,9 +66,9 @@ class JobVacanciesTable
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'full_time' => 'Full Time',
-                        'part_time' => 'Part Time',
-                        'freelance' => 'Freelance',
+                        'full_time' => 'Penuh Waktu',
+                        'part_time' => 'Paruh Waktu',
+                        'freelance' => 'Pekerja Lepas',
                         'internship' => 'Magang',
                         default => $state,
                     }),
@@ -108,10 +108,10 @@ class JobVacanciesTable
                 SelectFilter::make('job_type')
                     ->label('Tipe Pekerjaan')
                     ->options([
-                        'full_time'=>'Full Time',
-                        'part_time'=>'Part Time',
-                        'freelance'=>'Freelance',
-                        'internship'=>'Magang',
+                        'full_time' => 'Penuh Waktu',
+                        'part_time' => 'Paruh Waktu',
+                        'freelance' => 'Pekerja Lepas',
+                        'internship' => 'Magang',
                     ]),
 
                 SelectFilter::make('category')
@@ -153,7 +153,8 @@ class JobVacanciesTable
                         ->send();
 
                 }),
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Edit'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

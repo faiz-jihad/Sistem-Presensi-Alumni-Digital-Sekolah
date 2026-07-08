@@ -72,7 +72,7 @@ class StudentAttendancesTable
                         default    => 'gray',
                     })
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'pending'  => 'Menunggu',
+                        'pending'  => 'Menunggu Verifikasi',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                         null       => '-',
@@ -106,7 +106,7 @@ class StudentAttendancesTable
                 SelectFilter::make('verification_status')
                     ->label('Status Verifikasi')
                     ->options([
-                        'pending'  => 'Menunggu',
+                        'pending'  => 'Menunggu Verifikasi',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                     ]),

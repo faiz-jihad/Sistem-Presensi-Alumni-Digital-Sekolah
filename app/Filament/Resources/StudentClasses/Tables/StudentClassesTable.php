@@ -83,7 +83,8 @@ class StudentClassesTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Edit'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

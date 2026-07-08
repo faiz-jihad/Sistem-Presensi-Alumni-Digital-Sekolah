@@ -83,7 +83,7 @@ class AlumniEventsTable
                     ->visible(fn ($record) => in_array(auth()->user()->role, ['super_admin', 'admin']) && $record->approval_status === 'pending')
                     ->action(function ($record) {
                         $record->update(['approval_status' => 'approved']);
-                        Notification::make()->title('Event disetujui')->success()->send();
+                        Notification::make()->title('Kegiatan disetujui')->success()->send();
                     }),
                 Action::make('reject_event')
                     ->label('Tolak')
@@ -93,7 +93,7 @@ class AlumniEventsTable
                     ->visible(fn ($record) => in_array(auth()->user()->role, ['super_admin', 'admin']) && $record->approval_status === 'pending')
                     ->action(function ($record) {
                         $record->update(['approval_status' => 'rejected']);
-                        Notification::make()->title('Event ditolak')->danger()->send();
+                        Notification::make()->title('Kegiatan ditolak')->danger()->send();
                     }),
                 Action::make('toggle')
                     ->label(fn($record) => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
@@ -105,11 +105,12 @@ class AlumniEventsTable
                         ]);
 
                         Notification::make()
-                            ->title('Status event berhasil diubah')
+                            ->title('Status kegiatan berhasil diubah')
                             ->success()
                             ->send();
                     }),
-                EditAction::make(),
+                EditAction::make()
+                    ->label('Edit'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

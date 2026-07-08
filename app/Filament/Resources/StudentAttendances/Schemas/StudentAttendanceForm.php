@@ -88,7 +88,7 @@ class StudentAttendanceForm
                 Select::make('verification_status')
                     ->label('Status Verifikasi')
                     ->options([
-                        'pending'  => 'Menunggu',
+                        'pending'  => 'Menunggu Verifikasi',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                     ])
