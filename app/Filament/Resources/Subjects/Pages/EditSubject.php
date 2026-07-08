@@ -12,6 +12,22 @@ class EditSubject extends EditRecord
 {
     protected static string $resource = SubjectResource::class;
 
+    public function getTitle(): string
+    {
+        return 'Edit Pelajaran';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Edit';
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Kembali');
+    }    
+
     protected function getHeaderActions(): array
     {
         return [
