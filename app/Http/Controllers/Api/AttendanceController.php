@@ -18,6 +18,7 @@ use App\Services\PresensiSessionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends BaseController
 {
@@ -120,6 +121,13 @@ class AttendanceController extends BaseController
 
             return $this->success($result, 'Presensi manual berhasil disimpan');
         } catch (\Exception $e) {
+            Log::error('Gagal simpan presensi manual.', [
+                'session_id' => $session->id,
+                'user_id' => $request->user()->id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return $this->error($e->getMessage(), $this->exceptionCode($e));
         }
     }

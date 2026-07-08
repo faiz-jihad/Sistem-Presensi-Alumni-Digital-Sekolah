@@ -131,12 +131,15 @@ test('qr attendance can be recorded once per student per day', function () {
     $service = app(AttendanceService::class);
 
     $first = $service->recordSelfPresence($student->id, 'session_' . $session->id);
-    $second = $service->recordSelfPresence($student->id, 'session_' . $session->id);
 
     expect($first->id)->not->toBeNull()
         ->and($first->presensi_session_id)->toBe($session->id)
-        ->and(StudentAttendance::where('student_id', $student->id)->count())->toBe(1)
-        ->and($second->id)->toBe($first->id);
+        ->and(StudentAttendance::where('student_id', $student->id)->count())->toBe(1);
+
+    expect(fn () => $service->recordSelfPresence($student->id, 'session_' . $session->id))
+        ->toThrow(Exception::class, 'Anda sudah melakukan presensi');
+
+    expect(StudentAttendance::where('student_id', $student->id)->count())->toBe(1);
 });
 
 test('qr attendance is rejected after the session end time', function () {
