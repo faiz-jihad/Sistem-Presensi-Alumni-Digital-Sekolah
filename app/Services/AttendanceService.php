@@ -60,6 +60,9 @@ class AttendanceService
                     continue;
                 }
 
+                // Gunakan updateOrCreate dengan kunci (student_id, date).
+                // Unique constraint DB adalah (student_id, date) — satu record per siswa per hari.
+                // presensi_session_id pada record ini selalu diperbarui ke sesi terbaru.
                 $attendance = StudentAttendance::updateOrCreate(
                     [
                         'student_id' => $studentId,
@@ -109,10 +112,7 @@ class AttendanceService
 
         $session = PresensiSession::with(['schedule.classHour'])->findOrFail($sessionId);
 
-        $sessionStatus = $session->status instanceof \BackedEnum
-            ? $session->status->value
-            : $session->status;
-        if ($sessionStatus !== 'open') {
+        if ($session->status !== 'open') {
             throw new \Exception('Sesi presensi ini sedang tidak dibuka.');
         }
 
@@ -237,10 +237,7 @@ class AttendanceService
         $student    = Student::findOrFail($attendance->student_id);
 
         // Hanya bisa verifikasi jika status attendance adalah izin atau sakit
-        $attendanceStatus = $attendance->status instanceof \BackedEnum
-            ? $attendance->status->value
-            : $attendance->status;
-        if (!in_array($attendanceStatus, ['permission', 'sick'], true)) {
+        if (!in_array($attendance->status, ['permission', 'sick'], true)) {
             throw new \Exception('Hanya pengajuan izin atau sakit yang dapat diverifikasi.');
         }
 

@@ -310,7 +310,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: July 7, 2026</li>
+        <li>Last updated: July 8, 2026</li>
     </ul>
 </div>
 
@@ -1001,7 +1001,57 @@ access-control-allow-origin: *
     &quot;data&quot;: [
         {
             &quot;id&quot;: 1,
-            &quot;name&quot;: &quot;SMK Negeri 1 Digital Prestasi Indonesia&quot;
+            &quot;name&quot;: &quot;SMK Negeri 1 Digital Prestasi Indonesia&quot;,
+            &quot;classes&quot;: [
+                {
+                    &quot;id&quot;: 1,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;X RPL 1&quot;,
+                    &quot;major&quot;: &quot;RPL&quot;
+                },
+                {
+                    &quot;id&quot;: 2,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;X RPL 2&quot;,
+                    &quot;major&quot;: &quot;RPL&quot;
+                },
+                {
+                    &quot;id&quot;: 3,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;X TKJ 1&quot;,
+                    &quot;major&quot;: &quot;TKJ&quot;
+                },
+                {
+                    &quot;id&quot;: 4,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;XI RPL 1&quot;,
+                    &quot;major&quot;: &quot;RPL&quot;
+                },
+                {
+                    &quot;id&quot;: 5,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;XI TKJ 1&quot;,
+                    &quot;major&quot;: &quot;TKJ&quot;
+                },
+                {
+                    &quot;id&quot;: 6,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;XII RPL 1&quot;,
+                    &quot;major&quot;: &quot;RPL&quot;
+                },
+                {
+                    &quot;id&quot;: 7,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;XII RPL 2&quot;,
+                    &quot;major&quot;: &quot;RPL&quot;
+                },
+                {
+                    &quot;id&quot;: 8,
+                    &quot;school_id&quot;: 1,
+                    &quot;name&quot;: &quot;XII TKJ 1&quot;,
+                    &quot;major&quot;: &quot;TKJ&quot;
+                }
+            ]
         }
     ]
 }</code>
@@ -4702,8 +4752,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"nis\": \"ngzmiyvdljnikhwa\",
     \"nisn\": \"ykcmyuwpwl\",
     \"name\": \"v\",
-    \"gender\": \"female\",
-    \"birth_date\": \"2026-07-07T13:44:51\",
+    \"gender\": \"male\",
+    \"birth_date\": \"2026-07-08T08:04:52\",
     \"parent_name\": \"q\",
     \"parent_phone\": \"wrsitcpscqldzsnr\"
 }"
@@ -4726,8 +4776,8 @@ let body = {
     "nis": "ngzmiyvdljnikhwa",
     "nisn": "ykcmyuwpwl",
     "name": "v",
-    "gender": "female",
-    "birth_date": "2026-07-07T13:44:51",
+    "gender": "male",
+    "birth_date": "2026-07-08T08:04:52",
     "parent_name": "q",
     "parent_phone": "wrsitcpscqldzsnr"
 };
@@ -4881,10 +4931,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="gender"                data-endpoint="POSTapi-v1-students"
-               value="female"
+               value="male"
                data-component="body">
     <br>
-<p>Example: <code>female</code></p>
+<p>Example: <code>male</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>male</code></li> <li><code>female</code></li></ul>
         </div>
@@ -4895,10 +4945,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="birth_date"                data-endpoint="POSTapi-v1-students"
-               value="2026-07-07T13:44:51"
+               value="2026-07-08T08:04:52"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:52</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>parent_name</code></b>&nbsp;&nbsp;
@@ -5103,7 +5153,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"school_id\": \"architecto\",
     \"name\": \"n\",
     \"gender\": \"female\",
-    \"birth_date\": \"2026-07-07T13:44:51\",
+    \"birth_date\": \"2026-07-08T08:04:52\",
     \"status\": \"transferred\"
 }"
 </code></pre></div>
@@ -5124,7 +5174,7 @@ let body = {
     "school_id": "architecto",
     "name": "n",
     "gender": "female",
-    "birth_date": "2026-07-07T13:44:51",
+    "birth_date": "2026-07-08T08:04:52",
     "status": "transferred"
 };
 
@@ -5308,10 +5358,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="birth_date"                data-endpoint="PUTapi-v1-students--id-"
-               value="2026-07-07T13:44:51"
+               value="2026-07-08T08:04:52"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:52</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -6805,10 +6855,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Authorization: Bearer 6g43cv8PD1aE5beadkZfhV6" \
     --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --form "date=2026-07-07T13:44:51"\
-    --form "status=sick"\
+    --form "date=2026-07-08T08:04:52"\
+    --form "status=permission"\
     --form "note=architecto"\
-    --form "attachment=@C:\Users\LENOVO\AppData\Local\Temp\php3878.tmp" </code></pre></div>
+    --form "attachment=@C:\Users\LENOVO\AppData\Local\Temp\php50EF.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -6823,8 +6873,8 @@ const headers = {
 };
 
 const body = new FormData();
-body.append('date', '2026-07-07T13:44:51');
-body.append('status', 'sick');
+body.append('date', '2026-07-08T08:04:52');
+body.append('status', 'permission');
 body.append('note', 'architecto');
 body.append('attachment', document.querySelector('input[name="attachment"]').files[0]);
 
@@ -6929,10 +6979,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v1-attendances-izin"
-               value="2026-07-07T13:44:51"
+               value="2026-07-08T08:04:52"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:52</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -6941,10 +6991,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-v1-attendances-izin"
-               value="sick"
+               value="permission"
                data-component="body">
     <br>
-<p>Example: <code>sick</code></p>
+<p>Example: <code>permission</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>permission</code></li> <li><code>sick</code></li></ul>
         </div>
@@ -6970,7 +7020,7 @@ Must be one of:
                value=""
                data-component="body">
     <br>
-<p>Must be a file. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php3878.tmp</code></p>
+<p>Must be a file. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php50EF.tmp</code></p>
         </div>
         </form>
 
@@ -6993,7 +7043,7 @@ Must be one of:
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"verification_status\": \"rejected\"
+    \"verification_status\": \"approved\"
 }"
 </code></pre></div>
 
@@ -7010,7 +7060,7 @@ const headers = {
 };
 
 let body = {
-    "verification_status": "rejected"
+    "verification_status": "approved"
 };
 
 fetch(url, {
@@ -7127,10 +7177,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="verification_status"                data-endpoint="POSTapi-v1-attendances--id--verify"
-               value="rejected"
+               value="approved"
                data-component="body">
     <br>
-<p>Example: <code>rejected</code></p>
+<p>Example: <code>approved</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>approved</code></li> <li><code>rejected</code></li></ul>
         </div>
@@ -7443,11 +7493,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"class_id\": \"architecto\",
-    \"date\": \"2026-07-07T13:44:51\",
+    \"date\": \"2026-07-08T08:04:53\",
     \"attendances\": [
         {
             \"student_id\": \"architecto\",
-            \"status\": \"present\",
+            \"status\": \"late\",
             \"note\": \"n\"
         }
     ]
@@ -7468,11 +7518,11 @@ const headers = {
 
 let body = {
     "class_id": "architecto",
-    "date": "2026-07-07T13:44:51",
+    "date": "2026-07-08T08:04:53",
     "attendances": [
         {
             "student_id": "architecto",
-            "status": "present",
+            "status": "late",
             "note": "n"
         }
     ]
@@ -7591,10 +7641,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="POSTapi-v1-attendance-submit"
-               value="2026-07-07T13:44:51"
+               value="2026-07-08T08:04:53"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:53</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>presensi_session_id</code></b>&nbsp;&nbsp;
@@ -7637,10 +7687,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="attendances.0.status"                data-endpoint="POSTapi-v1-attendance-submit"
-               value="present"
+               value="late"
                data-component="body">
     <br>
-<p>Example: <code>present</code></p>
+<p>Example: <code>late</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>present</code></li> <li><code>late</code></li> <li><code>permission</code></li> <li><code>sick</code></li> <li><code>absent</code></li></ul>
                     </div>
@@ -7680,7 +7730,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"class_id\": \"architecto\",
-    \"date\": \"2026-07-07T13:44:51\"
+    \"date\": \"2026-07-08T08:04:53\"
 }"
 </code></pre></div>
 
@@ -7698,7 +7748,7 @@ const headers = {
 
 let body = {
     "class_id": "architecto",
-    "date": "2026-07-07T13:44:51"
+    "date": "2026-07-08T08:04:53"
 };
 
 fetch(url, {
@@ -7830,10 +7880,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="date"                data-endpoint="GETapi-v1-attendance-daily"
-               value="2026-07-07T13:44:51"
+               value="2026-07-08T08:04:53"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:51</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:53</code></p>
         </div>
         </form>
 
@@ -8190,7 +8240,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "latitude=4326.41688"\
     --form "longitude=4326.41688"\
-    --form "photo=@C:\Users\LENOVO\AppData\Local\Temp\php38E6.tmp" </code></pre></div>
+    --form "photo=@C:\Users\LENOVO\AppData\Local\Temp\php546B.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -8337,7 +8387,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php38E6.tmp</code></p>
+<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php546B.tmp</code></p>
         </div>
         </form>
 
@@ -8663,7 +8713,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"schedule_id\": 16
+    \"schedule_id\": 16,
+    \"class_id\": 16,
+    \"date\": \"2026-07-08T08:04:53\",
+    \"tanggal\": \"2026-07-08T08:04:53\"
 }"
 </code></pre></div>
 
@@ -8680,7 +8733,10 @@ const headers = {
 };
 
 let body = {
-    "schedule_id": 16
+    "schedule_id": 16,
+    "class_id": 16,
+    "date": "2026-07-08T08:04:53",
+    "tanggal": "2026-07-08T08:04:53"
 };
 
 fetch(url, {
@@ -8780,14 +8836,50 @@ You can check the Dev Tools console for debugging information.</code></pre>
         <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>schedule_id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
- &nbsp;
+<i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="schedule_id"                data-endpoint="POSTapi-v1-attendance-open"
                value="16"
                data-component="body">
     <br>
-<p>Must match an existing stored value. Example: <code>16</code></p>
+<p>This field is required when <code>class_id</code> is not present. Must match an existing stored value. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>class_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="class_id"                data-endpoint="POSTapi-v1-attendance-open"
+               value="16"
+               data-component="body">
+    <br>
+<p>This field is required when <code>schedule_id</code> is not present. Must match an existing stored value. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>date</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="date"                data-endpoint="POSTapi-v1-attendance-open"
+               value="2026-07-08T08:04:53"
+               data-component="body">
+    <br>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:53</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>tanggal</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="tanggal"                data-endpoint="POSTapi-v1-attendance-open"
+               value="2026-07-08T08:04:53"
+               data-component="body">
+    <br>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:53</code></p>
         </div>
         </form>
 
@@ -8816,7 +8908,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             \"student_id\": 16,
             \"status\": \"late\",
             \"note\": \"n\",
-            \"check_in_time\": \"13:44:52\"
+            \"check_in_time\": \"08:04:53\"
         }
     ]
 }"
@@ -8841,7 +8933,7 @@ let body = {
             "student_id": 16,
             "status": "late",
             "note": "n",
-            "check_in_time": "13:44:52"
+            "check_in_time": "08:04:53"
         }
     ]
 };
@@ -9007,10 +9099,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="attendances.0.check_in_time"                data-endpoint="POSTapi-v1-attendance-manual"
-               value="13:44:52"
+               value="08:04:53"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>13:44:52</code></p>
+<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>08:04:53</code></p>
                     </div>
                                     </details>
         </div>
@@ -9182,7 +9274,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"token\": \"bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs\"
+    \"session_id\": 16,
+    \"token\": \"ngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzsn\"
 }"
 </code></pre></div>
 
@@ -9199,7 +9292,8 @@ const headers = {
 };
 
 let body = {
-    "token": "bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs"
+    "session_id": 16,
+    "token": "ngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzsn"
 };
 
 fetch(url, {
@@ -9297,16 +9391,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                                 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>session_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="session_id"                data-endpoint="POSTapi-v1-attendance-scan"
+               value="16"
+               data-component="body">
+    <br>
+<p>Must match an existing stored value. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>token</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="token"                data-endpoint="POSTapi-v1-attendance-scan"
-               value="bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs"
+               value="ngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzsn"
                data-component="body">
     <br>
-<p>:Attribute minimal berisi 10 karakter. Example: <code>bngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzs</code></p>
+<p>:Attribute minimal berisi 10 karakter. Example: <code>ngzmiyvdljnikhwaykcmyuwpwlvqwrsitcpscqldzsn</code></p>
         </div>
         </form>
 
@@ -10775,9 +10881,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "title=b"\
     --form "description=Eius et animi quos velit et."\
-    --form "event_date=2026-07-07T13:44:52"\
+    --form "event_date=2026-07-08T08:04:54"\
     --form "location=v"\
-    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\php39A2.tmp" </code></pre></div>
+    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\php5621.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -10794,7 +10900,7 @@ const headers = {
 const body = new FormData();
 body.append('title', 'b');
 body.append('description', 'Eius et animi quos velit et.');
-body.append('event_date', '2026-07-07T13:44:52');
+body.append('event_date', '2026-07-08T08:04:54');
 body.append('location', 'v');
 body.append('banner_image', document.querySelector('input[name="banner_image"]').files[0]);
 
@@ -10923,10 +11029,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="event_date"                data-endpoint="POSTapi-v1-alumni-events"
-               value="2026-07-07T13:44:52"
+               value="2026-07-08T08:04:54"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:52</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:54</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
@@ -10950,7 +11056,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php39A2.tmp</code></p>
+<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php5621.tmp</code></p>
         </div>
         </form>
 
@@ -10974,10 +11080,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --form "title=b"\
     --form "description=Eius et animi quos velit et."\
-    --form "event_date=2026-07-07T13:44:52"\
+    --form "event_date=2026-07-08T08:04:54"\
     --form "location=v"\
-    --form "is_active="\
-    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\php39B3.tmp" </code></pre></div>
+    --form "is_active=1"\
+    --form "banner_image=@C:\Users\LENOVO\AppData\Local\Temp\php5622.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -10994,9 +11100,9 @@ const headers = {
 const body = new FormData();
 body.append('title', 'b');
 body.append('description', 'Eius et animi quos velit et.');
-body.append('event_date', '2026-07-07T13:44:52');
+body.append('event_date', '2026-07-08T08:04:54');
 body.append('location', 'v');
-body.append('is_active', '');
+body.append('is_active', '1');
 body.append('banner_image', document.querySelector('input[name="banner_image"]').files[0]);
 
 fetch(url, {
@@ -11137,10 +11243,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="event_date"                data-endpoint="POSTapi-v1-alumni-events--id-"
-               value="2026-07-07T13:44:52"
+               value="2026-07-08T08:04:54"
                data-component="body">
     <br>
-<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-07T13:44:52</code></p>
+<p>:Attribute bukan tanggal yang valid. Example: <code>2026-07-08T08:04:54</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>location</code></b>&nbsp;&nbsp;
@@ -11164,7 +11270,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value=""
                data-component="body">
     <br>
-<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php39B3.tmp</code></p>
+<p>:Attribute harus berupa gambar. :Attribute maksimal berukuran 2048 kilobita. Example: <code>C:\Users\LENOVO\AppData\Local\Temp\php5622.tmp</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_active</code></b>&nbsp;&nbsp;
@@ -11186,7 +11292,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 

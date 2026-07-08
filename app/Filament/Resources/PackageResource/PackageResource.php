@@ -256,12 +256,6 @@ class PackageResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        $user = auth()->user();
-
-        if ($user->role === 'super_admin') {
-            return true;
-        }
-
-        return $user->school?->status === 'active';
+        return auth()->user()->role === 'super_admin';
     }
 }

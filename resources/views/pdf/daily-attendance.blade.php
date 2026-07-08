@@ -170,9 +170,9 @@
                     <td>
                         <span class="badge {{ $statusClass }}">{{ $statusLabel }}</span>
                     </td>
-                    <td style="text-align: center;">{{ $student['check_in_time'] ?: '-' }}</td>
-                    <td style="text-align: center;">{{ $student['check_out_time'] ?: '-' }}</td>
-                    <td>{{ $student['note'] ?: '-' }}</td>
+                    <td style="text-align: center;">{{ $student['check_in_time'] ?? '-' }}</td>
+                    <td style="text-align: center;">{{ $student['check_out_time'] ?? '-' }}</td>
+                    <td>{{ $student['note'] ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -24,7 +24,7 @@ class AlumniEventResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher', 'alumni'])
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'alumni'])
             && auth()->user()->hasFeature('has_alumni');
     }
 

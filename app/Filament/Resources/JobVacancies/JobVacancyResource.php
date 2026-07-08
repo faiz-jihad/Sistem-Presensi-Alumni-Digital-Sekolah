@@ -22,7 +22,7 @@ class JobVacancyResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+        return in_array(auth()->user()->role, ['super_admin', 'admin'])
             && auth()->user()->hasFeature('has_job_vacancy');
     }
 
