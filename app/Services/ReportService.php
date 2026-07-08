@@ -165,11 +165,16 @@ class ReportService
     /**
      * Kirim rekap kehadiran harian ke orang tua siswa melalui WhatsApp
      */
-    public function sendDailyRecapToParents(string $date): int
+    public function sendDailyRecapToParents(string $date, ?int $schoolId = null): int
     {
-        $students = Student::with(['school', 'class', 'parent'])
-            ->where('status', 'active')
-            ->get();
+        $query = Student::with(['school', 'class', 'parent'])
+            ->where('status', 'active');
+            
+        if ($schoolId) {
+            $query->where('school_id', $schoolId);
+        }
+        
+        $students = $query->get();
 
         $sentCount = 0;
 
@@ -228,11 +233,16 @@ class ReportService
     /**
      * Kirim rekap kehadiran bulanan ke orang tua siswa melalui WhatsApp
      */
-    public function sendMonthlyRecapToParents(int $month, int $year): int
+    public function sendMonthlyRecapToParents(int $month, int $year, ?int $schoolId = null): int
     {
-        $students = Student::with(['school', 'class', 'parent'])
-            ->where('status', 'active')
-            ->get();
+        $query = Student::with(['school', 'class', 'parent'])
+            ->where('status', 'active');
+            
+        if ($schoolId) {
+            $query->where('school_id', $schoolId);
+        }
+        
+        $students = $query->get();
 
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->toDateString();
         $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->toDateString();

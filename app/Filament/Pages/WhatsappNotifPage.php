@@ -122,12 +122,17 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
      */
     public function getRecipientCount(): int
     {
-        return Student::where('status', 'active')
+        $query = Student::where('status', 'active')
             ->where(function ($q) {
                 $q->whereNotNull('parent_phone')
                   ->where('parent_phone', '!=', '');
-            })
-            ->count();
+            });
+
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+
+        return $query->count();
     }
 
     /**
@@ -135,9 +140,14 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
      */
     public function getStats(): array
     {
-        $totalStudents = Student::where('status', 'active')->count();
-        $hasPhone = Student::where('status', 'active')
-            ->whereNotNull('parent_phone')
+        $query = Student::where('status', 'active');
+        
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+
+        $totalStudents = (clone $query)->count();
+        $hasPhone = (clone $query)->whereNotNull('parent_phone')
             ->where('parent_phone', '!=', '')
             ->count();
 
@@ -182,17 +192,18 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
     {
         $type  = $this->data['type'] ?? 'daily';
         $service = app(ReportService::class);
+        $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
 
         try {
             if ($type === 'daily') {
                 $date  = $this->data['date'] ?? now()->toDateString();
-                $count = $service->sendDailyRecapToParents($date);
+                $count = $service->sendDailyRecapToParents($date, $schoolId);
                 $label = Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y');
                 $message = "✅ Rekap harian tanggal {$label} berhasil dikirim ke {$count} orang tua.";
             } else {
                 $month = (int) ($this->data['month'] ?? now()->month);
                 $year  = (int) ($this->data['year']  ?? now()->year);
-                $count = $service->sendMonthlyRecapToParents($month, $year);
+                $count = $service->sendMonthlyRecapToParents($month, $year, $schoolId);
                 $label = Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y');
                 $message = "✅ Rekap bulanan {$label} berhasil dikirim ke {$count} orang tua.";
             }
