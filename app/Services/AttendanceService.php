@@ -8,7 +8,6 @@ use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Jobs\SendWhatsAppNotification;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class AttendanceService
@@ -46,9 +45,7 @@ class AttendanceService
 
         $recordedCount = 0;
         $seenStudentIds = [];
-        $notificationTargets = [];
-
-        DB::transaction(function () use ($schoolId, $classId, $teacherId, $date, $attendances, $presensiSessionId, &$recordedCount, &$seenStudentIds, &$notificationTargets) {
+        DB::transaction(function () use ($schoolId, $classId, $teacherId, $date, $attendances, $presensiSessionId, &$recordedCount, &$seenStudentIds) {
             foreach ($attendances as $att) {
                 $studentId = $att['student_id'] ?? null;
                 $status = $att['status'] ?? null;
@@ -126,21 +123,8 @@ class AttendanceService
                 }
 
                 $recordedCount++;
-                $notificationTargets[] = [$student, $attendance];
             }
         });
-
-        foreach ($notificationTargets as [$student, $attendance]) {
-            try {
-                $this->triggerWhatsAppNotification($student, $attendance);
-            } catch (\Throwable $e) {
-                Log::warning('Gagal mengirim notifikasi presensi kelas.', [
-                    'student_id' => $student->id,
-                    'attendance_id' => $attendance->id,
-                    'message' => $e->getMessage(),
-                ]);
-            }
-        }
 
         return [
             'success' => true,

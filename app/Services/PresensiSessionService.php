@@ -15,7 +15,6 @@ use App\Models\Teacher;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Jobs\SendWhatsAppNotification;
 
@@ -413,9 +412,7 @@ class PresensiSessionService
         }
 
         $recordedCount = 0;
-        $notificationTargets = [];
-
-        DB::transaction(function () use ($session, $attendances, $classId, &$recordedCount, &$notificationTargets) {
+        DB::transaction(function () use ($session, $attendances, $classId, &$recordedCount) {
             foreach ($attendances as $att) {
                 $studentId = $att['student_id'] ?? null;
                 $status    = $att['status'] ?? AttendanceStatus::Present->value;
@@ -467,21 +464,8 @@ class PresensiSessionService
                 );
 
                 $recordedCount++;
-                $notificationTargets[] = [$student, $attendance];
             }
         });
-
-        foreach ($notificationTargets as [$student, $attendance]) {
-            try {
-                $this->triggerWhatsAppNotification($student, $attendance);
-            } catch (\Throwable $e) {
-                Log::warning('Gagal mengirim notifikasi presensi manual.', [
-                    'student_id' => $student->id,
-                    'attendance_id' => $attendance->id,
-                    'message' => $e->getMessage(),
-                ]);
-            }
-        }
 
         return [
             'success'   => true,
