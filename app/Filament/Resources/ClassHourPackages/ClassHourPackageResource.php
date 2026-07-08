@@ -26,7 +26,7 @@ class ClassHourPackageResource extends Resource
 
     protected static ?string $navigationLabel = 'Paket Jam Pelajaran';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Master Data';
+    protected static string|\UnitEnum|null $navigationGroup = 'Akademik';
 
     protected static ?int $navigationSort = 4;
 

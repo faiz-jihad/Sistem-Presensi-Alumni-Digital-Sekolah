@@ -30,7 +30,7 @@ class SemesterResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Master Data';
+        return 'Akademik';
     }
 
     public static function getNavigationSort(): ?int
