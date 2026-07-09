@@ -97,6 +97,7 @@ class GoogleAuthController extends Controller
                 'message' => 'Login Google berhasil.',
                 'data' => [
                     'token' => $token,
+                    'token_type' => 'Bearer',
                     'user' => [
                         'id' => $user->id,
                         'name' => $user->name,

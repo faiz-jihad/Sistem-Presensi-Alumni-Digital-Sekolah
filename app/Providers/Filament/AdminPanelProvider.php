@@ -48,7 +48,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\TestNotificationWidget::class,
                 \App\Filament\Widgets\DailyAttendanceChartWidget::class,
                 \App\Filament\Widgets\AttendanceChartWidget::class,
                 \App\Filament\Widgets\AlumniStatusChartWidget::class,

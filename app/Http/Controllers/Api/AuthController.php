@@ -26,7 +26,15 @@ class AuthController extends BaseController
     public function logout(Request $request): JsonResponse
     {
         try {
-            $this->authService->logout($request->user());
+            $user = $request->user();
+            
+            // Hapus token FCM jika disertakan dalam request
+            $fcmToken = $request->input('fcm_token');
+            if ($fcmToken) {
+                $user->fcmTokens()->where('token', $fcmToken)->delete();
+            }
+
+            $this->authService->logout($user);
             return $this->success(null, 'Logout berhasil', 200);
         } catch (\Exception $e) {
             return $this->error('Terjadi kesalahan saat logout.', 500);

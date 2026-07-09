@@ -46,13 +46,17 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(\App\Models\Teacher::class, \App\Policies\MasterDataPolicy::class);
 
         // ─── Database Notification Observer for Firebase Push ────────────────
-        \Illuminate\Notifications\DatabaseNotification::created(function ($notification) {
+        $notificationCreatedHandler = function ($notification) {
             $user = $notification->notifiable;
             
             if ($user instanceof \App\Models\User) {
                 $data = $notification->data;
                 $title = $data['title'] ?? 'Notifikasi Baru';
                 $body = $data['body'] ?? '';
+                
+                // Bersihkan tag HTML (seperti markdown/formatting text dari Filament)
+                $title = strip_tags($title);
+                $body = strip_tags($body);
                 
                 try {
                     $user->notify(new \App\Notifications\FilamentWebPushNotification($title, $body, [
@@ -72,7 +76,13 @@ class AppServiceProvider extends ServiceProvider
                     logger()->error('Failed to send FCM push notification from DatabaseNotification observer: ' . $e->getMessage());
                 }
             }
-        });
+        };
+
+        \Illuminate\Notifications\DatabaseNotification::created($notificationCreatedHandler);
+
+        if (class_exists(\Filament\Notifications\Models\DatabaseNotification::class)) {
+            \Filament\Notifications\Models\DatabaseNotification::created($notificationCreatedHandler);
+        }
 
         // ─── Model Observers for Automated Notifications ────────────────────
         
