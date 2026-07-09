@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Alumni;
-use App\Models\AlumniProfile;
+use App\Http\Requests\Alumni\UpdateAlumniProfileRequest;
+use App\Http\Resources\AlumniResource;
+use App\Services\AlumniProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Gate;
 
 class AlumniProfileController extends BaseController
 {
+    public function __construct(
+        private readonly AlumniProfileService $profileService
+    ) {}
+
     /**
      * Tampilkan profil alumni yang sedang login
      */
@@ -17,6 +23,7 @@ class AlumniProfileController extends BaseController
     {
         $user = $request->user();
 
+        // Otorisasi role via Policy/Gate
         if ($user->role !== 'alumni') {
             return $this->forbidden('Hanya alumni yang memiliki data profil alumni.');
         }
@@ -27,16 +34,20 @@ class AlumniProfileController extends BaseController
             return $this->error('Profil alumni tidak ditemukan.', 404);
         }
 
-        return $this->success([
-            'alumni' => $alumni,
-            'profile' => $alumni->profile,
-        ], 'Profil alumni berhasil dimuat.');
+        if (!Gate::forUser($user)->allows('viewProfile', $alumni)) {
+            return $this->forbidden();
+        }
+
+        return $this->success(
+            new AlumniResource($alumni),
+            'Profil alumni berhasil dimuat.'
+        );
     }
 
     /**
      * Perbarui profil alumni yang sedang login
      */
-    public function update(Request $request): JsonResponse
+    public function update(UpdateAlumniProfileRequest $request): JsonResponse
     {
         $user = $request->user();
 
@@ -50,48 +61,17 @@ class AlumniProfileController extends BaseController
             return $this->error('Data alumni tidak ditemukan.', 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'current_status' => 'required|in:working,studying,entrepreneur,unemployed,studying_working',
-            'university_name' => 'nullable|required_if:current_status,studying,studying_working|string|max:255',
-            'study_program' => 'nullable|required_if:current_status,studying,studying_working|string|max:255',
-            'company_name' => 'nullable|required_if:current_status,working,studying_working|string|max:255',
-            'job_position' => 'nullable|required_if:current_status,working,studying_working|string|max:255',
-            'business_name' => 'nullable|required_if:current_status,entrepreneur|string|max:255',
-            'city' => 'nullable|string|max:100',
-            'province' => 'nullable|string|max:100',
-            'whatsapp' => 'nullable|string|max:20',
-            'linkedin_url' => 'nullable|url|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationError($validator->errors());
+        if (!Gate::forUser($user)->allows('updateProfile', $alumni)) {
+            return $this->forbidden();
         }
 
         try {
-            $profile = AlumniProfile::updateOrCreate(
-                ['alumni_id' => $alumni->id],
-                $request->only([
-                    'current_status',
-                    'university_name',
-                    'study_program',
-                    'company_name',
-                    'job_position',
-                    'business_name',
-                    'city',
-                    'province',
-                    'whatsapp',
-                    'linkedin_url',
-                ])
+            $updatedAlumni = $this->profileService->updateProfile($alumni, $user, $request->validated());
+
+            return $this->success(
+                new AlumniResource($updatedAlumni),
+                'Profil alumni berhasil diperbarui.'
             );
-
-            // Update user phone number if provided
-            if ($request->has('whatsapp') && !empty($request->whatsapp)) {
-                $user->update(['phone' => $request->whatsapp]);
-            }
-
-            return $this->success([
-                'alumni' => $alumni->load('profile'),
-            ], 'Profil alumni berhasil diperbarui.');
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
         }

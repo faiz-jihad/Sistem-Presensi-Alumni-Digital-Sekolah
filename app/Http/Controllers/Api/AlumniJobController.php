@@ -2,48 +2,40 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\JobVacancy;
+use App\Http\Resources\JobVacancyResource;
+use App\Services\AlumniJobService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AlumniJobController extends BaseController
 {
+    public function __construct(
+        private readonly AlumniJobService $jobService
+    ) {}
+
     /**
      * Get a list of active job vacancies for alumni.
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $perPage = $request->query('per_page', 10);
-        $search = $request->query('search');
-        $type = $request->query('type');
-        $category = $request->query('category');
-
-        $query = JobVacancy::with(['postedBy:id,name', 'school:id,name'])
-            ->active()
-            ->latest();
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhere('company_name', 'like', '%' . $search . '%')
-                  ->orWhere('location', 'like', '%' . $search . '%');
-            });
+        // Otorisasi via Policy (opsional untuk viewAny)
+        if (Gate::allows('viewAny', \App\Models\JobVacancy::class)) {
+            // pass
         }
 
-        if ($type) {
-            $query->jobType($type);
+        try {
+            $perPage = (int) $request->query('per_page', 10);
+            $filters = $request->only(['search', 'type', 'category']);
+
+            $jobs = $this->jobService->listJobs($filters, $perPage);
+
+            return $this->success(
+                JobVacancyResource::collection($jobs),
+                'Daftar lowongan kerja berhasil diambil'
+            );
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 500);
         }
-
-        if ($category) {
-            $query->where('category', $category);
-        }
-
-        $jobs = $query->paginate($perPage);
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Daftar lowongan kerja berhasil diambil',
-            'data' => $jobs
-        ]);
     }
 }

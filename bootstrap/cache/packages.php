@@ -64,6 +64,17 @@
       0 => 'Dedoc\\Scramble\\ScrambleServiceProvider',
     ),
   ),
+  'diogogpinto/filament-auth-ui-enhancer' => 
+  array (
+    'aliases' => 
+    array (
+      'AuthUIEnhancer' => 'DiogoGPinto\\AuthUIEnhancer\\Facades\\AuthUIEnhancer',
+    ),
+    'providers' => 
+    array (
+      0 => 'DiogoGPinto\\AuthUIEnhancer\\AuthUIEnhancerServiceProvider',
+    ),
+  ),
   'filament/actions' => 
   array (
     'providers' => 
@@ -223,6 +234,13 @@
     'providers' => 
     array (
       0 => 'LaravelLang\\StarterKits\\ServiceProvider',
+    ),
+  ),
+  'laravel-notification-channels/webpush' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'NotificationChannels\\WebPush\\WebPushServiceProvider',
     ),
   ),
   'laravel/pail' => 

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\LaporanResource\Pages;
 
-use App\Filament\Resources\LaporanResource;
+use App\Filament\Resources\LaporanResource\LaporanResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 

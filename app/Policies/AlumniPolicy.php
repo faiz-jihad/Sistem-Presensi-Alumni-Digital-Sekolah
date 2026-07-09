@@ -66,6 +66,25 @@ class AlumniPolicy
         return $user->isSuperAdmin() || ($user->isAdmin() && $user->school_id === $alumni->school_id);
     }
 
+    public function viewProfile(User $user, Alumni $alumni): bool
+    {
+        return $user->id === $alumni->user_id || $user->isSuperAdmin() || $user->isAdmin();
+    }
+
+    public function updateProfile(User $user, Alumni $alumni): bool
+    {
+        return $user->id === $alumni->user_id;
+    }
+
+    public function verify(User $user, Alumni $alumni): bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        return $user->isAdmin() && $user->school_id === $alumni->school_id;
+    }
+
     public function forceDelete(User $user, Alumni $alumni): bool
     {
         return $user->isSuperAdmin();
