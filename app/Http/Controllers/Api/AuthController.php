@@ -35,13 +35,14 @@ class AuthController extends BaseController
 
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load('school');
+        $user = $request->user()->load(['school', 'teacher', 'alumni']);
+        $phone = $user->phone ?: $user->teacher?->phone ?: $user->alumni?->phone;
 
         $userData = [
             'id'          => $user->id,
             'name'        => $user->name,
             'email'       => $user->email,
-            'phone'       => $user->phone,
+            'phone'       => $phone,
             'role'        => $user->role,
             'status'      => $user->status,
             'school_id'   => $user->school_id,

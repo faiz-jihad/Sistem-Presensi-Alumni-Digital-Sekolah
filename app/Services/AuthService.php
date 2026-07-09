@@ -26,14 +26,17 @@ class AuthService
             throw new \Exception('Akses ditolak. Hanya guru, alumni, siswa, dan orangtua yang dapat mengakses aplikasi mobile.', 403);
         }
 
+        $user->loadMissing(['teacher', 'alumni']);
+
         $device = $data['device_name'] ?? 'default';
         $token = $user->createToken($device)->plainTextToken;
+        $phone = $user->phone ?: $user->teacher?->phone ?: $user->alumni?->phone;
 
         $userData = [
             'id'        => $user->id,
             'name'      => $user->name,
             'email'     => $user->email,
-            'phone'     => $user->phone,
+            'phone'     => $phone,
             'role'      => $user->role,
             'status'    => $user->status,
             'school_id' => $user->school_id,
