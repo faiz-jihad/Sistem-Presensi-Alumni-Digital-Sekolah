@@ -9,20 +9,44 @@ use Illuminate\Support\Facades\Http;
 class FirebaseNotificationService
 {
     /**
+     * Mendapatkan kredensial Service Account Firebase dari config (.env) atau file storage.
+     */
+    private function getServiceAccount(): ?array
+    {
+        // 1. Coba dari environment variable (FIREBASE_SERVICE_ACCOUNT_JSON)
+        $configJson = config('services.firebase.service_account_json');
+        if ($configJson) {
+            $decoded = json_decode($configJson, true);
+            if (is_array($decoded) && isset($decoded['private_key'], $decoded['client_email'])) {
+                return $decoded;
+            }
+        }
+
+        // 2. Coba dari berkas file storage
+        $serviceAccountPath = storage_path('app/firebase/service-account.json');
+        if (file_exists($serviceAccountPath)) {
+            $decoded = json_decode(file_get_contents($serviceAccountPath), true);
+            if (is_array($decoded) && isset($decoded['private_key'], $decoded['client_email'])) {
+                return $decoded;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get FCM v1 OAuth2 Access Token.
      */
     public function getAccessToken(): ?string
     {
-        // Cache token to prevent excessive requests (valid for 1 hour, cached for 58 minutes)
+        // Cache token selama 58 menit (3480 detik) untuk menghemat limit request Google OAuth2
         return cache()->remember('firebase_fcm_access_token', 3480, function () {
-            $serviceAccountPath = storage_path('app/firebase/service-account.json');
+            $serviceAccount = $this->getServiceAccount();
 
-            if (!file_exists($serviceAccountPath)) {
-                logger()->error('Firebase service account file not found at ' . $serviceAccountPath);
+            if (!$serviceAccount) {
+                logger()->error('Firebase service account credentials not found in env (FIREBASE_SERVICE_ACCOUNT_JSON) or storage.');
                 return null;
             }
-
-            $serviceAccount = json_decode(file_get_contents($serviceAccountPath), true);
             
             $privateKey = $serviceAccount['private_key'];
             $clientEmail = $serviceAccount['client_email'];
@@ -90,11 +114,10 @@ class FirebaseNotificationService
             return ['success' => false, 'message' => 'Failed to obtain Firebase access token.'];
         }
 
-        $serviceAccountPath = storage_path('app/firebase/service-account.json');
-        if (!file_exists($serviceAccountPath)) {
-            return ['success' => false, 'message' => 'Firebase service account file not found.'];
+        $serviceAccount = $this->getServiceAccount();
+        if (!$serviceAccount || empty($serviceAccount['project_id'])) {
+            return ['success' => false, 'message' => 'Firebase Project ID is missing.'];
         }
-        $serviceAccount = json_decode(file_get_contents($serviceAccountPath), true);
         $projectId = $serviceAccount['project_id'];
 
         $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
@@ -129,7 +152,7 @@ class FirebaseNotificationService
                 $failedCount++;
                 logger()->warning('FCM Notification failed for token: ' . $token . ' Response: ' . $response->body());
                 
-                // If token is invalid or unregistered, clean it up from DB
+                // Jika token tidak valid / sudah dihapus di konsol Firebase, bersihkan dari DB
                 if ($response->status() === 400 || $response->status() === 404) {
                     FcmToken::where('token', $token)->delete();
                 }

@@ -88,6 +88,28 @@ class UserForm
                     ->default('active')
                     ->native(false)
                     ->required(),
+
+                TextInput::make('google_id')
+                    ->label('Tautan Akun Google')
+                    ->placeholder('Belum terhubung ke akun Google')
+                    ->disabled()
+                    ->dehydrated(true)
+                    ->suffixAction(
+                        \Filament\Actions\Action::make('unlinkGoogle')
+                            ->label('Putus Tautan')
+                            ->icon('heroicon-o-link-slash')
+                            ->color('danger')
+                            ->requiresConfirmation()
+                            ->visible(fn ($state) => !empty($state))
+                            ->action(function ($set) {
+                                $set('google_id', null);
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Tautan Google Diputuskan')
+                                    ->body('Akun Google berhasil diputuskan dari pengguna ini. Silakan simpan untuk memperbarui.')
+                                    ->warning()
+                                    ->send();
+                            })
+                    ),
                     
                 DateTimePicker::make('email_verified_at')
                     ->label('Diverifikasi Pada')

@@ -218,6 +218,20 @@ class AttendanceService
         // Kirim notifikasi masuk ke orang tua
         $this->triggerWhatsAppNotification($student, $attendance);
 
+        // Kirim notifikasi Web Push & Database ke Guru yang mengajar
+        try {
+            $teacherUser = $session->openedBy ?? ($session->teacher?->user ?? null);
+            if ($teacherUser) {
+                $statusLabel = $status === 'late' ? 'Terlambat' : 'Hadir';
+                $teacherUser->notify(new \App\Notifications\SiswaPresensiNotification(
+                    "Presensi Masuk Siswa 🔔",
+                    "Siswa {$student->name} telah mencatat kehadiran ({$statusLabel}) di kelas Anda."
+                ));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Gagal mengirim Web Push ke guru: ' . $e->getMessage());
+        }
+
         return $attendance;
     }
 

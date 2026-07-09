@@ -48,6 +48,7 @@ return [
         'messaging_sender_id' => env('FIREBASE_MESSAGING_SENDER_ID'),
         'app_id' => env('FIREBASE_APP_ID'),
         'vapid_key' => env('FIREBASE_VAPID_KEY'),
+        'service_account_json' => env('FIREBASE_SERVICE_ACCOUNT_JSON'),
     ],
 
 ];

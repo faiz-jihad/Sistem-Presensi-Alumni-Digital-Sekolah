@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles; // Tambahkan ini
+use NotificationChannels\WebPush\HasPushSubscriptions;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -19,7 +20,8 @@ class User extends Authenticatable implements FilamentUser
         HasFactory,
         Notifiable,
         SoftDeletes,
-        HasRoles; // Tambahkan HasRoles
+        HasRoles,
+        HasPushSubscriptions; // Tambahkan HasPushSubscriptions
 
     protected $fillable = [
         'name',
