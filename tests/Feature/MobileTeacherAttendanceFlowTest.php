@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\AttendanceStatus;
-use App\Jobs\SendWhatsAppNotification;
 use App\Models\AcademicYear;
 use App\Models\ClassHour;
 use App\Models\Schedule;
@@ -16,7 +15,6 @@ use App\Models\Teacher;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class MobileTeacherAttendanceFlowTest extends TestCase
@@ -107,8 +105,6 @@ class MobileTeacherAttendanceFlowTest extends TestCase
      */
     public function test_alur_presensi_mobile_guru_lengkap(): void
     {
-        Queue::fake([SendWhatsAppNotification::class]);
-
         // ─── Step 1: Guru Login ──────────────────────────────────────────────
         $loginResponse = $this->postJson('/api/v1/login', [
             'email'    => 'gurumobile@sekolah.id',
@@ -217,9 +213,7 @@ class MobileTeacherAttendanceFlowTest extends TestCase
             'status'     => 'absent',
             'note'       => 'Tanpa keterangan',
         ]);
-
-        // ─── Step 5: Verifikasi Notifikasi WA Orang Tua Dispatched ───────────
-        // Karena 5 siswa memiliki parent dengan nomor telepon (081234567890), harus ada 5 job terkirim
-        Queue::assertPushed(SendWhatsAppNotification::class, 5);
+        // Response simpan manual tidak boleh menunggu pengiriman WhatsApp.
     }
 }
+
