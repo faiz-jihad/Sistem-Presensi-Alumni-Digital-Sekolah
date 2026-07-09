@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\AcademicYear;
 use App\Models\School;
 use App\Models\Student;
+use App\Models\StudentAttendance;
 use App\Models\StudentClass;
 use App\Models\Teacher;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -289,9 +291,61 @@ class DashboardController extends BaseController
 
     private function parentDashboard(User $user): JsonResponse
     {
+        $today = Carbon::today()->toDateString();
         $children = Student::where('parent_user_id', $user->id)
             ->with(['class:id,name,grade,major', 'school:id,name'])
-            ->get(['id', 'name', 'nis', 'class_id', 'school_id', 'status', 'gender']);
+            ->get(['id', 'name', 'nis', 'nisn', 'class_id', 'school_id', 'status', 'gender']);
+
+        $todayAttendances = StudentAttendance::whereIn('student_id', $children->pluck('id'))
+            ->where('date', $today)
+            ->get()
+            ->keyBy('student_id');
+
+        $children = $children->map(function (Student $student) use ($todayAttendances, $today) {
+            $attendance = $todayAttendances->get($student->id);
+            $status = $attendance?->status instanceof \BackedEnum
+                ? $attendance->status->value
+                : $attendance?->status;
+
+            return [
+                'id' => $student->id,
+                'name' => $student->name,
+                'nis' => $student->nis,
+                'nisn' => $student->nisn,
+                'status' => $student->status,
+                'gender' => $student->gender,
+                'class' => $student->class ? [
+                    'id' => $student->class->id,
+                    'name' => $student->class->name,
+                    'grade' => $student->class->grade,
+                    'major' => $student->class->major,
+                ] : null,
+                'school' => $student->school ? [
+                    'id' => $student->school->id,
+                    'name' => $student->school->name,
+                ] : null,
+                'today_attendance' => $attendance ? [
+                    'date' => $attendance->date,
+                    'status' => $status,
+                    'status_label' => match ($status) {
+                        'present' => 'Hadir',
+                        'late' => 'Terlambat',
+                        'permission' => 'Izin',
+                        'sick' => 'Sakit',
+                        'absent' => 'Alpha',
+                        default => $status,
+                    },
+                    'check_in_time' => $attendance->check_in_time,
+                    'note' => $attendance->note,
+                ] : [
+                    'date' => $today,
+                    'status' => 'not_recorded',
+                    'status_label' => 'Belum Tercatat',
+                    'check_in_time' => null,
+                    'note' => null,
+                ],
+            ];
+        });
 
         return $this->success([
             'role'     => 'parent',
