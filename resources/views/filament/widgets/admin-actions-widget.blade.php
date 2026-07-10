@@ -1,7 +1,6 @@
 <x-filament-widgets::widget>
     <div class="mb-6">
         <div class="flex items-center gap-2">
-            <span class="text-2xl">👋</span>
             <div>
                 <h2 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">Aksi Cepat Admin</h2>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Pintasan tindakan utama untuk mengelola aktivitas sekolah dengan mudah.</p>

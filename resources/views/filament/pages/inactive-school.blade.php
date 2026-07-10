@@ -31,7 +31,7 @@
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <span class="text-gray-700 dark:text-gray-300" style="font-size: 12px; font-weight: 700;">Informasi Bantuan</span>
                     <p class="text-gray-500 dark:text-gray-400" style="font-size: 12px; line-height: 1.4; margin: 0;">
-                        Silakan hubungi administrator utama (**Super Admin**) sekolah Anda untuk memperbarui status langganan atau mengaktifkan kembali instansi sekolah Anda.
+                        Silakan hubungi administrator utama ( Super Admin ) sekolah Anda untuk memperbarui status langganan atau mengaktifkan kembali instansi sekolah Anda.
                     </p>
                 </div>
             </div>

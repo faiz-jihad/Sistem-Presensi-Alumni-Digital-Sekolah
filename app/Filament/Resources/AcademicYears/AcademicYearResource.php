@@ -29,10 +29,9 @@ class AcademicYearResource extends Resource
     
     protected static ?string $recordTitleAttribute = 'name';
 
-    // Gunakan method
-    public static function getNavigationIcon(): string
+    public static function getNavigationIcon(): string|\BackedEnum|null
     {
-        return 'heroicon-o-rectangle-stack';
+        return 'heroicon-o-calendar';
     }
 
     public static function getNavigationLabel(): string
