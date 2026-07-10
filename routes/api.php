@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\AlumniEventController;
 use App\Http\Controllers\Api\AlumniJobController;
 use App\Http\Controllers\Api\TeacherAttendanceController;
 use App\Http\Controllers\Api\AlumniVerificationController;
+use App\Http\Controllers\Api\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -41,6 +42,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/device-token', [\App\Http\Controllers\Api\FcmTokenController::class, 'register']);
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
         Route::get('/test-fcm', function (\Illuminate\Http\Request $request) {
             $service = app(\App\Services\FirebaseNotificationService::class);
             $result = $service->sendPushNotification($request->user(), 'Test Notifikasi', 'Ini adalah notifikasi uji coba dari Firebase!');

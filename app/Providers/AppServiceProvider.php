@@ -69,9 +69,13 @@ class AppServiceProvider extends ServiceProvider
 
                 try {
                     $firebaseService = app(\App\Services\FirebaseNotificationService::class);
-                    $firebaseService->sendPushNotification($user, $title, $body, [
-                        'notification_id' => $notification->id,
-                    ]);
+                    $payload = $data['data'] ?? [];
+                    if (! is_array($payload)) {
+                        $payload = [];
+                    }
+                    $payload['notification_id'] = $notification->id;
+
+                    $firebaseService->sendPushNotification($user, $title, $body, $payload);
                 } catch (\Exception $e) {
                     logger()->error('Failed to send FCM push notification from DatabaseNotification observer: ' . $e->getMessage());
                 }
