@@ -12,10 +12,6 @@ class ListAlumni extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make()
-                ->label('Tambah Alumni')
-                ->icon('heroicon-o-plus'),
-        ];
+        return [];
     }
 }

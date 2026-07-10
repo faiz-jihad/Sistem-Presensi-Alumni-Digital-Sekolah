@@ -119,14 +119,23 @@ class ExportService
                         'public'
                     );
                 } else {
-                    $pdfData = [
-                        'school_name' => $schoolName,
-                        'graduation_year' => $graduationYear,
+                    $pdf = Pdf::loadView('pdf.alumni', [
+                        'alumni_list'         => $alumnis,
+
+                        'school_name'         => $school?->name,
+                        'school_address'      => $school?->address,
+                        'school_phone'        => $school?->phone,
+                        'school_email'        => $school?->email,
+                        'school_logo'         => $school?->logo,
+
+                        'graduation_year'     => $graduationYear,
                         'verification_status' => $verificationStatus,
-                        'alumni_list' => $alumnis,
-                    ];
-                    $pdf = Pdf::loadView('pdf.alumni', $pdfData);
-                    Storage::disk('public')->put($filePath, $pdf->output());
+                    ]);
+
+                    Storage::disk('public')->put(
+                        $filePath,
+                        $pdf->output()
+                    );
                 }
             } else {
                 throw new \Exception("Tipe laporan tidak didukung.");
@@ -149,154 +158,5 @@ class ExportService
                 'error_message' => $e->getMessage() . "\n" . $e->getTraceAsString(),
             ]);
         }
-    }
-
-    public function generateAlumniReport(array $filters, string $fileType, int $schoolId)
-    {
-        // Query alumni dengan filter
-        $query = Alumni::query()
-            ->with(['school', 'user', 'verifiedBy'])
-            ->where('school_id', $schoolId);
-
-        // Log filter yang diterima
-        \Log::info('Filters received:', $filters);
-
-        // Terapkan filter - PASTIKAN menggunakan kondisi yang benar
-        // Filter Tahun Lulus - hanya jika ada nilai dan tidak kosong
-        if (!empty($filters['graduation_year']) && $filters['graduation_year'] !== '') {
-            $query->where('graduation_year', $filters['graduation_year']);
-            \Log::info('Filter tahun: ' . $filters['graduation_year']);
-        }
-
-        // Filter Status Verifikasi
-        if (!empty($filters['verification_status']) && $filters['verification_status'] !== '') {
-            $query->where('verification_status', $filters['verification_status']);
-            \Log::info('Filter status: ' . $filters['verification_status']);
-        }
-
-        // Filter Gender (tambahan)
-        if (!empty($filters['gender']) && $filters['gender'] !== '') {
-            $query->where('gender', $filters['gender']);
-            \Log::info('Filter gender: ' . $filters['gender']);
-        }
-
-        // Ambil data alumni
-        $alumnis = $query->orderBy('name')->get();
-
-        // Log total data
-        \Log::info('Total alumni ditemukan: ' . $alumnis->count());
-        \Log::info('SQL yang dijalankan: ' . $query->toSql());
-        \Log::info('Bindings: ', $query->getBindings());
-
-        // Jika tidak ada data, throw exception atau return empty
-        if ($alumnis->isEmpty()) {
-            \Log::warning('Tidak ada alumni ditemukan dengan filter yang diberikan');
-        }
-
-        // Generate file berdasarkan tipe
-        if ($fileType === 'pdf') {
-            return $this->generatePDF($alumnis);
-        } else {
-            return $this->generateExcel($alumnis);
-        }
-    }
-
-    private function generateExcel($alumnis)
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // Header
-        $headers = [
-            'A1' => 'No',
-            'B1' => 'NISN',
-            'C1' => 'Nama Lengkap',
-            'D1' => 'Jenis Kelamin',
-            'E1' => 'Sekolah',
-            'F1' => 'Kelas Lulus',
-            'G1' => 'Jurusan',
-            'H1' => 'Tahun Lulus',
-            'I1' => 'Status Verifikasi',
-            'J1' => 'Terverifikasi Pada',
-            'K1' => 'Email',
-            'L1' => 'No HP',
-        ];
-
-        foreach ($headers as $cell => $value) {
-            $sheet->setCellValue($cell, $value);
-        }
-
-        // Style header
-        $sheet->getStyle('A1:L1')->getFont()->setBold(true);
-        $sheet->getStyle('A1:L1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('FFE0E0E0');
-
-        // Data
-        $row = 2;
-        $no = 1;
-        foreach ($alumnis as $alumni) {
-            $sheet->setCellValue('A' . $row, $no);
-            $sheet->setCellValue('B' . $row, $alumni->nisn);
-            $sheet->setCellValue('C' . $row, $alumni->name);
-            $sheet->setCellValue('D' . $row, $alumni->gender === 'male' ? 'Laki-laki' : 'Perempuan');
-            $sheet->setCellValue('E' . $row, $alumni->school->name ?? '-');
-            $sheet->setCellValue('F' . $row, $alumni->class_name);
-            $sheet->setCellValue('G' . $row, $alumni->major ?? '-');
-            $sheet->setCellValue('H' . $row, $alumni->graduation_year);
-            
-            // Status verifikasi
-            $status = match($alumni->verification_status) {
-                'pending' => 'Menunggu Verifikasi',
-                'verified' => 'Terverifikasi',
-                'rejected' => 'Ditolak',
-                default => $alumni->verification_status,
-            };
-            $sheet->setCellValue('I' . $row, $status);
-            
-            $sheet->setCellValue('J' . $row, $alumni->verified_at ? $alumni->verified_at->format('d/m/Y H:i') : '-');
-            $sheet->setCellValue('K' . $row, $alumni->email ?? '-');
-            $sheet->setCellValue('L' . $row, $alumni->phone ?? '-');
-
-            $row++;
-            $no++;
-        }
-
-        // Auto size columns
-        foreach (range('A', 'L') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
-        }
-
-        // Simpan file
-        $fileName = 'laporan_alumni_' . date('Ymd_His') . '.xlsx';
-        $filePath = 'exports/' . $fileName;
-        
-        $writer = new Xlsx($spreadsheet);
-        $writer->save(storage_path('app/public/' . $filePath));
-
-        \Log::info('File Excel saved at: ' . $filePath);
-
-        return $filePath;
-    }
-
-    private function generatePDF($alumnis)
-    {
-        $data = [
-            'alumnis' => $alumnis,
-            'title' => 'Laporan Data Alumni',
-            'date' => now()->format('d/m/Y H:i'),
-            'total' => $alumnis->count()
-        ];
-
-        $pdf = Pdf::loadView('exports.alumni-report', $data);
-        
-        $fileName = 'laporan_alumni_' . date('Ymd_His') . '.pdf';
-        $filePath = 'exports/' . $fileName;
-        
-        $pdf->save(storage_path('app/public/' . $filePath));
-
-        \Log::info('File PDF saved at: ' . $filePath);
-
-        return $filePath;
     }
 }

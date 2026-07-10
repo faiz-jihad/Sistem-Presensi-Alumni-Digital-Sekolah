@@ -574,7 +574,7 @@
                 </a>
 
                 {{-- Laporan Bulanan --}}
-                <a href="/admin/laporans" class="action-card laporan">
+                <a href="/admin/attendance-report" class="action-card laporan">
                     <div class="action-pattern"></div>
                     <div class="action-icon-wrapper">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">

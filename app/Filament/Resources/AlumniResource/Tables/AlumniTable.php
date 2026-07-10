@@ -263,15 +263,7 @@ class AlumniTable
                 ]),
             ])
             ->emptyStateHeading('Belum ada data alumni')
-            ->emptyStateDescription('Klik tombol "Tambah Alumni" untuk menambahkan data alumni pertama')
-            ->emptyStateIcon('heroicon-o-users')
-            ->emptyStateActions([
-                Action::make('create')
-                    ->label('Tambah Alumni')
-                    ->icon('heroicon-o-plus')
-                    ->color('primary')
-                    ->url(fn () => AlumniResource::getUrl('create')),
-            ])
+            ->emptyStateDescription('Mohon Maaf Sekolah Anda Belum Memiliki Alumni')
             ->defaultSort('created_at', 'desc');
     }
 }
