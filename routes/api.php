@@ -27,6 +27,9 @@ Route::prefix('v1')->group(function () {
     // ─── Public routes ──────────────────────────────────────────────────────
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
     Route::post('/auth/google', [\App\Http\Controllers\Api\GoogleAuthController::class, 'login']);
     Route::get('/schools/public', function () {

@@ -199,7 +199,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         \App\Models\Alumni::updated(function ($alumni) {
-            if ($alumni->isDirty('verification_status')) {
+            if ($alumni->wasChanged('verification_status')) {
                 $user = $alumni->user;
                 if ($user) {
                     if ($alumni->verification_status === 'verified') {
@@ -208,6 +208,25 @@ class AppServiceProvider extends ServiceProvider
                             ->body('Selamat! Akun alumni Anda telah terverifikasi oleh Admin. Anda sekarang dapat mengakses seluruh fitur alumni.')
                             ->success()
                             ->sendToDatabase($user);
+
+                        $recipientEmail = $alumni->email ?: $user->email;
+                        if ($recipientEmail && filter_var($recipientEmail, FILTER_VALIDATE_EMAIL)) {
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($recipientEmail)
+                                    ->send(new \App\Mail\AlumniAccountVerifiedMail($alumni));
+                            } catch (\Throwable $exception) {
+                                \Illuminate\Support\Facades\Log::error('Gagal mengirim email verifikasi akun alumni.', [
+                                    'alumni_id' => $alumni->id,
+                                    'email' => $recipientEmail,
+                                    'error' => $exception->getMessage(),
+                                ]);
+                            }
+                        } else {
+                            \Illuminate\Support\Facades\Log::warning('Email verifikasi alumni tidak dikirim karena alamat email tidak valid.', [
+                                'alumni_id' => $alumni->id,
+                                'email' => $recipientEmail,
+                            ]);
+                        }
                     } elseif ($alumni->verification_status === 'rejected') {
                         $reason = $alumni->verification_notes ?? 'Tidak ada alasan khusus yang diberikan.';
                         \Filament\Notifications\Notification::make()
