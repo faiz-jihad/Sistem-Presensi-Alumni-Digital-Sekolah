@@ -12,9 +12,12 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\Teacher;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Jobs\SendWhatsAppNotification;
 
@@ -412,7 +415,9 @@ class PresensiSessionService
         }
 
         $recordedCount = 0;
-        DB::transaction(function () use ($session, $attendances, $classId, &$recordedCount) {
+        $recordedAttendances = [];
+
+        DB::transaction(function () use ($session, $attendances, $classId, &$recordedCount, &$recordedAttendances) {
             foreach ($attendances as $att) {
                 $studentId = $att['student_id'] ?? null;
                 $status    = $att['status'] ?? AttendanceStatus::Present->value;
@@ -463,9 +468,17 @@ class PresensiSessionService
                     $values
                 );
 
+                $attendance->loadMissing(['student.parent', 'student.class']);
+                $recordedAttendances[] = $attendance;
                 $recordedCount++;
             }
         });
+
+        foreach ($recordedAttendances as $attendance) {
+            if ($attendance->student) {
+                $this->sendAttendancePushNotification($attendance->student, $attendance);
+            }
+        }
 
         return [
             'success'   => true,
@@ -577,6 +590,7 @@ class PresensiSessionService
             ]);
 
             $this->triggerWhatsAppNotification($student, $attendance);
+            $this->sendAttendancePushNotification($student, $attendance);
 
             $teacherUser = $session->teacher?->user;
             if ($teacherUser) {
@@ -797,5 +811,94 @@ class PresensiSessionService
         $message .= "\nTerima kasih.\nSistem Presensi Sekolah SIMPAD";
 
         SendWhatsAppNotification::dispatchAfterResponse($phone, $message);
+    }
+
+    private function sendAttendancePushNotification(Student $student, StudentAttendance $attendance): void
+    {
+        try {
+            $student->loadMissing(['parent', 'class']);
+
+            $statusRaw = is_string($attendance->status)
+                ? $attendance->status
+                : ($attendance->status->value ?? '');
+            $statusLabel = $this->attendanceStatusLabel($statusRaw);
+            $dateFormatted = Carbon::parse($attendance->date)->translatedFormat('d F Y');
+            $className = $student->class?->name ?? '-';
+
+            $data = [
+                'type' => 'student_attendance_recorded',
+                'attendance_id' => $attendance->id,
+                'student_id' => $student->id,
+                'student_name' => $student->name,
+                'status' => $statusRaw,
+                'status_label' => $statusLabel,
+                'date' => $attendance->date,
+                'check_in_time' => $attendance->check_in_time,
+                'class_name' => $className,
+            ];
+
+            $studentUsers = User::where('role', 'student')
+                ->where(function ($query) use ($student) {
+                    $query->where('name', $student->name);
+
+                    if (!empty($student->nis)) {
+                        $query->orWhere('email', $student->nis);
+                    }
+
+                    if (!empty($student->nisn)) {
+                        $query->orWhere('email', $student->nisn);
+                    }
+                })
+                ->get();
+
+            foreach ($studentUsers as $studentUser) {
+                $title = 'Presensi Anda Tercatat';
+                $timeText = $attendance->check_in_time ? " pukul {$attendance->check_in_time}" : '';
+                $body = "Kehadiran Anda pada {$dateFormatted}{$timeText} tercatat {$statusLabel}.";
+
+                $this->storeAppNotification($studentUser, $title, $body, $data);
+            }
+
+            $parent = $student->parent;
+            if ($parent) {
+                $title = 'Presensi Anak Tercatat';
+                $timeText = $attendance->check_in_time ? " pukul {$attendance->check_in_time}" : '';
+                $body = "Anak Anda {$student->name} pada {$dateFormatted}{$timeText} tercatat {$statusLabel}.";
+
+                $this->storeAppNotification($parent, $title, $body, $data);
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Gagal mengirim FCM presensi siswa: ' . $e->getMessage(), [
+                'student_id' => $student->id,
+                'attendance_id' => $attendance->id,
+            ]);
+        }
+    }
+
+    private function attendanceStatusLabel(string $status): string
+    {
+        return match ($status) {
+            'present' => 'Hadir',
+            'late' => 'Terlambat',
+            'permission' => 'Izin',
+            'sick' => 'Sakit',
+            'absent' => 'Alpha',
+            default => 'Belum Tercatat',
+        };
+    }
+
+    private function storeAppNotification(User $user, string $title, string $body, array $data): void
+    {
+        DatabaseNotification::create([
+            'id' => (string) Str::uuid(),
+            'type' => 'student_attendance_recorded',
+            'notifiable_type' => User::class,
+            'notifiable_id' => $user->id,
+            'data' => [
+                'title' => $title,
+                'body' => $body,
+                'data' => $data,
+            ],
+        ]);
     }
 }

@@ -18,17 +18,28 @@ class JobVacancyResource extends JsonResource
             'company_logo'   => $this->company_logo ? asset('storage/' . $this->company_logo) : null,
             'location'       => $this->location,
             'job_type'       => $this->job_type,
-            'job_type_label' => $this->job_type ? __($this->job_type) : null,
-            'salary_range'   => $this->salary_range,
+            'job_type_label' => $this->job_type_label,
+            'category'       => $this->category,
+            'category_label' => $this->category_label,
+
+            // Kirim salary yang sebenarnya
+            'salary_min'     => $this->salary_min,
+            'salary_max'     => $this->salary_max,
+            'salary_formatted' => $this->salary_formatted,
+
+            // Kirim deadline
+            'deadline'       => $this->deadline?->toDateString(),
+
             'description'    => $this->description,
             'requirements'   => $this->requirements,
-            'contact_email'  => $this->contact_email,
-            'contact_phone'  => $this->contact_phone,
-            'is_active'      => (bool) $this->is_active,
+            'link'           => $this->link,
+            'is_active'      => $this->is_active,
+
             'school'         => new SchoolResource($this->whenLoaded('school')),
             'posted_by_user' => new UserResource($this->whenLoaded('postedBy')),
-            'created_at'     => $this->created_at ? $this->created_at->toIso8601String() : null,
-            'updated_at'     => $this->updated_at ? $this->updated_at->toIso8601String() : null,
+
+            'created_at'     => $this->created_at?->toIso8601String(),
+            'updated_at'     => $this->updated_at?->toIso8601String(),
         ];
     }
 }
