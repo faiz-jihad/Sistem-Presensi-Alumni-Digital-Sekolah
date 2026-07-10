@@ -59,9 +59,9 @@ class JobVacancyResource extends Resource
         ];
     }
 
-    public static function getNavigationLabel(): string
+    public static function getNavigationIcon(): string|\BackedEnum|null
     {
-        return 'Lowongan Kerja';
+        return 'heroicon-o-building-office';
     }
 
     public static function getNavigationGroup(): ?string
