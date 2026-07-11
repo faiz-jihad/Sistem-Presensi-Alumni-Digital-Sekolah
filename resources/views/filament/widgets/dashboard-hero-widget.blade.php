@@ -13,7 +13,7 @@
 
             background:
             radial-gradient(circle at top right,#60a5fa33,transparent 35%),
-            linear-gradient(135deg,#1e3a8a,#2563eb,#3b82f6);
+            linear-gradient(135deg,#1e3a8a,#1e3a8a,#1e3a8a);
 
             box-shadow:
             0 20px 45px rgba(37,99,235,.25);
@@ -368,10 +368,10 @@
             transform:rotate(-8deg) scale(1.08);
             background:rgba(255,255,255,.25);
         }
-        .action-card.siswa { background: linear-gradient(135deg, #10b981, #0d9488); }
-        .action-card.guru { background: linear-gradient(135deg, #3b82f6, #4f46e5); }
-        .action-card.presensi { background: linear-gradient(135deg, #f59e0b, #ea580c); }
-        .action-card.laporan { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .action-card.siswa { background: linear-gradient(135deg, #1E88E5, #1E88E5); }
+        .action-card.guru { background: linear-gradient(135deg, #1E88E5, #1E88E5); }
+        .action-card.presensi { background: linear-gradient(135deg, #1E88E5, #1E88E5); }
+        .action-card.laporan { background: linear-gradient(135deg, #1E88E5, #1E88E5); }
         
         .action-card.ajukan-event { background: linear-gradient(135deg, #ec4899, #d946ef); }
         .action-card.daftar-event { background: linear-gradient(135deg, #3b82f6, #6366f1); }
