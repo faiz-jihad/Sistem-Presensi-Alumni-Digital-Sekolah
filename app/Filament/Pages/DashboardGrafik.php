@@ -11,24 +11,17 @@ use Filament\Support\Icons\Heroicon;
 
 class DashboardGrafik extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBarSquare;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-home';
 
-    protected static ?string $navigationLabel = 'Dashboard Grafik';
+    protected static ?string $navigationLabel = 'Beranda';
 
-    protected static ?string $title = 'Dashboard Grafik';
+    protected static ?string $title = 'Beranda';
 
-    protected ?string $heading = 'Dashboard Grafik';
+    protected ?string $heading = 'Beranda';
 
     protected ?string $subheading = 'Pantau ringkasan sekolah, presensi siswa, dan status alumni dalam satu tampilan visual.';
 
-    protected static \UnitEnum|string|null $navigationGroup = 'Laporan & Monitoring';
-
-    protected static ?int $navigationSort = 2;
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+    protected static ?int $navigationSort = -2;
 
     protected string $view = 'filament.pages.dashboard-grafik';
 

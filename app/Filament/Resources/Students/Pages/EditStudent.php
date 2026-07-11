@@ -102,10 +102,13 @@ class EditStudent extends EditRecord
         }
 
         // Sinkronisasi akun login siswa
+        $originalNis = $student->getOriginal('nis') ?? $student->nis;
+        $originalName = $student->getOriginal('name') ?? $student->name;
+
         $studentUser = User::where('role', 'student')
-            ->where(function ($q) use ($student) {
-                $q->where('email', $student->nis)
-                    ->orWhere('name', $student->name);
+            ->where(function ($q) use ($originalNis, $originalName) {
+                $q->where('email', $originalNis)
+                    ->orWhere('name', $originalName);
             })->first();
 
         $email    = $this->data['email'] ?? $student->nis;

@@ -35,6 +35,10 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(\DiogoGPinto\AuthUIEnhancer\Pages\Auth\AuthUiEnhancerLogin::class)
             ->brandName('SIMPAD')
+            ->brandLogo(asset('logo_transparent.png'))
+            ->darkModeBrandLogo(asset('logo_white.png'))
+            ->brandLogoHeight('2.5rem')
+            ->favicon(asset('logo_icon.png'))
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -276,7 +280,12 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->databaseNotificationsPolling('5s')
-            ->profile();
+            ->userMenuItems([
+                'profile' => \Filament\Navigation\MenuItem::make()
+                    ->label('Profil Saya')
+                    ->url(fn (): string => \App\Filament\Pages\Profile::getUrl())
+                    ->icon('heroicon-o-user'),
+            ]);
     }
 
     public function boot(): void

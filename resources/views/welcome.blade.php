@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMPAD - Sistem Informasi Presensi & Alumni Digital</title>
+    <link rel="icon" type="image/png" href="{{ asset('logo_icon.png') }}">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,8 +84,8 @@
     <header class="sticky top-0 z-40 w-full bg-white/70 backdrop-blur-md border-b border-slate-100 px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-500 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-brand-500/20">
-                    S
+                <div class="h-10 w-10 flex items-center justify-center">
+                    <img src="{{ asset('logo_icon.png') }}" class="h-10 w-10 object-contain" alt="Logo">
                 </div>
                 <div>
                     <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">SIMPAD</h1>
