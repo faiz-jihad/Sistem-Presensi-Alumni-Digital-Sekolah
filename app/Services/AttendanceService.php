@@ -140,6 +140,8 @@ class AttendanceService
             }
         }
 
+        $this->sendClassAttendanceSummaryNotification($teacherId, $classId, $date, $recordedCount);
+
         return [
             'success' => true,
             'count'   => $recordedCount,
@@ -431,8 +433,71 @@ class AttendanceService
         };
     }
 
+    private function sendClassAttendanceSummaryNotification(?int $teacherId, int $classId, string $date, int $recordedCount): void
+    {
+        if ($recordedCount <= 0) {
+            return;
+        }
+
+        try {
+            $class = \App\Models\SchoolClass::find($classId);
+            $teacher = $teacherId ? \App\Models\Teacher::with('user')->find($teacherId) : null;
+            $className = $class?->name ?? 'Kelas';
+            $dateText = Carbon::parse($date)->translatedFormat('d F Y');
+
+            $recipients = User::query()
+                ->whereIn('role', ['admin', 'super_admin'])
+                ->where('status', 'active')
+                ->when($class?->school_id, function ($query) use ($class) {
+                    $query->where(function ($query) use ($class) {
+                        $query->where('role', 'super_admin')
+                            ->orWhere(function ($query) use ($class) {
+                                $query->where('role', 'admin')
+                                    ->where('school_id', $class->school_id);
+                            });
+                    });
+                })
+                ->get();
+
+            if ($teacher?->user) {
+                $recipients->push($teacher->user);
+            }
+
+            $recipients = $recipients->unique('id')->values();
+            if ($recipients->isEmpty()) {
+                return;
+            }
+
+            \Filament\Notifications\Notification::make()
+                ->title('Presensi Kelas Tersimpan')
+                ->body("Presensi **{$className}** tanggal **{$dateText}** berhasil disimpan untuk **{$recordedCount} siswa**.")
+                ->success()
+                ->sendToDatabase($recipients);
+        } catch (\Throwable $exception) {
+            Log::warning('Gagal mengirim ringkasan notifikasi presensi kelas.', [
+                'class_id' => $classId,
+                'date' => $date,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
     private function storeAppNotification(User $user, string $title, string $body, array $data): void
     {
+        $attendanceId = $data['attendance_id'] ?? null;
+        if ($attendanceId) {
+            $alreadyExists = DatabaseNotification::query()
+                ->where('type', 'student_attendance_recorded')
+                ->where('notifiable_type', User::class)
+                ->where('notifiable_id', $user->id)
+                ->where('data->data->attendance_id', $attendanceId)
+                ->exists();
+
+            if ($alreadyExists) {
+                return;
+            }
+        }
+
         DatabaseNotification::create([
             'id' => (string) Str::uuid(),
             'type' => 'student_attendance_recorded',
