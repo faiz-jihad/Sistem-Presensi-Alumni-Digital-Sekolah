@@ -33,12 +33,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->globalSearch(false)
             ->login(\DiogoGPinto\AuthUIEnhancer\Pages\Auth\AuthUiEnhancerLogin::class)
             ->brandName('SIMPAD')
             ->brandLogo(asset('logo_transparent.png'))
             ->darkModeBrandLogo(asset('logo_white.png'))
-            ->brandLogoHeight('10rem')
+            ->brandLogoHeight('4rem')
             ->favicon(asset('logo_icon.png'))
             ->colors([
                 'primary' => Color::Blue,
