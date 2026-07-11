@@ -148,6 +148,8 @@ Route::prefix('v1')->group(function () {
                 ->middleware('role:teacher');
             Route::get('/teacher-attendance/today', [TeacherAttendanceController::class, 'today'])
                 ->middleware('role:teacher');
+            Route::get('/teacher/schedules', [\App\Http\Controllers\Api\TeacherController::class, 'schedules'])
+                ->middleware('role:teacher');
 
             Route::post('/attendance/open', [AttendanceController::class, 'open'])
                 ->middleware('role:teacher,admin,super_admin');

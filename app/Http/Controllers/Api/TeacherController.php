@@ -114,4 +114,45 @@ class TeacherController extends BaseController
             return $this->error('Terjadi kesalahan: ' . $e->getMessage(), 500);
         }
     }
+
+    /**
+     * Ambil jadwal mengajar guru
+     */
+    public function schedules(Request $request): JsonResponse
+    {
+        try {
+            /** @var \App\Models\User $user */
+            $user = $request->user();
+
+            if ($user->role !== 'teacher' || !$user->teacher) {
+                return $this->forbidden('Hanya guru yang dapat mengakses jadwal mengajar.');
+            }
+
+            $schedules = \App\Models\Schedule::with([
+                'class',
+                'subject',
+                'classHour'
+            ])
+            ->where('teacher_id', $user->teacher->id)
+            ->where('is_active', true)
+            ->orderByRaw("FIELD(day, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')")
+            ->get();
+
+            // Format ke format response yang mudah dikonsumsi mobile
+            $groupedSchedules = $schedules->groupBy(function ($schedule) {
+                return $schedule->day instanceof \BackedEnum ? $schedule->day->value : $schedule->day;
+            })->map(function ($daySchedules) {
+                return $daySchedules->sortBy(function ($schedule) {
+                    return $schedule->classHour ? $schedule->classHour->start_time : '23:59';
+                })->values();
+            });
+
+            return $this->success([
+                'schedules' => $groupedSchedules
+            ], 'Jadwal mengajar berhasil diambil');
+
+        } catch (\Exception $e) {
+            return $this->error('Terjadi kesalahan: ' . $e->getMessage(), 500);
+        }
+    }
 }
