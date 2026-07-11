@@ -39,7 +39,6 @@ class ClassHourPackageResource extends Resource
     {
         return in_array(auth()->user()->role, [
             'super_admin',
-            'admin',
         ]);
     }
 
