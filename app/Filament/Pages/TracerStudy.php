@@ -14,7 +14,7 @@ class TracerStudy extends Page
 
     public static function canAccess(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+        return in_array(auth()->user()->role, ['super_admin', 'admin'])
             && auth()->user()->hasFeature('has_tracer_study');
     }
 

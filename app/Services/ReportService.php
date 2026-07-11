@@ -71,17 +71,22 @@ class ReportService
         }
 
         return [
-            'class' => [
-                'id' => $class->id,
-                'name' => $class->name,
-                'grade' => $class->grade,
-                'major' => $class->major,
-            ],
-            'school_name' => $class->school?->name ?? 'Sekolah',
-            'date' => $date,
-            'summary' => $summary,
-            'students' => $reportData,
-        ];
+        'class' => [
+        'id' => $class->id,
+        'name' => $class->name,
+        'grade' => $class->grade,
+        'major' => $class->major,
+        ],
+
+        'school_name'    => $class->school?->name ?? '-',
+        'school_address' => $class->school?->address ?? '-',
+        'school_phone'   => $class->school?->phone ?? '-',
+        'school_email'   => $class->school?->email ?? '-',
+
+        'date' => $date,
+        'summary' => $summary,
+        'students' => $reportData,
+    ];
     }
 
     /**
@@ -148,18 +153,23 @@ class ReportService
         }
 
         return [
-            'class' => [
-                'id' => $class->id,
-                'name' => $class->name,
-                'grade' => $class->grade,
-                'major' => $class->major,
-            ],
-            'school_name' => $class->school?->name ?? 'Sekolah',
-            'month' => $month,
-            'year' => $year,
-            'total_students' => $students->count(),
-            'students' => $reportData,
-        ];
+        'class' => [
+        'id' => $class->id,
+        'name' => $class->name,
+        'grade' => $class->grade,
+        'major' => $class->major,
+        ],
+
+        'school_name'    => $class->school?->name ?? '-',
+        'school_address' => $class->school?->address ?? '-',
+        'school_phone'   => $class->school?->phone ?? '-',
+        'school_email'   => $class->school?->email ?? '-',
+
+        'month' => $month,
+        'year' => $year,
+        'total_students' => $students->count(),
+        'students' => $reportData,
+    ];
     }
 
     /**

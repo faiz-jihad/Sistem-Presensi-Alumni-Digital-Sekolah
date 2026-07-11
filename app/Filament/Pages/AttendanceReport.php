@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\School;
 
 class AttendanceReport extends Page
 {
@@ -202,22 +203,12 @@ class AttendanceReport extends Page
     public function exportPdf()
     {
         $report = $this->getReport();
-        if (! $report) {
-            Notification::make()->title('Data tidak tersedia untuk diekspor.')->danger()->send();
-            return null;
-        }
 
-        $className = $report['class']['name'] ?? 'Kelas';
+        $pdf = Pdf::loadView('pdf.daily-attendance', $report);
 
-        if ($this->data['type'] === 'daily') {
-            $date = $report['date'];
-            $pdf = Pdf::loadView('pdf.daily-attendance', $report);
-            return $pdf->download("rekap_harian_{$className}_{$date}.pdf");
-        } else {
-            $month = $this->data['month'];
-            $year = $this->data['year'];
-            $pdf = Pdf::loadView('pdf.monthly-attendance', $report);
-            return $pdf->download("rekap_bulanan_{$className}_{$month}_{$year}.pdf");
-        }
+    return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'laporan.pdf'
+        );
     }
 }

@@ -13,12 +13,11 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #10B981;
             padding-bottom: 10px;
         }
         .header h2 {
             margin: 0;
-            color: #065F46;
+            color: #000;
             font-size: 18px;
             text-transform: uppercase;
         }
@@ -26,6 +25,48 @@
             margin: 4px 0 0 0;
             font-size: 12px;
             color: #666;
+        }
+        .kop-table {
+            width: 100%;
+            border-bottom: 3px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .kop-logo {
+            width: 90px;
+            text-align: center;
+        }
+
+        .kop-logo img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .kop-title {
+            text-align: center;
+        }
+
+        .kop-title h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .kop-title h2 {
+            margin: 2px 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .kop-title h3 {
+            margin: 3px 0;
+            font-size: 16px;
+        }
+
+        .kop-title p {
+            margin: 2px 0;
+            font-size: 11px;
         }
         .meta-table {
             width: 100%;
@@ -49,7 +90,7 @@
             margin-top: 10px;
         }
         .report-table th {
-            background-color: #10B981;
+            background-color: #1E88E5;
             color: #ffffff;
             font-weight: bold;
             text-align: left;
@@ -61,7 +102,7 @@
             border: 1px solid #ddd;
         }
         .report-table tr:nth-child(even) {
-            background-color: #f0fdf4;
+            background-color: #f8fafc;
         }
         .badge {
             display: inline-block;
@@ -91,9 +132,32 @@
 </head>
 <body>
 
+        <table class="kop-table">
+        <tr>
+            <td class="kop-title">
+
+                <h2>{{ strtoupper($school_name) }}</h2>
+
+                <h3>
+                    SISTEM INFORMASI MANAJEMEN PRESENSI & ALUMNI DIGITAL
+                </h3>
+
+                <p>
+                    {{ $school_address }}<br>
+
+                    Telp. {{ $school_phone }}
+
+                    @if($school_email)
+                        - Email: {{ $school_email }}
+                    @endif
+                </p>
+
+            </td>
+        </tr>
+    </table>
+
     <div class="header">
-        <h2>Laporan Data Alumni</h2>
-        <p>{{ $school_name }}</p>
+        <h2>LAPORAN DATA ALUMNI</h2>
     </div>
 
     <table class="meta-table">
@@ -117,7 +181,7 @@
                 @endif
             </td>
             <td class="label">Total Alumni:</td>
-            <td class="value">{{ count($alumni_list) }} orang</td>
+            <td class="value">{{ count($alumni_list ?? []) }} orang</td>
         </tr>
     </table>
 
@@ -173,7 +237,9 @@
     </table>
 
     <div class="footer">
-        Dokumen ini dibuat otomatis oleh Sistem Presensi Alumni Digital Sekolah (SIMPAD) pada {{ now()->format('d/m/Y H:i:s') }}
+        Dicetak pada {{ now()->locale('id')->isoFormat('D MMMM Y HH:mm') }} WIB
+        <br>
+        Sistem Informasi Manajemen Presensi & Alumni Digital (SIMPAD)
     </div>
 
 </body>

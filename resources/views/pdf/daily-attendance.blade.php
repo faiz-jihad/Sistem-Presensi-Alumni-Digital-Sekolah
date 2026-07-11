@@ -13,19 +13,55 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #2563EB;
             padding-bottom: 10px;
         }
         .header h2 {
             margin: 0;
-            color: #1E3A8A;
+            color: #000;
             font-size: 18px;
             text-transform: uppercase;
         }
-        .header p {
-            margin: 4px 0 0 0;
-            font-size: 12px;
-            color: #666;
+        .kop-table {
+            width: 100%;
+            border-bottom: 3px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .kop-logo {
+            width: 90px;
+            text-align: center;
+        }
+
+        .kop-logo img {
+            width: 75px;
+            height: 75px;
+        }
+
+        .kop-title {
+            text-align: center;
+        }
+
+        .kop-title h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .kop-title h2 {
+            margin: 2px 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .kop-title h3 {
+            margin: 3px 0;
+            font-size: 16px;
+        }
+
+        .kop-title p {
+            margin: 2px 0;
+            font-size: 11px;
         }
         .meta-table {
             width: 100%;
@@ -49,7 +85,7 @@
             margin-top: 10px;
         }
         .report-table th {
-            background-color: #2563EB;
+            background-color: #1E88E5;
             color: #ffffff;
             font-weight: bold;
             text-align: left;
@@ -88,7 +124,7 @@
         }
         .summary-box h4 {
             margin: 0 0 8px 0;
-            color: #1E3A8A;
+            color: #1E88E5;
         }
         .summary-list {
             margin: 0;
@@ -106,10 +142,32 @@
     </style>
 </head>
 <body>
+        <table class="kop-table">
+        <tr>
+            <td class="kop-title">
+
+                <h2>{{ strtoupper($school_name) }}</h2>
+
+                <h3>
+                    SISTEM INFORMASI MANAJEMEN PRESENSI & ALUMNI DIGITAL
+                </h3>
+
+                <p>
+                    {{ $school_address }}<br>
+
+                    Telp. {{ $school_phone }}
+
+                    @if($school_email)
+                        - Email: {{ $school_email }}
+                    @endif
+                </p>
+
+            </td>
+        </tr>
+    </table>
 
     <div class="header">
         <h2>Laporan Presensi Harian Siswa</h2>
-        <p>Sistem Informasi Manajemen Presensi & Alumni Digital (SIMPAD)</p>
     </div>
 
     <table class="meta-table">
