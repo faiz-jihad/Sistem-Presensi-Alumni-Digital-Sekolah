@@ -84,7 +84,10 @@ class AppServiceProvider extends ServiceProvider
 
         \Illuminate\Notifications\DatabaseNotification::created($notificationCreatedHandler);
 
-        if (class_exists(\Filament\Notifications\Models\DatabaseNotification::class)) {
+        if (
+            class_exists(\Filament\Notifications\Models\DatabaseNotification::class)
+            && \Filament\Notifications\Models\DatabaseNotification::class !== \Illuminate\Notifications\DatabaseNotification::class
+        ) {
             \Filament\Notifications\Models\DatabaseNotification::created($notificationCreatedHandler);
         }
 
@@ -143,6 +146,14 @@ class AppServiceProvider extends ServiceProvider
 
         // 2. StudentAttendance Observers
         \App\Models\StudentAttendance::saved(function ($attendance) {
+            // Notifikasi presensi dikirim dari AttendanceService/PresensiSessionService
+            // agar hanya murid terkait dan orang tuanya yang menerima notifikasi.
+            return;
+
+            if (!$attendance->wasRecentlyCreated && !$attendance->wasChanged(['status', 'date'])) {
+                return;
+            }
+
             $student = $attendance->student;
             if ($student) {
                 $statusVal = $attendance->status instanceof \App\Enums\AttendanceStatus ? $attendance->status->value : $attendance->status;
@@ -175,7 +186,7 @@ class AppServiceProvider extends ServiceProvider
                           ->orWhere('name', $student->name);
                     })->first();
                     
-                if ($studentUser) {
+                if ($studentUser && (!$parentUser || $studentUser->id !== $parentUser->id)) {
                     \Filament\Notifications\Notification::make()
                         ->title($title)
                         ->body("Presensi Anda tercatat {$statusLabel} pada tanggal " . \Carbon\Carbon::parse($attendance->date)->translatedFormat('d F Y') . ".")
@@ -187,6 +198,8 @@ class AppServiceProvider extends ServiceProvider
 
         // 3. Alumni Observers
         \App\Models\Alumni::created(function ($alumni) {
+            return;
+
             // Notifikasi registrasi alumni baru ke Admin / Super Admin
             $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
             if ($admins->isNotEmpty()) {
@@ -348,7 +361,6 @@ class AppServiceProvider extends ServiceProvider
         // Auto notify admin users for important Filament model changes.
         foreach ([
             \App\Models\AcademicYear::class,
-            \App\Models\Alumni::class,
             \App\Models\AlumniEvent::class,
             \App\Models\ClassHourPackage::class,
             \App\Models\Export::class,
@@ -360,7 +372,6 @@ class AppServiceProvider extends ServiceProvider
             \App\Models\SchoolClass::class,
             \App\Models\Semester::class,
             \App\Models\Student::class,
-            \App\Models\StudentAttendance::class,
             \App\Models\StudentClass::class,
             \App\Models\Subject::class,
             \App\Models\Teacher::class,
