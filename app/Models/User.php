@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -14,7 +15,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles; // Tambahkan ini
 use NotificationChannels\WebPush\HasPushSubscriptions;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasApiTokens,
         HasFactory,
@@ -32,6 +33,7 @@ class User extends Authenticatable implements FilamentUser
         'school_id',
         'status',
         'google_id',
+        'avatar_url',
     ];
 
     protected $hidden = [
@@ -244,5 +246,13 @@ class User extends Authenticatable implements FilamentUser
     public function fcmTokens(): HasMany
     {
         return $this->hasMany(FcmToken::class);
+    }
+
+    /**
+     * Dapatkan URL avatar pengguna untuk Filament.
+     */
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url;
     }
 }

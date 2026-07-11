@@ -7,6 +7,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class SchoolsTable
@@ -88,6 +89,39 @@ class SchoolsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->filters([
+                SelectFilter::make('level')
+                    ->label('Jenjang')
+                    ->options([
+                        'sd' => 'SD',
+                        'smp' => 'SMP',
+                        'sma' => 'SMA',
+                        'smk' => 'SMK',
+                        'ma' => 'MA',
+                    ])
+                    ->placeholder('Semua Jenjang'),
+
+                SelectFilter::make('status')
+                    ->label('Status Aktif')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                    ])
+                    ->placeholder('Semua Status'),
+
+                SelectFilter::make('package_id')
+                    ->label('Paket Langganan')
+                    ->relationship('package', 'name')
+                    ->placeholder('Semua Paket')
+                    ->preload(),
+            ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->actions([
                 EditAction::make()
                     ->label('Edit')

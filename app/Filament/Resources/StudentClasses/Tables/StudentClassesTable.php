@@ -9,6 +9,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class StudentClassesTable
@@ -80,8 +81,54 @@ class StudentClassesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make(),
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('academic_year_id')
+                    ->label('Tahun Ajaran')
+                    ->relationship('academicYear', 'name')
+                    ->placeholder('Semua Tahun Ajaran')
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('grade')
+                    ->label('Tingkat Kelas')
+                    ->options([
+                        '10' => 'Kelas 10 (X)',
+                        '11' => 'Kelas 11 (XI)',
+                        '12' => 'Kelas 12 (XII)',
+                        '13' => 'Kelas 13 (XIII)',
+                    ])
+                    ->placeholder('Semua Tingkat'),
+
+                SelectFilter::make('major')
+                    ->label('Jurusan')
+                    ->options(fn () => \App\Models\StudentClass::query()->whereNotNull('major')->where('major', '!=', '')->distinct()->pluck('major', 'major')->toArray())
+                    ->placeholder('Semua Jurusan')
+                    ->searchable(),
+
+                SelectFilter::make('homeroom_teacher_id')
+                    ->label('Wali Kelas')
+                    ->relationship('homeroomTeacher', 'name')
+                    ->placeholder('Semua Wali Kelas')
+                    ->preload()
+                    ->searchable(),
+
+                TrashedFilter::make()
+                    ->label('Sampah (Soft Delete)'),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make()
                     ->label('Edit'),

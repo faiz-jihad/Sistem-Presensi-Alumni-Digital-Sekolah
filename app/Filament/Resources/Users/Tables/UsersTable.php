@@ -61,6 +61,14 @@ class UsersTable
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
                 SelectFilter::make('role')
                     ->label('Peran')
                     ->options([
@@ -71,6 +79,7 @@ class UsersTable
                         'parent' => 'Orang Tua / Wali',
                         'alumni' => 'Alumni',
                     ]),
+
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
@@ -78,6 +87,7 @@ class UsersTable
                         'inactive' => 'Tidak Aktif',
                         'suspended' => 'Ditangguhkan',
                     ]),
+
                 SelectFilter::make('google_id')
                     ->label('Tautan Google')
                     ->options([
@@ -92,6 +102,13 @@ class UsersTable
                         }
                     }),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->actions([
                 EditAction::make()
                     ->label('Edit'),

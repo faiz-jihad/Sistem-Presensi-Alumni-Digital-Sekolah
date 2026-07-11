@@ -246,7 +246,17 @@ class StudentAttendanceController extends BaseController
         try {
             $attendance = $this->attendanceService->applyLeave($student->id, $request->all());
 
-            $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+            $admins = \App\Models\User::query()
+                ->whereIn('role', ['super_admin', 'admin'])
+                ->where('status', 'active')
+                ->where(function ($query) use ($student) {
+                    $query->where('role', 'super_admin')
+                        ->orWhere(function ($query) use ($student) {
+                            $query->where('role', 'admin')
+                                ->where('school_id', $student->school_id);
+                        });
+                })
+                ->get();
             if ($admins->isNotEmpty()) {
                 $statusLabel = $request->status === 'sick' ? 'Sakit' : 'Izin';
                 \Filament\Notifications\Notification::make()

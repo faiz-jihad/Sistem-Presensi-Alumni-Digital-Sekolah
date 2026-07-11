@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class SchedulesTable
@@ -66,8 +67,64 @@ class SchedulesTable
                     ->boolean(),
             ])
             ->filters([
-                //
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('class_id')
+                    ->label('Kelas')
+                    ->relationship('class', 'name')
+                    ->placeholder('Semua Kelas')
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('subject_id')
+                    ->label('Mata Pelajaran')
+                    ->relationship('subject', 'name')
+                    ->placeholder('Semua Mata Pelajaran')
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('teacher_id')
+                    ->label('Guru Pengampu')
+                    ->relationship('teacher', 'name')
+                    ->placeholder('Semua Guru')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->role !== 'teacher'),
+
+                SelectFilter::make('day')
+                    ->label('Hari')
+                    ->options([
+                        'monday' => 'Senin',
+                        'tuesday' => 'Selasa',
+                        'wednesday' => 'Rabu',
+                        'thursday' => 'Kamis',
+                        'friday' => 'Jumat',
+                        'saturday' => 'Sabtu',
+                        'sunday' => 'Minggu',
+                    ])
+                    ->placeholder('Semua Hari'),
+
+                SelectFilter::make('is_active')
+                    ->label('Status Aktif')
+                    ->options([
+                        '1' => 'Aktif',
+                        '0' => 'Tidak Aktif',
+                    ])
+                    ->placeholder('Semua Status'),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make(),
             ])

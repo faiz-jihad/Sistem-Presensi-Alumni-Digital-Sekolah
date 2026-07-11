@@ -111,6 +111,7 @@ class FilamentChangeNotificationService
             \App\Models\AcademicYear::class => 'Tahun ajaran',
             \App\Models\Alumni::class => 'Alumni',
             \App\Models\AlumniEvent::class => 'Kegiatan alumni',
+            \App\Models\ClassHour::class => 'Jam pelajaran',
             \App\Models\ClassHourPackage::class => 'Paket jam pelajaran',
             \App\Models\Export::class => 'Laporan',
             \App\Models\JobVacancy::class => 'Lowongan kerja',

@@ -8,6 +8,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+
 Route::get('/storage/{filename}', function ($filename) {
     $path = storage_path('app/public/' . $filename);
 
@@ -58,6 +60,8 @@ Route::post('/webpush/subscribe', [\App\Http\Controllers\WebPushController::clas
 
 // Redirect route for default Filament login page
 Route::redirect('/login', '/admin/login')->name('login');
+
+
 
 // Google Web Login - Redirect ke Google OAuth 2.0 (tanpa Firebase)
 Route::get('/admin/login/google/redirect', function () {
@@ -141,9 +145,17 @@ Route::get('/admin/login/google/callback', function (\Illuminate\Http\Request $r
             ]);
         }
 
-        // Hubungkan google_id jika belum terhubung
+        // Hubungkan google_id dan avatar_url jika diperlukan
+        $avatarUrl = $payload['picture'] ?? null;
+        $updateData = [];
         if (empty($user->google_id)) {
-            $user->update(['google_id' => $googleId]);
+            $updateData['google_id'] = $googleId;
+        }
+        if ($avatarUrl && $user->avatar_url !== $avatarUrl) {
+            $updateData['avatar_url'] = $avatarUrl;
+        }
+        if (!empty($updateData)) {
+            $user->update($updateData);
         }
 
         // Verifikasi status user aktif

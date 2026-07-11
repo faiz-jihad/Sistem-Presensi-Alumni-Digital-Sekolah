@@ -57,7 +57,17 @@ class AlumniService
             ]);
 
             // 5. Kirim notifikasi database ke admin/super_admin
-            $admins = User::role(['admin', 'super_admin'])->get();
+            $admins = User::query()
+                ->whereIn('role', ['super_admin', 'admin'])
+                ->where('status', 'active')
+                ->where(function ($query) use ($alumni) {
+                    $query->where('role', 'super_admin')
+                        ->orWhere(function ($query) use ($alumni) {
+                            $query->where('role', 'admin')
+                                ->where('school_id', $alumni->school_id);
+                        });
+                })
+                ->get();
             if ($admins->isNotEmpty()) {
                 Notification::make()
                     ->title('Registrasi Alumni Baru')

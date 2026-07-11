@@ -99,7 +99,11 @@ class AlumniTable
             ->filters([
                 Tables\Filters\SelectFilter::make('school_id')
                     ->label('Sekolah')
-                    ->relationship('school', 'name'),
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
                 Tables\Filters\SelectFilter::make('verification_status')
                     ->label('Status Verifikasi')
                     ->options([
@@ -146,6 +150,13 @@ class AlumniTable
                         }
                     }),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->searchable()
             ->searchPlaceholder('Cari alumni...')
             ->searchDebounce(300)

@@ -4,15 +4,7 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Dashboard as BaseDashboard;
 
-class HomeRedirect extends BaseDashboard
+// Disabled to prevent conflicts with the main Dashboard page.
+class HomeRedirect
 {
-    public function mount(): void
-    {
-        redirect('/admin/profile');
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
 }

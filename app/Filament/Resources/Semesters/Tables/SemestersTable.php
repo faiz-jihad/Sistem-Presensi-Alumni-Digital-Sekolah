@@ -9,6 +9,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class SemestersTable
@@ -61,6 +62,45 @@ class SemestersTable
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->filters([
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('academicYear.school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('academic_year_id')
+                    ->label('Tahun Ajaran')
+                    ->relationship('academicYear', 'name')
+                    ->placeholder('Semua Tahun Ajaran')
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('type')
+                    ->label('Jenis Semester')
+                    ->options([
+                        'odd' => 'Ganjil',
+                        'even' => 'Genap',
+                    ])
+                    ->placeholder('Semua Jenis'),
+
+                SelectFilter::make('is_active')
+                    ->label('Status Aktif')
+                    ->options([
+                        '1' => 'Aktif',
+                        '0' => 'Tidak Aktif',
+                    ])
+                    ->placeholder('Semua Status'),
+            ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make(),
             ])

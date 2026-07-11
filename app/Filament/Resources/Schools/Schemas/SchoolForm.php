@@ -8,6 +8,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Placeholder;
 
 class SchoolForm
 {
@@ -76,6 +77,11 @@ class SchoolForm
                     ->numeric()
                     ->default(100)
                     ->helperText('Jarak maksimal guru boleh melakukan presensi dari titik sekolah (dalam meter)'),
+                    
+                Placeholder::make('map_picker')
+                    ->label('Pilih Lokasi di Peta')
+                    ->content(view('filament.forms.components.map-picker'))
+                    ->columnSpanFull(),
                     
                 FileUpload::make('logo')
                     ->label('Logo Sekolah')

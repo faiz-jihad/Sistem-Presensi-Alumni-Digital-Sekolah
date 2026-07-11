@@ -256,7 +256,17 @@ class PresensiSessionService
             $session->load(['teacher', 'schedule.class', 'schedule.subject']);
 
             // Kirim notifikasi database ke Admin & Super Admin
-            $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+            $admins = \App\Models\User::query()
+                ->whereIn('role', ['super_admin', 'admin'])
+                ->where('status', 'active')
+                ->where(function ($query) use ($session) {
+                    $query->where('role', 'super_admin')
+                        ->orWhere(function ($query) use ($session) {
+                            $query->where('role', 'admin')
+                                ->where('school_id', $session->school_id);
+                        });
+                })
+                ->get();
             if ($admins->isNotEmpty()) {
                 $teacherName = $session->teacher?->name ?? 'Guru';
                 $className = $session->schedule?->class?->name ?? 'Kelas';
@@ -378,7 +388,17 @@ class PresensiSessionService
         $session->load(['teacher', 'schedule.class', 'schedule.subject']);
 
         // Kirim notifikasi database ke Admin & Super Admin
-        $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+        $admins = \App\Models\User::query()
+            ->whereIn('role', ['super_admin', 'admin'])
+            ->where('status', 'active')
+            ->where(function ($query) use ($session) {
+                $query->where('role', 'super_admin')
+                    ->orWhere(function ($query) use ($session) {
+                        $query->where('role', 'admin')
+                            ->where('school_id', $session->school_id);
+                    });
+            })
+            ->get();
         if ($admins->isNotEmpty()) {
             $teacherName = $session->teacher?->name ?? 'Guru';
             $className = $session->schedule?->class?->name ?? 'Kelas';

@@ -16,14 +16,9 @@ class Dashboard extends BaseDashboard
     protected static ?string $title = 'Beranda';
     protected static ?int $navigationSort = -2;
 
-    public function mount(): void
-    {
-        redirect('/admin/profile');
-    }
-
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return true;
     }
 
     public function getView(): string

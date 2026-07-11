@@ -9,6 +9,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class SubjectsTable
@@ -65,8 +66,42 @@ class SubjectsTable
                     ->sortable(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('group')
+                    ->label('Kelompok Pelajaran')
+                    ->options([
+                        'general' => 'Umum',
+                        'specialized' => 'Kejuruan / Peminatan',
+                        'local' => 'Muatan Lokal',
+                        'extracurricular' => 'Ekstrakurikuler',
+                    ])
+                    ->placeholder('Semua Kelompok'),
+
+                SelectFilter::make('status')
+                    ->label('Status Aktif')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                    ])
+                    ->placeholder('Semua Status'),
+
+                TrashedFilter::make()
+                    ->label('Sampah (Soft Delete)'),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make(),
             ])

@@ -68,9 +68,17 @@ class GoogleAuthController extends Controller
                 ], 404);
             }
 
-            // Link google_id if not linked yet
+            // Link google_id and avatar_url if needed
+            $avatarUrl = $payload['picture'] ?? null;
+            $updateData = [];
             if (empty($user->google_id)) {
-                $user->update(['google_id' => $googleId]);
+                $updateData['google_id'] = $googleId;
+            }
+            if ($avatarUrl && $user->avatar_url !== $avatarUrl) {
+                $updateData['avatar_url'] = $avatarUrl;
+            }
+            if (!empty($updateData)) {
+                $user->update($updateData);
             }
 
             // Verify if user is active

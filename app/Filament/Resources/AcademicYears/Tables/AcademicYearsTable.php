@@ -10,6 +10,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class AcademicYearsTable
@@ -61,8 +62,32 @@ class AcademicYearsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make(),
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('is_active')
+                    ->label('Status Aktif')
+                    ->options([
+                        '1' => 'Aktif',
+                        '0' => 'Tidak Aktif',
+                    ])
+                    ->placeholder('Semua Status'),
+
+                TrashedFilter::make()
+                    ->label('Sampah (Soft Delete)'),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make()
                     ->label('Edit'),

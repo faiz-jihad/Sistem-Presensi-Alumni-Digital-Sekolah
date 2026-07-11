@@ -11,17 +11,27 @@ use Filament\Support\Icons\Heroicon;
 
 class DashboardGrafik extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-home';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected static ?string $navigationLabel = 'Beranda';
+    protected static ?string $navigationLabel = 'Dasbor Grafik';
 
-    protected static ?string $title = 'Beranda';
+    protected static ?string $title = 'Dasbor Grafik';
 
-    protected ?string $heading = 'Beranda';
+    protected ?string $heading = 'Dasbor Grafik';
 
     protected ?string $subheading = 'Pantau ringkasan sekolah, presensi siswa, dan status alumni dalam satu tampilan visual.';
 
     protected static ?int $navigationSort = -2;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
+    public function mount(): void
+    {
+        redirect('/admin');
+    }
 
     protected string $view = 'filament.pages.dashboard-grafik';
 

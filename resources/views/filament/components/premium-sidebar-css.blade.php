@@ -12,6 +12,7 @@
     };
     $userEmail = $user ? $user->email : '';
     $isGoogleLinked = !empty($user?->google_id);
+    $avatarUrl = $user?->avatar_url;
     
     // Initials calculation
     $initials = '';
@@ -1431,8 +1432,8 @@
                     const profileCard = document.createElement('div');
                     profileCard.className = 'simpad-profile-card';
                     profileCard.innerHTML = `
-                        <div class="simpad-profile-card__avatar">
-                            {{ $initials }}
+                        <div class="simpad-profile-card__avatar" style="overflow: hidden;">
+                            ${ "{{ $avatarUrl }}" !== "" ? `<img src="{{ $avatarUrl }}" alt="{{ $userName }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;">` : `{{ $initials }}` }
                         </div>
                         <div class="simpad-profile-card__info">
                             <h1 class="simpad-profile-card__name">{{ $userName }}</h1>

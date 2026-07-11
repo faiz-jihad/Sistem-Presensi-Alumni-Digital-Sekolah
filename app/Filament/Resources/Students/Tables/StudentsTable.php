@@ -85,17 +85,50 @@ class StudentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('class_id')
+                    ->label('Kelas')
+                    ->relationship('class', 'name')
+                    ->placeholder('Semua Kelas')
+                    ->preload()
+                    ->searchable(),
+
+                SelectFilter::make('gender')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'male' => 'Laki-laki',
+                        'female' => 'Perempuan',
+                    ])
+                    ->placeholder('Semua Jenis Kelamin'),
+
                 SelectFilter::make('status')
-                    ->label('Filter Status')
+                    ->label('Status')
                     ->options([
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',
                         'graduated' => 'Lulus',
                         'transferred' => 'Pindahan',
                         'dropout' => 'Keluar',
-                    ]),
-                TrashedFilter::make()->label('Keranjang Sampah'),
+                    ])
+                    ->placeholder('Semua Status'),
+
+                TrashedFilter::make()
+                    ->label('Sampah (Soft Delete)'),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make()
                     ->label('Edit'),

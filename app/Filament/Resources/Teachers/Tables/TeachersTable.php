@@ -6,6 +6,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class TeachersTable
@@ -117,8 +119,59 @@ class TeachersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('school_id')
+                    ->label('Sekolah')
+                    ->relationship('school', 'name')
+                    ->placeholder('Semua Sekolah')
+                    ->preload()
+                    ->searchable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+
+                SelectFilter::make('employment_status')
+                    ->label('Status Kerja')
+                    ->options([
+                        'pns' => 'PNS',
+                        'pppk' => 'PPPK',
+                        'honorer' => 'Honorer',
+                        'gtt' => 'GTT',
+                        'ptt' => 'PTT',
+                        'kontrak' => 'Kontrak',
+                    ])
+                    ->placeholder('Semua Status Kerja'),
+
+                SelectFilter::make('gender')
+                    ->label('Jenis Kelamin')
+                    ->options([
+                        'male' => 'Laki-laki',
+                        'female' => 'Perempuan',
+                    ])
+                    ->placeholder('Semua Jenis Kelamin'),
+
+                SelectFilter::make('status')
+                    ->label('Status Aktif')
+                    ->options([
+                        'active' => 'Aktif',
+                        'inactive' => 'Tidak Aktif',
+                        'retired' => 'Pensiun',
+                    ])
+                    ->placeholder('Semua Status'),
+
+                SelectFilter::make('field_of_study')
+                    ->label('Bidang Studi')
+                    ->options(fn () => \App\Models\Teacher::query()->whereNotNull('field_of_study')->where('field_of_study', '!=', '')->distinct()->pluck('field_of_study', 'field_of_study')->toArray())
+                    ->placeholder('Semua Bidang Studi')
+                    ->searchable(),
+
+                TrashedFilter::make()
+                    ->label('Sampah (Soft Delete)'),
             ])
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->recordActions([
                 EditAction::make()
                     ->label('Edit'),

@@ -201,7 +201,17 @@ class AppServiceProvider extends ServiceProvider
             return;
 
             // Notifikasi registrasi alumni baru ke Admin / Super Admin
-            $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+            $admins = \App\Models\User::query()
+                ->whereIn('role', ['super_admin', 'admin'])
+                ->where('status', 'active')
+                ->where(function ($query) use ($alumni) {
+                    $query->where('role', 'super_admin')
+                        ->orWhere(function ($query) use ($alumni) {
+                            $query->where('role', 'admin')
+                                ->where('school_id', $alumni->school_id);
+                        });
+                })
+                ->get();
             if ($admins->isNotEmpty()) {
                 \Filament\Notifications\Notification::make()
                     ->title('Pendaftaran Alumni Baru 🔔')
@@ -256,7 +266,17 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\AlumniEvent::created(function ($event) {
             // Jika diajukan oleh alumni (butuh approval)
             if ($event->approval_status === 'pending') {
-                $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+                $admins = \App\Models\User::query()
+                    ->whereIn('role', ['super_admin', 'admin'])
+                    ->where('status', 'active')
+                    ->where(function ($query) use ($event) {
+                        $query->where('role', 'super_admin')
+                            ->orWhere(function ($query) use ($event) {
+                                $query->where('role', 'admin')
+                                    ->where('school_id', $event->school_id);
+                            });
+                    })
+                    ->get();
                 if ($admins->isNotEmpty()) {
                     \Filament\Notifications\Notification::make()
                         ->title('Pengajuan Kegiatan Alumni Baru 🗓️')
@@ -307,7 +327,17 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\JobVacancy::created(function ($job) {
             // Notifikasi pengajuan loker oleh alumni
             if (!$job->is_active) {
-                $admins = \App\Models\User::role(['admin', 'super_admin'])->get();
+                $admins = \App\Models\User::query()
+                    ->whereIn('role', ['super_admin', 'admin'])
+                    ->where('status', 'active')
+                    ->where(function ($query) use ($job) {
+                        $query->where('role', 'super_admin')
+                            ->orWhere(function ($query) use ($job) {
+                                $query->where('role', 'admin')
+                                    ->where('school_id', $job->school_id);
+                            });
+                    })
+                    ->get();
                 if ($admins->isNotEmpty()) {
                     \Filament\Notifications\Notification::make()
                         ->title('Pengajuan Lowongan Kerja Baru 💼')
@@ -361,7 +391,9 @@ class AppServiceProvider extends ServiceProvider
         // Auto notify admin users for important Filament model changes.
         foreach ([
             \App\Models\AcademicYear::class,
+            \App\Models\Alumni::class,
             \App\Models\AlumniEvent::class,
+            \App\Models\ClassHour::class,
             \App\Models\ClassHourPackage::class,
             \App\Models\Export::class,
             \App\Models\JobVacancy::class,
