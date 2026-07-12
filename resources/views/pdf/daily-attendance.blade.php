@@ -63,21 +63,16 @@
             margin: 2px 0;
             font-size: 11px;
         }
-        .meta-table {
-            width: 100%;
-            margin-bottom: 15px;
-            border-collapse: collapse;
+        .meta-table{
+        width:100%;
+        margin:20px 0 15px;
+        border-collapse:collapse;
         }
-        .meta-table td {
-            padding: 4px 0;
-            vertical-align: top;
-        }
-        .meta-table td.label {
-            width: 15%;
-            font-weight: bold;
-        }
-        .meta-table td.value {
-            width: 35%;
+
+        .meta-table td{
+            padding:4px 2px;
+            vertical-align:top;
+            font-size:11px;
         }
         .report-table {
             width: 100%;
@@ -170,12 +165,13 @@
         <h2>Laporan Presensi Harian Siswa</h2>
     </div>
 
-    <table class="meta-table">
+    <table class="meta-table" style="width:100%; border-collapse:collapse;">
         <tr>
-            <td class="label">Kelas:</td>
-            <td class="value">{{ $class['name'] }} ({{ $class['major'] }})</td>
-            <td class="label">Tanggal:</td>
-            <td class="value">{{ \Carbon\Carbon::parse($date)->locale('id')->isoFormat('dddd, D MMMM Y') }}</td>
+            <td style="width:15%; font-weight:bold;">Kelas</td>
+            <td style="width:35%;">: {{ $class['name'] }} ({{ $class['major'] }})</td>
+
+            <td style="font-weight:bold;">Tanggal</td>
+            <td>: {{ now()->locale('id')->isoFormat('D MMMM Y HH:mm') }} WIB</td>
         </tr>
     </table>
 
@@ -194,33 +190,39 @@
         <tbody>
             @php $no = 1; @endphp
             @foreach($students as $student)
-                @php
-                    $statusClass = 'badge-not_recorded';
-                    $statusLabel = 'Belum Diisi';
-                    
-                    switch($student['status']) {
-                        case 'present':
-                            $statusClass = 'badge-present';
-                            $statusLabel = 'Hadir';
-                            break;
-                        case 'late':
-                            $statusClass = 'badge-late';
-                            $statusLabel = 'Terlambat';
-                            break;
-                        case 'permission':
-                            $statusClass = 'badge-permission';
-                            $statusLabel = 'Izin';
-                            break;
-                        case 'sick':
-                            $statusClass = 'badge-sick';
-                            $statusLabel = 'Sakit';
-                            break;
-                        case 'absent':
-                            $statusClass = 'badge-absent';
-                            $statusLabel = 'Alpha';
-                            break;
-                    }
-                @endphp
+            @php
+                $status = $student['status'] ?? 'not_recorded';
+
+                $statusClass = 'badge-not_recorded';
+                $statusLabel = 'Belum Diisi';
+
+                switch ($status) {
+                    case 'present':
+                        $statusClass = 'badge-present';
+                        $statusLabel = 'Hadir';
+                        break;
+
+                    case 'late':
+                        $statusClass = 'badge-late';
+                        $statusLabel = 'Terlambat';
+                        break;
+
+                    case 'permission':
+                        $statusClass = 'badge-permission';
+                        $statusLabel = 'Izin';
+                        break;
+
+                    case 'sick':
+                        $statusClass = 'badge-sick';
+                        $statusLabel = 'Sakit';
+                        break;
+
+                    case 'absent':
+                        $statusClass = 'badge-absent';
+                        $statusLabel = 'Alpha';
+                        break;
+                }
+            @endphp
                 <tr>
                     <td style="text-align: center;">{{ $no++ }}</td>
                     <td><strong>{{ $student['name'] }}</strong></td>

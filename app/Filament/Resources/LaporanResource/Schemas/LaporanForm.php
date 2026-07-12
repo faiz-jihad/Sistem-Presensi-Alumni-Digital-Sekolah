@@ -68,18 +68,8 @@ class LaporanForm
                             ])
                             ->placeholder('Semua Status')
                             ->nullable(),
-                            
-                        // Tambahan filter untuk kelengkapan
-                        Select::make('filters.gender')
-                            ->label('Jenis Kelamin')
-                            ->options([
-                                'male' => 'Laki-laki',
-                                'female' => 'Perempuan',
-                            ])
-                            ->placeholder('Semua Jenis Kelamin')
-                            ->nullable(),
                     ])
-                    ->columns(3),
+                    ->columns(2),
             ]);
     }
 }

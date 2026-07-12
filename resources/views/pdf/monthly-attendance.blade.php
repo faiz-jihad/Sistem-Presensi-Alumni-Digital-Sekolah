@@ -4,105 +4,137 @@
     <meta charset="utf-8">
     <title>Laporan Presensi Bulanan</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 10px;
-            color: #333;
-            line-height: 1.3;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #10B981;
-            padding-bottom: 8px;
-        }
-        .header h2 {
-            margin: 0;
-            color: #065F46;
-            font-size: 16px;
-            text-transform: uppercase;
-        }
-        .header p {
-            margin: 4px 0 0 0;
-            font-size: 11px;
-            color: #666;
-        }
-        .meta-table {
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        color: #333;
+        line-height: 1.4;
+    }
+
+    .kop-table{
+    width:100%;
+    border-bottom:3px solid #000;
+    margin-bottom:20px;
+    border-collapse:collapse;
+    }
+
+    .kop-title{
+        text-align:center;
+    }
+
+    .kop-title h2{
+        margin:2px 0;
+        font-size:22px;
+        font-weight:bold;
+    }
+
+    .kop-title h3{
+        margin:3px 0;
+        font-size:16px;
+    }
+
+    .kop-title p{
+        margin:2px 0;
+        font-size:11px;
+    }
+
+    .header{
+        text-align:center;
+        margin-bottom:20px;
+    }
+
+    .header h2{
+        margin:0;
+        font-size:18px;
+    }
+
+    .meta-table{
+        width:100%;
+        margin:20px 0 15px;
+        border-collapse:collapse;
+    }
+
+    .meta-table td{
+        padding:4px 2px;
+        vertical-align:top;
+        font-size:11px;
+    }
+
+    .report-table {
             width: 100%;
-            margin-bottom: 12px;
             border-collapse: collapse;
-        }
-        .meta-table td {
-            padding: 3px 0;
-            vertical-align: top;
-        }
-        .meta-table td.label {
-            width: 15%;
-            font-weight: bold;
-        }
-        .meta-table td.value {
-            width: 35%;
-        }
-        .report-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
+            margin-top: 10px;
         }
         .report-table th {
-            background-color: #10B981;
+            background-color: #1E88E5;
             color: #ffffff;
             font-weight: bold;
-            text-align: center;
-            padding: 6px;
+            text-align: left;
+            padding: 8px;
             border: 1px solid #ddd;
         }
         .report-table td {
-            padding: 6px;
+            padding: 8px;
             border: 1px solid #ddd;
         }
         .report-table tr:nth-child(even) {
             background-color: #f8fafc;
         }
-        .text-center {
-            text-align: center;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .percentage-badge {
-            font-weight: bold;
-            color: #047857;
-        }
-        .percentage-low {
-            color: #b91c1c;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: right;
-            font-size: 9px;
-            color: #777;
-        }
+
+    .summary-box{
+        margin-top:20px;
+        border:1px solid #ddd;
+        padding:10px;
+        border-radius:6px;
+        background:#f8fafc;
+    }
     </style>
 </head>
 <body>
 
+        <table class="kop-table">
+        <tr>
+            <td class="kop-title">
+
+                <h2>{{ strtoupper($school_name) }}</h2>
+
+                <h3>
+                    SISTEM INFORMASI MANAJEMEN PRESENSI & ALUMNI DIGITAL
+                </h3>
+
+                <p>
+                    {{ $school_address }}<br>
+
+                    Telp. {{ $school_phone }}
+
+                    @if($school_email)
+                        - Email: {{ $school_email }}
+                    @endif
+                </p>
+
+            </td>
+        </tr>
+    </table>
+
     <div class="header">
         <h2>Laporan Rekapitulasi Presensi Bulanan</h2>
-        <p>Sistem Informasi Manajemen Presensi & Alumni Digital (SIMPAD)</p>
     </div>
 
-    <table class="meta-table">
+    <table class="meta-table" style="width:100%; border-collapse:collapse;">
         <tr>
-            <td class="label">Kelas:</td>
-            <td class="value">{{ $class['name'] }} ({{ $class['major'] }})</td>
-            <td class="label">Periode:</td>
-            <td class="value">{{ \Carbon\Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y') }}</td>
+            <td style="width:15%; font-weight:bold;">Kelas</td>
+            <td style="width:35%;">: {{ $class['name'] }} ({{ $class['major'] }})</td>
+
+            <td style="width:15%; font-weight:bold;">Periode</td>
+            <td style="width:35%;">: {{ \Carbon\Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y') }}</td>
         </tr>
+
         <tr>
-            <td class="label">Total Siswa:</td>
-            <td class="value">{{ $total_students }} Siswa</td>
-            <td class="label">Dicetak Pada:</td>
-            <td class="value">{{ now()->locale('id')->isoFormat('D MMMM Y H:i') }} WIB</td>
+            <td style="font-weight:bold;">Total Siswa</td>
+            <td>: {{ $total_students }} Siswa</td>
+
+            <td style="font-weight:bold;">Tanggal</td>
+            <td>: {{ now()->locale('id')->isoFormat('D MMMM Y HH:mm') }} WIB</td>
         </tr>
     </table>
 
@@ -143,22 +175,46 @@
         </tbody>
     </table>
 
-    <table style="width: 100%; margin-top: 30px;">
-        <tr>
-            <td style="width: 50%; font-size: 9px; vertical-align: top;">
-                <p><strong>Keterangan Kriteria Kehadiran:</strong></p>
-                <p>- Persentase kehadiran dihitung dari: (Hadir + Terlambat) / Total Hari Rekam Presensi.</p>
-                <p>- Persentase berwarna <span style="color: #b91c1c; font-weight: bold;">Merah</span> menunjukkan tingkat kehadiran di bawah 80%.</p>
-            </td>
-            <td style="width: 50%; text-align: right; vertical-align: bottom;">
-                <div style="font-size: 10px;">
-                    <p>Kepala Sekolah / Wali Kelas</p>
-                    <br><br><br>
-                    <p>__________________________</p>
-                    <p style="font-weight: bold; margin-right: 45px;">NIP. .........................</p>
-                </div>
-            </td>
-        </tr>
+    <table style="width:100%; margin-top:20px;">
+    <tr>
+
+    <td style="width:50%; vertical-align:top;">
+
+    <div class="summary-box">
+
+    <h4>Informasi</h4>
+
+    <ul class="summary-list">
+    <li>Persentase dihitung dari (Hadir + Terlambat) / Total Hari Presensi.</li>
+    <li>Persentase di bawah 80% dianggap kurang.</li>
+    </ul>
+
+    </div>
+
+    </td>
+
+    <td style="width:50%; vertical-align:bottom; text-align:right;">
+
+    <div style="font-size:11px">
+
+    <p>
+    Dicetak pada:
+    {{ now()->locale('id')->isoFormat('D MMMM Y H:i') }} WIB
+    </p>
+
+    <br><br><br>
+
+    <p>__________________________</p>
+
+    <p style="font-weight:bold; margin-right:40px;">
+    Wali Kelas / Petugas
+    </p>
+
+    </div>
+
+    </td>
+
+    </tr>
     </table>
 
 </body>

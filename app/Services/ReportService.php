@@ -53,20 +53,25 @@ class ReportService
         ];
 
         foreach ($students as $student) {
+
             $att = $attendances->get($student->id);
-            $status = $att ? $this->attendanceStatusValue($att->status) : 'not_recorded';
+
+            $status = $att
+                ? $this->attendanceStatusValue($att->status)
+                : 'not_recorded';
 
             if (array_key_exists($status, $summary)) {
                 $summary[$status]++;
             }
 
             $reportData[] = [
-                'student_id' => $student->id,
-                'name' => $student->name,
-                'nis' => $student->nis,
-                'status' => $status,
-                'check_in_time' => $att ? $att->check_in_time : null,
-                'note' => $att ? $att->note : null,
+                'student_id'     => $student->id,
+                'name'           => $student->name,
+                'nis'            => $student->nis,
+                'status'         => $status,
+                'check_in_time'  => $att?->check_in_time,
+                'check_out_time' => $att?->check_out_time,
+                'note'           => $att?->note,
             ];
         }
 
