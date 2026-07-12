@@ -201,14 +201,40 @@ class AttendanceReport extends Page
     }
 
     public function exportPdf()
-    {
-        $report = $this->getReport();
+{
+    $report = $this->getReport();
 
-        $pdf = Pdf::loadView('pdf.daily-attendance', $report);
+    if (! $report) {
+        Notification::make()
+            ->title('Data tidak tersedia.')
+            ->danger()
+            ->send();
+
+        return;
+    }
+
+    $class = StudentClass::find($this->data['class_id']);
+    $school = School::find($class->school_id);
+
+    $data = array_merge($report, [
+        'school_name'    => $school?->name,
+        'school_address' => $school?->address,
+        'school_phone'   => $school?->phone,
+        'school_email'   => $school?->email,
+        'school_logo'    => $school?->logo,
+    ]);
+
+    if ($this->data['type'] === 'daily') {
+        $data['date'] = $this->data['date'];
+
+        $pdf = Pdf::loadView('pdf.daily-attendance', $data);
+    } else {
+        $pdf = Pdf::loadView('pdf.monthly-attendance', $data);
+    }
 
     return response()->streamDownload(
-            fn () => print($pdf->output()),
-            'laporan.pdf'
-        );
-    }
+        fn () => print($pdf->output()),
+        'laporan-presensi.pdf'
+    );
+}
 }

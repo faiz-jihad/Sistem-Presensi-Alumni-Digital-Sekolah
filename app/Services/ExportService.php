@@ -69,9 +69,22 @@ class ExportService
                             'public'
                         );
                     } else {
-                        $reportData['school_name'] = $schoolName;
-                        $pdf = Pdf::loadView('pdf.daily-attendance', $reportData);
-                        Storage::disk('public')->put($filePath, $pdf->output());
+                        $reportData = array_merge($reportData, [
+                        'date' => $date,
+
+                        'school_name' => $school?->name,
+                        'school_address' => $school?->address,
+                        'school_phone' => $school?->phone,
+                        'school_email' => $school?->email,
+                        'school_logo' => $school?->logo,
+                    ]);
+
+                    $pdf = Pdf::loadView('pdf.daily-attendance', $reportData);
+
+                    Storage::disk('public')->put(
+                        $filePath,
+                        $pdf->output()
+                    );
                     }
                 } else {
                     $month = (int) ($filters['month'] ?? now()->month);
@@ -91,7 +104,14 @@ class ExportService
                             'public'
                         );
                     } else {
-                        $reportData['school_name'] = $schoolName;
+                        $reportData = array_merge($reportData, [
+                            'school_name'    => $school?->name,
+                            'school_address' => $school?->address,
+                            'school_phone'   => $school?->phone,
+                            'school_email'   => $school?->email,
+                            'school_logo'    => $school?->logo,
+                        ]);
+
                         $pdf = Pdf::loadView('pdf.monthly-attendance', $reportData);
                         Storage::disk('public')->put($filePath, $pdf->output());
                     }
