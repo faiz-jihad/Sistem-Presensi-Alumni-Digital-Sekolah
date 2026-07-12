@@ -21,7 +21,7 @@ class StoreAlumniEventRequest extends FormRequest
             'banner_image' => 'nullable|image|max:2048', // max 2MB
         ];
 
-        if ($this->user()->role === 'super_admin') {
+        if ($this->user() && $this->user()->role === 'super_admin') {
             $rules['school_id'] = 'nullable|exists:schools,id';
         }
 

@@ -27,7 +27,11 @@ class RecentStudents extends BaseWidget
 
     protected function getTableQuery(): Builder
     {
-        return Student::query()->latest()->limit(5);
+        $query = Student::query();
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+        return $query->latest()->limit(5);
     }
 
     public function table(Table $table): Table

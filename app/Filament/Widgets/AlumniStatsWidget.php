@@ -18,10 +18,17 @@ class AlumniStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $totalAlumni = Alumni::count();
-        $verifiedAlumni = Alumni::verified()->count();
-        $pendingAlumni = Alumni::pending()->count();
-        $rejectedAlumni = Alumni::rejected()->count();
+        $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
+
+        $query = Alumni::query();
+        if ($schoolId) {
+            $query->where('school_id', $schoolId);
+        }
+
+        $totalAlumni = (clone $query)->count();
+        $verifiedAlumni = (clone $query)->verified()->count();
+        $pendingAlumni = (clone $query)->pending()->count();
+        $rejectedAlumni = (clone $query)->rejected()->count();
 
         return [
             Stat::make('Total Alumni', $totalAlumni)

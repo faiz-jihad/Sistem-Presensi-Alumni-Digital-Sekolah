@@ -14,28 +14,39 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
-use Filament\Pages\Page;
+use Filament\Resources\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use App\Filament\Resources\StudentAttendances\StudentAttendanceResource;
 
 class ManualAttendance extends Page
 {
+    protected static string $resource = StudentAttendanceResource::class;
+
     protected string $view = 'filament.resources.student-attendances.pages.manual-attendance';
 
-    protected static ?string $navigationLabel = 'Input Presensi Manual';
+    protected static ?string $title = 'Presensi Manual Kelas';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Presensi & Kehadiran';
+    protected static ?string $navigationLabel = 'Presensi Manual Kelas';
 
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedPencil;
+    protected static string|\UnitEnum|null $navigationGroup = 'Presensi';
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-pencil-square';
 
     protected static ?int $navigationSort = 2;
 
-    public static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(array $parameters = []): bool
     {
-        return false;
+        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+            && auth()->user()->hasFeature('has_presensi')
+            && auth()->user()->school?->status === 'active';
     }
 
     public ?array $data = [];
+
+    public array $attendances = [];
+
+    public array $studentList = [];
 
     public function mount(): void
     {
@@ -46,27 +57,42 @@ class ManualAttendance extends Page
             'date'                => $session ? $session->date : now()->toDateString(),
             'class_id'            => $session ? $session->schedule?->class_id : null,
             'presensi_session_id' => $session ? $session->id : null,
-            'attendances'         => [],
         ];
 
+        $this->attendances = [];
+        $this->studentList = [];
+
         if ($session && $session->schedule?->class_id) {
+            $students = Student::where('class_id', $session->schedule->class_id)
+                ->where('status', 'active')
+                ->with(['attendances' => function ($query) {
+                    $query->latest('date')->limit(4);
+                }])
+                ->orderBy('name')
+                ->get();
+
+            $this->studentList = $students->map(fn($s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+                'nis' => $s->nis,
+                'nisn' => $s->nisn,
+                'history' => $s->attendances->sortBy('date')->map(fn($a) => [
+                    'status' => $a->status instanceof \App\Enums\AttendanceStatus ? $a->status->value : $a->status,
+                    'date' => $a->date,
+                ])->values()->toArray(),
+            ])->toArray();
+
             // Load existing attendances if they exist
             $existingAttendances = StudentAttendance::where('presensi_session_id', $session->id)->get();
 
             if ($existingAttendances->isNotEmpty()) {
-                $this->data['attendances'] = $existingAttendances->map(fn($att) => [
+                $this->attendances = $existingAttendances->map(fn($att) => [
                     'student_id' => $att->student_id,
                     'status'     => $att->status instanceof AttendanceStatus ? $att->status->value : $att->status,
                     'note'       => $att->note,
                 ])->toArray();
             } else {
-                // Otherwise, load active students in the class
-                $students = Student::where('class_id', $session->schedule->class_id)
-                    ->where('status', 'active')
-                    ->orderBy('name')
-                    ->get();
-
-                $this->data['attendances'] = $students->map(fn($s) => [
+                $this->attendances = $students->map(fn($s) => [
                     'student_id' => $s->id,
                     'status'     => 'present',
                     'note'       => '',
@@ -81,99 +107,61 @@ class ManualAttendance extends Page
             ->schema([
                 Select::make('class_id')
                     ->label('Kelas')
-                    ->options(StudentClass::orderBy('name')->pluck('name', 'id'))
+                    ->options(function () {
+                        $user = auth()->user();
+                        $query = StudentClass::query()->orderBy('name');
+                        if ($user->role !== 'super_admin' && $user->school_id) {
+                            $query->where('school_id', $user->school_id);
+                        }
+                        return $query->pluck('name', 'id');
+                    })
                     ->required()
                     ->searchable()
                     ->preload()
                     ->live()
-                    ->afterStateUpdated(fn(callable $set) => $set('attendances', [])),
+                    ->afterStateUpdated(function ($state, $livewire) {
+                        if ($state) {
+                            $students = Student::where('class_id', $state)
+                                ->where('status', 'active')
+                                ->with(['attendances' => function ($query) {
+                                    $query->latest('date')->limit(4);
+                                }])
+                                ->orderBy('name')
+                                ->get();
+
+                            $livewire->studentList = $students->map(fn($s) => [
+                                'id' => $s->id,
+                                'name' => $s->name,
+                                'nis' => $s->nis,
+                                'nisn' => $s->nisn,
+                                'history' => $s->attendances->sortBy('date')->map(fn($a) => [
+                                    'status' => $a->status instanceof \App\Enums\AttendanceStatus ? $a->status->value : $a->status,
+                                    'date' => $a->date,
+                                ])->values()->toArray(),
+                            ])->toArray();
+
+                            $livewire->attendances = $students->map(fn($s) => [
+                                'student_id' => $s->id,
+                                'status'     => 'present',
+                                'note'       => '',
+                            ])->toArray();
+                        } else {
+                            $livewire->studentList = [];
+                            $livewire->attendances = [];
+                        }
+                    }),
 
                 DatePicker::make('date')
                     ->label('Tanggal')
                     ->required()
                     ->default(now()),
 
-                Select::make('presensi_session_id')
-                    ->label('Sesi Presensi')
-                    ->helperText('Pilih sesi yang sesuai agar rekap presensi terkait dengan sesi jadwal yang benar.')
-                    ->options(function (callable $get) {
-                        $classId = $get('class_id');
-                        $date = $get('date');
-
-                        if (! $classId || ! $date) {
-                            return [];
-                        }
-
-                        return PresensiSession::query()
-                            ->where('date', $date)
-                            ->whereHas('schedule', fn($query) => $query->where('class_id', $classId))
-                            ->orderBy('start_time')
-                            ->get()
-                            ->mapWithKeys(function (PresensiSession $session) {
-                                $label = $session->schedule?->subject?->name ?? 'Sesi';
-                                $timeLabel = $session->start_time ? ' • ' . $session->start_time : '';
-                                $teacherLabel = $session->teacher?->name ? ' • ' . $session->teacher->name : '';
-
-                                return [$session->id => $label . $timeLabel . $teacherLabel];
-                            })
-                            ->toArray();
-                    })
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-
-                Repeater::make('attendances')
-                    ->label('Daftar Kehadiran')
-                    ->helperText('Pilih kelas lalu klik tombol muat semua siswa untuk mengisi daftar dengan cepat.')
-                    ->schema([
-                        Select::make('student_id')
-                            ->label('Nama Siswa')
-                            ->searchable()
-                            ->preload()
-                            ->options(function () {
-                                $classId = $this->data['class_id'] ?? null;
-                                if (! $classId) {
-                                    return [];
-                                }
-
-                                return Student::where('class_id', $classId)
-                                    ->where('status', 'active')
-                                    ->orderBy('name')
-                                    ->pluck('name', 'id');
-                            })
-                            ->required()
-                            ->columnSpan(2),
-
-                        Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'present'    => '🟢 Hadir',
-                                'late'       => '🟡 Terlambat',
-                                'sick'       => '🔵 Sakit',
-                                'permission' => '🟡 Izin',
-                                'absent'     => '🔴 Alpha',
-                            ])
-                            ->default('present')
-                            ->required()
-                            ->columnSpan(1),
-
-                        \Filament\Forms\Components\TextInput::make('note')
-                            ->label('Catatan')
-                            ->placeholder('Masukkan catatan jika ada (opsional)...')
-                            ->maxLength(255)
-                            ->columnSpan(3),
-                    ])
-                    ->columns(3)
-                    ->addActionLabel('+ Tambah Siswa')
-                    ->reorderable(false)
-                    ->collapsible()
-                    ->defaultItems(0),
             ])
             ->statePath('data');
     }
 
     /**
-     * Auto-populate repeater dengan semua siswa aktif di kelas
+     * Auto-populate dengan semua siswa aktif di kelas
      */
     public function loadAllStudents(): void
     {
@@ -189,6 +177,9 @@ class ManualAttendance extends Page
 
         $students = Student::where('class_id', $classId)
             ->where('status', 'active')
+            ->with(['attendances' => function ($query) {
+                $query->latest('date')->limit(4);
+            }])
             ->orderBy('name')
             ->get();
 
@@ -201,7 +192,18 @@ class ManualAttendance extends Page
             return;
         }
 
-        $this->data['attendances'] = $students->map(fn($s) => [
+        $this->studentList = $students->map(fn($s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'nis' => $s->nis,
+            'nisn' => $s->nisn,
+            'history' => $s->attendances->sortBy('date')->map(fn($a) => [
+                'status' => $a->status instanceof \App\Enums\AttendanceStatus ? $a->status->value : $a->status,
+                'date' => $a->date,
+            ])->values()->toArray(),
+        ])->toArray();
+
+        $this->attendances = $students->map(fn($s) => [
             'student_id' => $s->id,
             'status'     => 'present',
             'note'       => '',
@@ -221,24 +223,14 @@ class ManualAttendance extends Page
         $teacher = Teacher::where('user_id', auth()->id())->first();
         $teacherId = $teacher?->id;
 
-        if (! $teacherId) {
-            // Resolve from the selected presensi session (e.g. if the user is an admin)
-            if (!empty($data['presensi_session_id'])) {
-                $session = PresensiSession::find($data['presensi_session_id']);
-                $teacherId = $session?->teacher_id;
-            }
+        if (! $teacherId && !empty($data['class_id'])) {
+            // Fallback: Wali kelas (homeroom teacher)
+            $teacherId = \Illuminate\Support\Facades\DB::table('classes')
+                ->where('id', $data['class_id'])
+                ->value('homeroom_teacher_id');
         }
 
-        if (! $teacherId) {
-            Notification::make()
-                ->title('Guru pengampu tidak ditemukan')
-                ->body('Pastikan Anda memilih sesi presensi yang benar atau akun Anda terdaftar sebagai guru.')
-                ->danger()
-                ->send();
-            return;
-        }
-
-        if (empty($data['attendances'])) {
+        if (empty($this->attendances)) {
             Notification::make()
                 ->title('Daftar kehadiran kosong')
                 ->body('Silakan tambahkan atau muat daftar siswa terlebih dahulu.')
@@ -252,8 +244,8 @@ class ManualAttendance extends Page
             $teacherId,
             $data['class_id'],
             $data['date'],
-            $data['attendances'],
-            $data['presensi_session_id'] ?? null
+            $this->attendances,
+            null // No presensiSessionId
         );
 
         Notification::make()
@@ -262,32 +254,11 @@ class ManualAttendance extends Page
             ->success()
             ->send();
 
-        // Reset repeater setelah submit
-        $this->data['attendances'] = [];
-    }
+        // Reset setelah submit
+        $this->attendances = [];
+        $this->studentList = [];
 
-    /**
-     * Hitung statistik dari data repeater untuk ditampilkan di view
-     */
-    public function getAttendanceSummary(): array
-    {
-        $counts = [
-            'present'    => 0,
-            'late'       => 0,
-            'sick'       => 0,
-            'permission' => 0,
-            'absent'     => 0,
-            'total'      => 0,
-        ];
-
-        foreach ($this->data['attendances'] ?? [] as $att) {
-            $status = $att['status'] ?? 'present';
-            if (array_key_exists($status, $counts)) {
-                $counts[$status]++;
-            }
-            $counts['total']++;
-        }
-
-        return $counts;
+        // Redirect ke daftar presensi
+        $this->redirect(StudentAttendanceResource::getUrl('index'));
     }
 }

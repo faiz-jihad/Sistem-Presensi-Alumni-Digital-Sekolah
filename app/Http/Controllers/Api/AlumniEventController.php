@@ -23,6 +23,9 @@ class AlumniEventController extends BaseController
     public function index(Request $request): JsonResponse
     {
         try {
+            if (!$request->user()) {
+                return $this->error('Unauthenticated.', 401);
+            }
             $events = $this->eventService->listEvents($request->user());
             return $this->success(
                 AlumniEventResource::collection($events),
@@ -71,7 +74,7 @@ class AlumniEventController extends BaseController
                 $request->file('banner_image')
             );
 
-            $message = $request->user()->role === 'alumni' 
+            $message = $request->user()?->role === 'alumni' 
                 ? 'Event alumni berhasil diajukan, menunggu persetujuan admin.' 
                 : 'Event alumni berhasil ditambahkan.';
 

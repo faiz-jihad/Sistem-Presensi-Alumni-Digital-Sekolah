@@ -22,7 +22,7 @@ class UpdateAlumniEventRequest extends FormRequest
             'is_active'    => 'nullable|boolean',
         ];
 
-        if (in_array($this->user()->role, ['super_admin', 'admin'], true)) {
+        if ($this->user() && in_array($this->user()->role, ['super_admin', 'admin'], true)) {
             $rules['approval_status'] = 'nullable|in:pending,approved,rejected';
         }
 

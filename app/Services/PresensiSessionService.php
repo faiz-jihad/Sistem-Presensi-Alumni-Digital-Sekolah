@@ -274,7 +274,7 @@ class PresensiSessionService
                 
                 \Filament\Notifications\Notification::make()
                     ->title('Sesi Kelas Dibuka')
-                    ->body("Guru **{$teacherName}** telah membuka sesi kelas **{$className}** untuk pelajaran **{$subjectName}**.")
+                    ->body("Guru {$teacherName} telah membuka sesi kelas {$className} untuk pelajaran {$subjectName}.")
                     ->success()
                     ->sendToDatabase($admins);
             }
@@ -406,7 +406,7 @@ class PresensiSessionService
             
             \Filament\Notifications\Notification::make()
                 ->title('Sesi Kelas Ditutup')
-                ->body("Guru **{$teacherName}** telah menutup sesi kelas **{$className}** untuk pelajaran **{$subjectName}**.")
+                ->body("Guru {$teacherName} telah menutup sesi kelas {$className} untuk pelajaran {$subjectName}.")
                 ->info()
                 ->sendToDatabase($admins);
         }
@@ -621,7 +621,7 @@ class PresensiSessionService
 
                 $dbNotif = \Filament\Notifications\Notification::make()
                     ->title('Siswa Scan QR')
-                    ->body("**{$student->name}** melakukan scan QR di kelas **{$className}** dengan status **{$statusLabel}**.");
+                    ->body("{$student->name} melakukan scan QR di kelas {$className} dengan status {$statusLabel}.");
 
                 if ($status->value === AttendanceStatus::Late->value) {
                     $dbNotif->warning();
@@ -946,7 +946,7 @@ class PresensiSessionService
 
             \Filament\Notifications\Notification::make()
                 ->title('Presensi Kelas Tersimpan')
-                ->body("Presensi **{$className}** tanggal **{$dateText}** berhasil disimpan untuk **{$recordedCount} siswa**.")
+                ->body("Presensi {$className} tanggal {$dateText} berhasil disimpan untuk {$recordedCount} siswa.")
                 ->success()
                 ->sendToDatabase($recipients);
         } catch (\Throwable $exception) {

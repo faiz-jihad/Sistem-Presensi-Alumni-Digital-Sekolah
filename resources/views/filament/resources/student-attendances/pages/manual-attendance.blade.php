@@ -1,5 +1,4 @@
 <x-filament-panels::page>
-<<<<<<< Updated upstream
 <style>
     .ma-header {
         position: relative;
@@ -75,35 +74,45 @@
         background: linear-gradient(to right, #3b82f6, #6366f1, #a855f7);
     }
     .ma-card-body { padding: 1.75rem 2rem; }
-=======
-    <style>
-        .summary-bar {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        @media (max-width: 640px) {
-            .summary-bar { grid-template-columns: repeat(3, 1fr); }
-        }
-        .summary-item {
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid transparent;
-        }
-        .summary-item-present  { background: #ecfdf5; border-color: #a7f3d0; }
-        .summary-item-late     { background: #fffbeb; border-color: #fde68a; }
-        .summary-item-sick     { background: #eff6ff; border-color: #bae6fd; }
-        .summary-item-izin     { background: #fffbeb; border-color: #fde68a; }
-        .summary-item-absent   { background: #fef2f2; border-color: #fca5a5; }
 
-        .dark .summary-item-present  { background: rgba(6,95,70,0.15);  border-color: rgba(6,95,70,0.4);  }
-        .dark .summary-item-late     { background: rgba(146,64,14,0.15); border-color: rgba(146,64,14,0.4); }
-        .dark .summary-item-sick     { background: rgba(7,89,133,0.15);  border-color: rgba(7,89,133,0.4);  }
-        .dark .summary-item-izin     { background: rgba(146,64,14,0.15); border-color: rgba(146,64,14,0.4); }
-        .dark .summary-item-absent   { background: rgba(153,27,27,0.15); border-color: rgba(153,27,27,0.4); }
->>>>>>> Stashed changes
+    .summary-bar {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    @media (max-width: 640px) {
+        .summary-bar { grid-template-columns: repeat(3, 1fr); }
+    }
+    .summary-item {
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid transparent;
+    }
+    .summary-item-present  { background: #ecfdf5; border-color: #a7f3d0; }
+    .summary-item-late     { background: #fffbeb; border-color: #fde68a; }
+    .summary-item-sick     { background: #eff6ff; border-color: #bae6fd; }
+    .summary-item-izin     { background: #fffbeb; border-color: #fde68a; }
+    .summary-item-absent   { background: #fef2f2; border-color: #fca5a5; }
+
+    .dark .summary-item-present  { background: rgba(6,95,70,0.15);  border-color: rgba(6,95,70,0.4);  }
+    .dark .summary-item-late     { background: rgba(146,64,14,0.15); border-color: rgba(146,64,14,0.4); }
+    .dark .summary-item-sick     { background: rgba(7,89,133,0.15);  border-color: rgba(7,89,133,0.4);  }
+    .dark .summary-item-izin     { background: rgba(146,64,14,0.15); border-color: rgba(146,64,14,0.4); }
+    .dark .summary-item-absent   { background: rgba(153,27,27,0.15); border-color: rgba(153,27,27,0.4); }
+
+    .summary-item-present .summary-number  { color: #065f46; }
+    .summary-item-late .summary-number     { color: #92400e; }
+    .summary-item-sick .summary-number     { color: #075985; }
+    .summary-item-izin .summary-number     { color: #92400e; }
+    .summary-item-absent .summary-number   { color: #991b1b; }
+
+    .dark .summary-item-present .summary-number  { color: #34d399; }
+    .dark .summary-item-late .summary-number     { color: #fbbf24; }
+    .dark .summary-item-sick .summary-number     { color: #38bdf8; }
+    .dark .summary-item-izin .summary-number     { color: #fbbf24; }
+    .dark .summary-item-absent .summary-number   { color: #f87171; }
 
     .ma-form-wrap {
         background: #f8fafc;
@@ -113,7 +122,6 @@
     }
     .dark .ma-form-wrap { background: rgba(39,39,42,0.4); border-color: rgba(63,63,70,0.5); }
 
-<<<<<<< Updated upstream
     .ma-divider {
         border: none; border-top: 1px solid #f1f5f9;
         margin: 1.5rem 0 0;
@@ -141,20 +149,6 @@
         font-size: 0.7rem; font-weight: 600;
     }
     .dark .ma-summary-badge { background: rgba(79,70,229,0.25); color: #a5b4fc; }
-=======
-        .summary-item-present .summary-number  { color: #065f46; }
-        .summary-item-late .summary-number     { color: #92400e; }
-        .summary-item-sick .summary-number     { color: #075985; }
-        .summary-item-izin .summary-number     { color: #92400e; }
-        .summary-item-absent .summary-number   { color: #991b1b; }
-
-        .dark .summary-item-present .summary-number  { color: #34d399; }
-        .dark .summary-item-late .summary-number     { color: #fbbf24; }
-        .dark .summary-item-sick .summary-number     { color: #38bdf8; }
-        .dark .summary-item-izin .summary-number     { color: #fbbf24; }
-        .dark .summary-item-absent .summary-number   { color: #f87171; }
-    </style>
->>>>>>> Stashed changes
 
     .ma-grid-5 {
         display: grid;
@@ -176,25 +170,25 @@
     .ma-stat-terlambat { background: linear-gradient(135deg,#fffbeb,#fef3c7); border-color: #fde68a; }
     .ma-stat-sakit     { background: linear-gradient(135deg,#faf5ff,#ede9fe); border-color: #ddd6fe; }
     .ma-stat-izin      { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-color: #bae6fd; }
-    .ma-stat-alpha     { background: linear-gradient(135deg,#fff1f2,#ffe4e6); border-color: #fecdd3; }
+    .ma-stat-alpa      { background: linear-gradient(135deg,#fff1f2,#ffe4e6); border-color: #fecdd3; }
 
     .dark .ma-stat-hadir     { background: rgba(6,78,59,0.18);   border-color: rgba(6,95,70,0.3); }
     .dark .ma-stat-terlambat { background: rgba(120,53,15,0.18);  border-color: rgba(146,64,14,0.3); }
     .dark .ma-stat-sakit     { background: rgba(88,28,135,0.18);  border-color: rgba(107,33,168,0.3); }
     .dark .ma-stat-izin      { background: rgba(7,89,133,0.18);   border-color: rgba(14,116,144,0.3); }
-    .dark .ma-stat-alpha     { background: rgba(127,29,29,0.18);  border-color: rgba(153,27,27,0.3); }
+    .dark .ma-stat-alpa      { background: rgba(127,29,29,0.18);  border-color: rgba(15,23,42,0.3); }
 
     .ma-stat-num { font-size: 2.25rem; font-weight: 900; line-height: 1; }
     .ma-stat-hadir     .ma-stat-num { color: #047857; }
     .ma-stat-terlambat .ma-stat-num { color: #b45309; }
     .ma-stat-sakit     .ma-stat-num { color: #7c3aed; }
     .ma-stat-izin      .ma-stat-num { color: #0369a1; }
-    .ma-stat-alpha     .ma-stat-num { color: #be123c; }
+    .ma-stat-alpa      .ma-stat-num { color: #be123c; }
     .dark .ma-stat-hadir     .ma-stat-num { color: #34d399; }
     .dark .ma-stat-terlambat .ma-stat-num { color: #fbbf24; }
     .dark .ma-stat-sakit     .ma-stat-num { color: #c084fc; }
     .dark .ma-stat-izin      .ma-stat-num { color: #38bdf8; }
-    .dark .ma-stat-alpha     .ma-stat-num { color: #fb7185; }
+    .dark .ma-stat-alpa      .ma-stat-num { color: #fb7185; }
 
     .ma-stat-label {
         font-size: 0.65rem; font-weight: 700;
@@ -204,12 +198,12 @@
     .ma-stat-terlambat .ma-stat-label { color: #92400e; }
     .ma-stat-sakit     .ma-stat-label { color: #6b21a8; }
     .ma-stat-izin      .ma-stat-label { color: #075985; }
-    .ma-stat-alpha     .ma-stat-label { color: #9f1239; }
+    .ma-stat-alpa      .ma-stat-label { color: #9f1239; }
     .dark .ma-stat-hadir     .ma-stat-label { color: #6ee7b7; }
     .dark .ma-stat-terlambat .ma-stat-label { color: #fcd34d; }
     .dark .ma-stat-sakit     .ma-stat-label { color: #d8b4fe; }
     .dark .ma-stat-izin      .ma-stat-label { color: #7dd3fc; }
-    .dark .ma-stat-alpha     .ma-stat-label { color: #fda4af; }
+    .dark .ma-stat-alpa      .ma-stat-label { color: #fda4af; }
 
     .ma-actions {
         display: flex; flex-wrap: wrap; gap: 0.75rem;
@@ -218,6 +212,44 @@
         border-top: 1px solid #f1f5f9;
     }
     .dark .ma-actions { border-top-color: rgba(39,39,42,0.8); }
+
+    /* Circular Quick Attendance Buttons with precise CSS */
+    .ma-btn-status {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        border: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        flex-shrink: 0 !important;
+        transition: all 120ms ease-in-out !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        padding: 0 !important;
+    }
+    .ma-btn-status:hover {
+        transform: scale(1.08) !important;
+    }
+    .ma-btn-status svg {
+        pointer-events: none !important;
+    }
+
+    .ma-btn-present-active { background-color: #22c55e !important; color: white !important; }
+    .ma-btn-present-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
+    .dark .ma-btn-present-inactive { background-color: #27272a !important; color: #52525b !important; }
+
+    .ma-btn-permission-active { background-color: #3b82f6 !important; color: white !important; }
+    .ma-btn-permission-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
+    .dark .ma-btn-permission-inactive { background-color: #27272a !important; color: #52525b !important; }
+
+    .ma-btn-sick-active { background-color: #f59e0b !important; color: white !important; }
+    .ma-btn-sick-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
+    .dark .ma-btn-sick-inactive { background-color: #27272a !important; color: #52525b !important; }
+
+    .ma-btn-absent-active { background-color: #ef4444 !important; color: white !important; }
+    .ma-btn-absent-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
+    .dark .ma-btn-absent-inactive { background-color: #27272a !important; color: #52525b !important; }
 </style>
 
 <div style="display:flex;flex-direction:column;gap:1.5rem;">
@@ -240,25 +272,51 @@
             </div>
         </div>
 
-<<<<<<< Updated upstream
-        <div class="ma-header-badge">
-            <span class="ma-badge-dot"></span>
-            Status Sakit/Izin butuh verifikasi
-=======
-        {{-- Info Box --}}
-        <div style="background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px;" class="dark:border-blue-900">
-            <p class="text-sm font-semibold text-blue-900 dark:text-blue-300">Informasi Otomatis</p>
-            <ul class="mt-1 text-sm text-blue-700 dark:text-blue-400 space-y-1 list-disc list-inside">
-                <li>Notifikasi WhatsApp dikirim otomatis ke orang tua saat presensi disimpan</li>
-                <li>Status <strong>Izin</strong> dan <strong>Sakit</strong> memerlukan verifikasi wali kelas/admin</li>
-                <li>Data presensi yang sudah tersimpan dapat dilihat di menu <strong>Presensi Siswa</strong></li>
-            </ul>
->>>>>>> Stashed changes
+        <div style="display: flex; flex-direction: column; gap: 10px; min-width: 250px;">
+            <div class="ma-header-badge">
+                <span class="ma-badge-dot"></span>
+                Status Sakit/Izin butuh verifikasi
+            </div>
+
+            {{-- Info Box --}}
+            <div style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 12px; padding: 12px 16px; color: white;">
+                <p class="text-xs font-semibold" style="margin: 0; color: #fef08a;">Info Sistem</p>
+                <ul class="text-xs space-y-1 list-disc list-inside" style="margin: 4px 0 0; padding: 0; opacity: 0.95;">
+                    <li>WA Otomatis dikirim ke orang tua</li>
+                    <li>Sakit & Izin perlu disetujui</li>
+                </ul>
+            </div>
         </div>
     </div>
 
     {{-- Main Card --}}
-    <div class="ma-card">
+    <div class="ma-card" x-data="{
+        attendances: @entangle('attendances'),
+        studentList: @entangle('studentList'),
+        setStudentStatus(studentId, status) {
+            let index = this.attendances.findIndex(item => item.student_id == studentId);
+            if (index !== -1) {
+                this.attendances[index].status = status;
+            } else {
+                this.attendances.push({
+                    student_id: studentId,
+                    status: status,
+                    note: ''
+                });
+            }
+        },
+        getSummary() {
+            let summary = { present: 0, late: 0, sick: 0, permission: 0, absent: 0, total: 0 };
+            this.attendances.forEach(item => {
+                let status = item.status || 'present';
+                if (summary.hasOwnProperty(status)) {
+                    summary[status]++;
+                }
+                summary.total++;
+            });
+            return summary;
+        }
+    }">
         <div class="ma-card-topbar"></div>
 
         <form wire:submit.prevent="submit" class="ma-card-body">
@@ -269,59 +327,179 @@
                     {{ $this->form }}
                 </div>
 
-                {{-- Summary --}}
-                @php $summary = $this->getAttendanceSummary(); @endphp
-                @if($summary['total'] > 0)
-                    <div>
-                        <div class="ma-summary-header">
-                            <div class="ma-summary-icon">
-                                <x-heroicon-o-chart-pie style="width:16px;height:16px;" />
-                            </div>
-                            <div class="ma-summary-title">
-                                Ringkasan Kehadiran
-                                <span class="ma-summary-badge">{{ $summary['total'] }} Siswa</span>
-                            </div>
-                        </div>
+                {{-- Loading State --}}
+                <div wire:loading wire:target="data.class_id" style="display: none; text-align: center; padding: 3rem 0; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" class="dark:bg-zinc-900 dark:border-zinc-800">
+                    <div style="display: inline-flex; align-items: center; justify-content: center;">
+                        <svg class="animate-spin" style="width: 2.5rem; height: 2.5rem; color: #4f46e5;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <p style="margin-top: 16px; font-weight: 600; font-size: 0.95rem; color: #4f46e5;" class="dark:text-zinc-400">
+                        Sedang memuat daftar siswa...
+                    </p>
+                    <p style="margin-top: 4px; font-size: 0.8rem; color: #9ca3af;">
+                        Menghubungkan ke database sekolah
+                    </p>
+                </div>
 
-                        <div class="ma-grid-5">
-                            <div class="ma-stat ma-stat-hadir">
-                                <x-heroicon-o-check-circle style="width:24px;height:24px;color:#047857;" class="ma-stat-icon" />
-                                <span class="ma-stat-num">{{ $summary['present'] }}</span>
-                                <span class="ma-stat-label">Hadir</span>
-                            </div>
-                            <div class="ma-stat ma-stat-terlambat">
-                                <x-heroicon-o-clock style="width:24px;height:24px;color:#b45309;" class="ma-stat-icon" />
-                                <span class="ma-stat-num">{{ $summary['late'] }}</span>
-                                <span class="ma-stat-label">Terlambat</span>
-                            </div>
-                            <div class="ma-stat ma-stat-sakit">
-                                <x-heroicon-o-heart style="width:24px;height:24px;color:#7c3aed;" class="ma-stat-icon" />
-                                <span class="ma-stat-num">{{ $summary['sick'] }}</span>
-                                <span class="ma-stat-label">Sakit</span>
-                            </div>
-                            <div class="ma-stat ma-stat-izin">
-                                <x-heroicon-o-document-check style="width:24px;height:24px;color:#0369a1;" class="ma-stat-icon" />
-                                <span class="ma-stat-num">{{ $summary['permission'] }}</span>
-                                <span class="ma-stat-label">Izin</span>
-                            </div>
-                            <div class="ma-stat ma-stat-alpha">
-                                <x-heroicon-o-x-circle style="width:24px;height:24px;color:#be123c;" class="ma-stat-icon" />
-                                <span class="ma-stat-num">{{ $summary['absent'] }}</span>
-                                <span class="ma-stat-label">Alpha</span>
-                            </div>
+                {{-- Student List Section --}}
+                <div wire:loading.remove wire:target="data.class_id" x-show="studentList.length > 0" style="display: none; margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #374151;" class="dark:text-zinc-300">
+                        Daftar Siswa Kelas
+                    </h3>
+
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" class="dark:bg-zinc-900 dark:border-zinc-800">
+                        <div style="display: flex; flex-direction: column;" class="divide-y divide-gray-100 dark:divide-zinc-800">
+                            <template x-for="(student, idx) in studentList" :key="student.id">
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9;" class="dark:border-zinc-800">
+
+                                    {{-- Left Side: Student Info & History --}}
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <span style="font-weight: 600; font-size: 14px; color: #1f2937;" class="dark:text-zinc-200" x-text="student.name"></span>
+
+                                        {{-- Attendance History dots --}}
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <span style="font-size: 11px; color: #9ca3af;">Riwayat:</span>
+                                            <template x-if="student.history && student.history.length > 0">
+                                                <div style="display: flex; gap: 4px;">
+                                                    <template x-for="pastAtt in student.history">
+                                                        <span style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; color: white; font-size: 7px; font-weight: 800;"
+                                                              :style="{
+                                                                  backgroundColor: pastAtt.status === 'present' ? '#22c55e' :
+                                                                                  pastAtt.status === 'late' ? '#f59e0b' :
+                                                                                  pastAtt.status === 'permission' ? '#3b82f6' :
+                                                                                  pastAtt.status === 'sick' ? '#06b6d4' : '#ef4444'
+                                                              }"
+                                                              :title="pastAtt.status"
+                                                              x-text="pastAtt.status === 'present' ? '✓' :
+                                                                     pastAtt.status === 'late' ? 'T' :
+                                                                     pastAtt.status === 'permission' ? 'I' :
+                                                                     pastAtt.status === 'sick' ? 'S' : 'A'">
+                                                        </span>
+                                                    </template>
+                                                </div>
+                                            </template>
+                                            <template x-if="!student.history || student.history.length === 0">
+                                                <span style="font-size: 11px; color: #9ca3af; font-style: italic;">Belum ada riwayat</span>
+                                            </template>
+                                        </div>
+
+                                        {{-- Text Note Input (Alpine model) --}}
+                                        <input type="text"
+                                               x-model="attendances[idx].note"
+                                               placeholder="Tambahkan catatan presensi (opsional)..."
+                                               style="margin-top: 6px; display: block; width: 280px; border-radius: 6px; border: 1px solid #d1d5db; padding: 4px 8px; font-size: 11px; outline: none;"
+                                               class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                                    </div>
+                                    {{-- Right Side: Quick Attendance Buttons (Alpine bound) --}}
+                                    <div style="display: flex !important; gap: 12px !important; align-items: center !important; flex-shrink: 0 !important;">
+
+                                        {{-- Hadir (present) --}}
+                                        <button type="button"
+                                                @click="setStudentStatus(student.id, 'present')"
+                                                class="ma-btn-status"
+                                                :class="attendances[idx] && attendances[idx].status === 'present' ? 'ma-btn-present-active' : 'ma-btn-present-inactive'"
+                                                title="Hadir">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        {{-- Izin (permission) --}}
+                                        <button type="button"
+                                                @click="setStudentStatus(student.id, 'permission')"
+                                                class="ma-btn-status"
+                                                :class="attendances[idx] && attendances[idx].status === 'permission' ? 'ma-btn-permission-active' : 'ma-btn-permission-inactive'"
+                                                title="Izin">
+                                            <span style="font-weight: 800; font-size: 14px; font-family: sans-serif;">i</span>
+                                        </button>
+
+                                        {{-- Sakit (sick) --}}
+                                        <button type="button"
+                                                @click="setStudentStatus(student.id, 'sick')"
+                                                class="ma-btn-status"
+                                                :class="attendances[idx] && attendances[idx].status === 'sick' ? 'ma-btn-sick-active' : 'ma-btn-sick-inactive'"
+                                                title="Sakit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                        {{-- Alpha (absent) --}}
+                                        <button type="button"
+                                                @click="setStudentStatus(student.id, 'absent')"
+                                                class="ma-btn-status"
+                                                :class="attendances[idx] && attendances[idx].status === 'absent' ? 'ma-btn-absent-active' : 'ma-btn-absent-inactive'"
+                                                title="Alpa">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:16px; height:16px;" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
-                @endif
+                </div>
+
+                {{-- Empty state (Alpine bound) --}}
+                <div wire:loading.remove wire:target="data.class_id" x-show="studentList.length === 0" style="text-align: center; padding: 2.5rem 0;" class="text-zinc-500">
+                    <x-heroicon-o-users style="width: 48px; height: 48px; margin: 0 auto 12px; opacity: 0.5;" />
+                    <p style="font-weight: 500;">Pilih kelas terlebih dahulu untuk memuat daftar siswa.</p>
+                </div>
+
+                {{-- Summary Section (Alpine bound) --}}
+                <div wire:loading.remove wire:target="data.class_id" x-show="attendances.length > 0" style="display: none;">
+                    <div class="ma-summary-header">
+                        <div class="ma-summary-icon">
+                            <x-heroicon-o-chart-pie style="width:16px;height:16px;" />
+                        </div>
+                        <div class="ma-summary-title">
+                            Ringkasan Kehadiran
+                            <span class="ma-summary-badge" x-text="getSummary().total + ' Siswa'"></span>
+                        </div>
+                    </div>
+
+                    <div class="ma-grid-5">
+                        <div class="ma-stat ma-stat-hadir">
+                            <x-heroicon-o-check-circle style="width:24px;height:24px;color:#047857;" class="ma-stat-icon" />
+                            <span class="ma-stat-num" x-text="getSummary().present"></span>
+                            <span class="ma-stat-label">Hadir</span>
+                        </div>
+                        <div class="ma-stat ma-stat-terlambat">
+                            <x-heroicon-o-clock style="width:24px;height:24px;color:#b45309;" class="ma-stat-icon" />
+                            <span class="ma-stat-num" x-text="getSummary().late"></span>
+                            <span class="ma-stat-label">Terlambat</span>
+                        </div>
+                        <div class="ma-stat ma-stat-sakit">
+                            <x-heroicon-o-heart style="width:24px;height:24px;color:#7c3aed;" class="ma-stat-icon" />
+                            <span class="ma-stat-num" x-text="getSummary().sick"></span>
+                            <span class="ma-stat-label">Sakit</span>
+                        </div>
+                        <div class="ma-stat ma-stat-izin">
+                            <x-heroicon-o-document-check style="width:24px;height:24px;color:#0369a1;" class="ma-stat-icon" />
+                            <span class="ma-stat-num" x-text="getSummary().permission"></span>
+                            <span class="ma-stat-label">Izin</span>
+                        </div>
+                        <div class="ma-stat ma-stat-alpa">
+                            <x-heroicon-o-x-circle style="width:24px;height:24px;color:#be123c;" class="ma-stat-icon" />
+                            <span class="ma-stat-num" x-text="getSummary().absent"></span>
+                            <span class="ma-stat-label">Alpa</span>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Action Buttons --}}
-                <div class="ma-actions">
+                <div wire:loading.remove wire:target="data.class_id" class="ma-actions">
                     <x-filament::button
-                        wire:click.prevent="loadAllStudents"
-                        color="info"
-                        icon="heroicon-m-users"
+                        @click.prevent="attendances.forEach(item => item.status = 'present')"
+                        color="gray"
+                        icon="heroicon-m-arrow-path"
                         outlined
                     >
-                        Muat Semua Siswa Kelas
+                        Reset Semua Hadir
                     </x-filament::button>
 
                     <x-filament::button

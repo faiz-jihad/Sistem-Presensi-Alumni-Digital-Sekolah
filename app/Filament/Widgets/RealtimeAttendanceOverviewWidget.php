@@ -43,8 +43,13 @@ class RealtimeAttendanceOverviewWidget extends Widget
             ->where('is_active', true)
             ->where('day', $todayDay->value);
 
-        // If the logged in user is a teacher, filter to only show their schedules
+        // If the logged in user is not a super admin, filter by school_id
         $user = auth()->user();
+        if ($user && $user->role !== 'super_admin') {
+            $query->where('school_id', $user->school_id);
+        }
+
+        // If the logged in user is a teacher, filter to only show their schedules
         if ($user && $user->hasRole('teacher')) {
             $teacher = Teacher::where('user_id', $user->id)->first();
             if ($teacher) {

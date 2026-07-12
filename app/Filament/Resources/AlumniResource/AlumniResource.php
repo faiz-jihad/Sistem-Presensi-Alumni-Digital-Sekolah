@@ -9,6 +9,7 @@ use App\Models\Alumni;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AlumniResource extends Resource
 {
@@ -48,12 +49,20 @@ class AlumniResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('verification_status', 'pending')->count() ?: null;
+        $query = static::getModel()::where('verification_status', 'pending');
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+        return $query->count() ?: null;
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
-        return static::getModel()::where('verification_status', 'pending')->count() > 0 
+        $query = static::getModel()::where('verification_status', 'pending');
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+        return $query->count() > 0 
             ? 'warning' 
             : 'success';
     }
@@ -74,6 +83,17 @@ class AlumniResource extends Resource
             'index' => Pages\ListAlumni::route('/'),
             'edit' => Pages\EditAlumni::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+
+        return $query;
     }
 
     public static function shouldRegisterNavigation(): bool

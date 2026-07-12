@@ -153,7 +153,7 @@ class AttendanceReport extends Page
             } else {
                 $month = (int) ($this->data['month'] ?? now()->month);
                 $year = (int) ($this->data['year'] ?? now()->year);
-                $studentId = $this->data['student_id'] ?? null;
+                $studentId = filled($this->data['student_id'] ?? null) ? (int) $this->data['student_id'] : null;
                 return $service->getMonthlyReport($month, $year, $classId, $schoolId, $studentId);
             }
         } catch (\Exception $e) {
@@ -203,12 +203,29 @@ class AttendanceReport extends Page
     public function exportPdf()
     {
         $report = $this->getReport();
+        if (! $report) {
+            Notification::make()->title('Data tidak tersedia untuk diekspor.')->danger()->send();
+            return null;
+        }
 
-        $pdf = Pdf::loadView('pdf.daily-attendance', $report);
+        $className = $report['class']['name'] ?? 'Kelas';
 
-    return response()->streamDownload(
-            fn () => print($pdf->output()),
-            'laporan.pdf'
-        );
+        if ($this->data['type'] === 'daily') {
+            $date = $report['date'];
+            $filename = "rekap_harian_{$className}_{$date}.pdf";
+            $pdf = Pdf::loadView('pdf.daily-attendance', $report);
+            return response()->streamDownload(
+                fn () => print($pdf->output()),
+                $filename
+            );
+        } else {
+            $monthName = Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->format('M');
+            $filename = "rekap_bulanan_{$className}_{$monthName}_{$this->data['year']}.pdf";
+            $pdf = Pdf::loadView('pdf.monthly-attendance', $report);
+            return response()->streamDownload(
+                fn () => print($pdf->output()),
+                $filename
+            );
+        }
     }
 }

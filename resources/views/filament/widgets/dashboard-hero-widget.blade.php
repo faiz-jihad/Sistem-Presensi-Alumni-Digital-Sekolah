@@ -452,6 +452,19 @@
                                 {{ $data['today_formatted'] }}
                             </span>
                         </div>
+                        @if($user->role !== 'alumni')
+                        <div style="display:flex; align-items:center; background:rgba(255,255,255,.12); padding:0 14px; height:38px; border-radius:999px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);">
+                            <span style="display:flex; align-items:center; gap:6px; color:#bfdbfe; font-size:11px; font-weight:600;">
+                                <x-heroicon-o-funnel class="w-4 h-4" style="color:#bfdbfe; width:16px; height:16px;"/>
+                                <select wire:model.live="classId" style="background:transparent; border:none; color:white; font-size:11px; font-weight:600; outline:none; cursor:pointer; padding:0 16px 0 0; margin:0;">
+                                    <option value="" style="color:#1e3a8a; background:white;">Semua Kelas</option>
+                                    @foreach($this->getClasses() as $id => $name)
+                                        <option value="{{ $id }}" style="color:#1e3a8a; background:white;">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </span>
+                        </div>
+                        @endif
                     </div>
                 </div>
 

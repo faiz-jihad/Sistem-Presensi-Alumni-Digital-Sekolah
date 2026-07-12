@@ -5,6 +5,7 @@ namespace App\Filament\Resources\StudentAttendances;
 use App\Filament\Resources\StudentAttendances\Pages\CreateStudentAttendance;
 use App\Filament\Resources\StudentAttendances\Pages\EditStudentAttendance;
 use App\Filament\Resources\StudentAttendances\Pages\ListStudentAttendances;
+use App\Filament\Resources\StudentAttendances\Pages\ManualAttendance;
 use App\Filament\Resources\StudentAttendances\Schemas\StudentAttendanceForm;
 use App\Filament\Resources\StudentAttendances\Tables\StudentAttendancesTable;
 use App\Models\StudentAttendance;
@@ -13,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class StudentAttendanceResource extends Resource
 {
@@ -48,9 +50,19 @@ class StudentAttendanceResource extends Resource
         return StudentAttendancesTable::configure($table);
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->whereDate('date', \Carbon\Carbon::today());
+        $query = parent::getEloquentQuery()
+            ->with(['student', 'class', 'teacher']);
+
+        $user = auth()->user();
+
+        // Admin sekolah hanya melihat data sekolahnya sendiri
+        if ($user->role !== 'super_admin' && $user->school_id) {
+            $query->where('school_id', $user->school_id);
+        }
+
+        return $query;
     }
 
     public static function getRelations(): array
@@ -64,6 +76,7 @@ class StudentAttendanceResource extends Resource
             'index'  => ListStudentAttendances::route('/'),
             'create' => CreateStudentAttendance::route('/create'),
             'edit'   => EditStudentAttendance::route('/{record}/edit'),
+            'manual' => ManualAttendance::route('/manual'),
         ];
     }
 
