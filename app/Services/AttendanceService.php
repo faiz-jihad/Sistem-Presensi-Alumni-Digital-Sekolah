@@ -470,7 +470,7 @@ class AttendanceService
 
             \Filament\Notifications\Notification::make()
                 ->title('Presensi Kelas Tersimpan')
-                ->body("Presensi **{$className}** tanggal **{$dateText}** berhasil disimpan untuk **{$recordedCount} siswa**.")
+                ->body("Presensi {$className} tanggal {$dateText} berhasil disimpan untuk {$recordedCount} siswa.")
                 ->success()
                 ->sendToDatabase($recipients);
         } catch (\Throwable $exception) {

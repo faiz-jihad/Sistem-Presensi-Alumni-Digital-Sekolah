@@ -1,7 +1,7 @@
 @php
     $user = auth()->user();
     $userName = $user ? $user->name : 'Pengguna SIMPAD';
-    $userRole = match($user?->role) {
+    $userRole = match ($user?->role) {
         'super_admin' => 'Super Admin',
         'admin' => 'Admin Sekolah',
         'teacher' => 'Guru',
@@ -13,7 +13,7 @@
     $userEmail = $user ? $user->email : '';
     $isGoogleLinked = !empty($user?->google_id);
     $avatarUrl = $user?->avatar_url;
-    
+
     // Initials calculation
     $initials = '';
     if ($user) {
@@ -23,175 +23,243 @@
         $initials = 'SP';
     }
 @endphp
+
+{{-- Meta tags untuk passing data dari Blade ke JavaScript --}}
+<meta name="simpad-user-name" content="{{ $userName }}">
+<meta name="simpad-user-role" content="{{ $userRole }}">
+<meta name="simpad-user-email" content="{{ $userEmail }}">
+<meta name="simpad-user-initials" content="{{ $initials }}">
+<meta name="simpad-user-avatar" content="{{ $avatarUrl ?? '' }}">
+<meta name="simpad-user-google-linked" content="{{ $isGoogleLinked ? '1' : '0' }}">
+
 <!-- Premium Sidebar Theme Style Hook -->
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-    /* Global Typography integration */
-    body, .fi-body, .fi-sidebar, .fi-sidebar-header, .fi-sidebar-item-button {
+    /* ============================================================
+       CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+       ============================================================ */
+    :root {
+        --sidebar-active-gradient: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+        --sidebar-hover-translate: translateX(5px);
+        --notification-unread-bg: #F5F9FF;
+        --notification-hover-bg: #EBF3FF;
+        --primary-blue: #3b82f6;
+        --primary-blue-dark: #2563eb;
+        --primary-indigo: #4f46e5;
+        --text-primary-light: #0f172a;
+        --text-secondary-light: #475569;
+        --text-muted-light: #64748b;
+        --border-light: rgba(226, 232, 240, 0.8);
+        --bg-white: #ffffff;
+        --bg-light-gray: #f8fafc;
+        --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ============================================================
+       GLOBAL TYPOGRAPHY
+       ============================================================ */
+    body,
+    .fi-body,
+    .fi-sidebar,
+    .fi-sidebar-header,
+    .fi-sidebar-item-button {
         font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
     }
 
-    /* ─── Sidebar Wrapper ─────────────────────────── */
+    /* ============================================================
+       SIDEBAR WRAPPER
+       ============================================================ */
     .fi-sidebar {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%) !important;
         backdrop-filter: blur(20px) !important;
-        border-right: 1px solid rgba(226, 232, 240, 0.8) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-right: 1px solid var(--border-light) !important;
         box-shadow: 4px 0 24px rgba(15, 23, 42, 0.015) !important;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: width 0.3s var(--transition-smooth) !important;
     }
 
-    /* Dark Mode Sidebar Wrapper */
     .dark .fi-sidebar {
         background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(9, 15, 30, 0.98) 100%) !important;
         border-right: 1px solid rgba(30, 41, 59, 0.6) !important;
         box-shadow: 4px 0 30px rgba(0, 0, 0, 0.25) !important;
     }
 
-    /* ─── Sidebar Header & Brand Name ─────────────── */
+    /* ============================================================
+       SIDEBAR HEADER & BRAND NAME
+       ============================================================ */
     .fi-sidebar-header {
-        border-bottom: 1px dashed rgba(226, 232, 240, 0.8) !important;
+        border-bottom: 1px dashed var(--border-light) !important;
         padding-top: 1.75rem !important;
         padding-bottom: 1.75rem !important;
         background: transparent !important;
     }
+
     .dark .fi-sidebar-header {
         border-bottom: 1px dashed rgba(51, 65, 85, 0.4) !important;
     }
 
-    .fi-sidebar-header a, .fi-sidebar-header-title {
+    .fi-sidebar-header a,
+    .fi-sidebar-header-title {
         font-family: 'Outfit', sans-serif !important;
         font-weight: 800 !important;
         letter-spacing: 0.075em !important;
         text-transform: uppercase;
-        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%) !important;
+        background: var(--sidebar-active-gradient) !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
         filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.15)) !important;
         font-size: 1.25rem !important;
     }
 
-    /* ─── Navigation Groups ────────────────────────── */
+    /* ============================================================
+       NAVIGATION GROUPS LABEL
+       ============================================================ */
     .fi-sidebar-group-header-label {
         font-family: 'Outfit', sans-serif !important;
         text-transform: uppercase !important;
         font-size: 0.72rem !important;
         letter-spacing: 0.12em !important;
         font-weight: 700 !important;
-        color: #64748b !important;
+        color: var(--text-muted-light) !important;
         padding-left: 1.25rem !important;
         opacity: 0.85;
     }
+
     .dark .fi-sidebar-group-header-label {
         color: #94a3b8 !important;
     }
 
-    /* ─── Navigation Items / Links ─────────────────── */
+    /* ============================================================
+       NAVIGATION ITEMS / LINKS
+       ============================================================ */
     .fi-sidebar-item-button {
         border-radius: 12px !important;
         margin: 0.2rem 0.75rem !important;
-        padding-top: 0.65rem !important;
-        padding-bottom: 0.65rem !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 0.65rem 0.85rem !important;
+        transition: all 0.2s var(--transition-smooth) !important;
         font-weight: 600 !important;
         font-size: 0.875rem !important;
-        color: #475569 !important;
+        color: var(--text-secondary-light) !important;
         border: 1px solid transparent !important;
+        outline: none !important;
     }
+
     .dark .fi-sidebar-item-button {
         color: #94a3b8 !important;
+    }
+
+    /* FOCUS VISIBLE (Aksesibilitas keyboard) */
+    .fi-sidebar-item-button:focus-visible {
+        outline: 2px solid var(--primary-blue) !important;
+        outline-offset: 2px !important;
     }
 
     /* Hover State (Non-Active) */
     .fi-sidebar-item-button:hover:not(.fi-sidebar-item-button-active):not([class*="-active"]) {
         background: rgba(241, 245, 249, 0.9) !important;
-        color: #0f172a !important;
-        transform: translateX(5px) !important;
+        color: var(--text-primary-light) !important;
+        transform: var(--sidebar-hover-translate) !important;
         border-color: rgba(226, 232, 240, 0.5) !important;
     }
+
     .dark .fi-sidebar-item-button:hover:not(.fi-sidebar-item-button-active):not([class*="-active"]) {
         background: rgba(30, 41, 59, 0.5) !important;
         color: #f8fafc !important;
-        transform: translateX(5px) !important;
+        transform: var(--sidebar-hover-translate) !important;
         border-color: rgba(51, 65, 85, 0.3) !important;
     }
 
-    /* Active State styling */
+    /* Active State */
     .fi-sidebar-item-button.fi-sidebar-item-button-active,
     .fi-sidebar-item-button[class*="-active"],
     .fi-sidebar-item-button[aria-current="page"] {
-        background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%) !important;
+        background: var(--sidebar-active-gradient) !important;
         color: #ffffff !important;
         box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.25) !important;
         font-weight: 700 !important;
         border: 1px solid rgba(99, 102, 241, 0.2) !important;
     }
+
     .dark .fi-sidebar-item-button.fi-sidebar-item-button-active,
     .dark .fi-sidebar-item-button[class*="-active"] {
         box-shadow: 0 4px 20px 0 rgba(79, 70, 229, 0.2) !important;
     }
 
-    /* Sidebar Item Icon styling */
+    /* Sidebar Item Icon */
     .fi-sidebar-item-icon {
         transition: all 0.2s ease !important;
-        color: #64748b !important;
+        color: var(--text-muted-light) !important;
     }
+
     .dark .fi-sidebar-item-icon {
         color: #64748b !important;
     }
 
-    /* Active Icon state */
-    .fi-sidebar-item-button.fi-sidebar-item-button-active .fi-sidebar-item-icon,
+    /* Active Icon */
+    .fi-sidebar-item-button-active .fi-sidebar-item-icon,
     .fi-sidebar-item-button[class*="-active"] .fi-sidebar-item-icon {
         color: #ffffff !important;
         transform: scale(1.1) rotate(1deg) !important;
     }
 
-    /* Hover Icon state */
+    /* Hover Icon */
     .fi-sidebar-item-button:hover:not(.fi-sidebar-item-button-active) .fi-sidebar-item-icon {
-        color: #3b82f6 !important;
+        color: var(--primary-blue) !important;
     }
+
     .dark .fi-sidebar-item-button:hover:not(.fi-sidebar-item-button-active) .fi-sidebar-item-icon {
         color: #60a5fa !important;
     }
 
-    /* Subtle divider spacing */
+    /* ============================================================
+       SIDEBAR NAV SPACING
+       ============================================================ */
     .fi-sidebar-nav {
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
     }
 
-    /* Notification trigger in sidebar */
+    /* ============================================================
+       NOTIFICATION TRIGGER BUTTON (SIDEBAR)
+       ============================================================ */
     .fi-sidebar-database-notifications-btn {
         display: flex !important;
         align-items: center !important;
         gap: 0.75rem !important;
         width: calc(100% - 1.5rem) !important;
         min-height: 2.75rem !important;
-        margin: 0.2rem 0.75rem !important; /* Match other navigation items */
+        margin: 0.2rem 0.75rem !important;
         padding: 0.65rem 0.85rem !important;
-        border-radius: 12px !important; /* Match 12px radius of other navigation items */
+        border-radius: 12px !important;
         border: 1px solid rgba(226, 232, 240, 0.75) !important;
         background: rgba(255, 255, 255, 0.78) !important;
         color: #334155 !important;
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
         transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease !important;
+        outline: none !important;
     }
 
-    /* Style button when sidebar is collapsed (label is hidden via display: none) */
+    .fi-sidebar-database-notifications-btn:focus-visible {
+        outline: 2px solid var(--primary-blue) !important;
+        outline-offset: 2px !important;
+    }
+
+    /* Collapsed state */
     .fi-sidebar-database-notifications-btn:has(.fi-sidebar-database-notifications-btn-label[style*="display: none"]) {
         justify-content: center !important;
         padding: 0.65rem 0 !important;
     }
 
     .fi-sidebar-database-notifications-btn:hover {
-        transform: translateX(5px) !important; /* Match translateX of other navigation items */
+        transform: var(--sidebar-hover-translate) !important;
         border-color: rgba(59, 130, 246, 0.35) !important;
         background: #ffffff !important;
         box-shadow: 0 8px 22px rgba(37, 99, 235, 0.10) !important;
     }
 
-    /* Keep translation normal when collapsed on hover to prevent layout shifting */
     .fi-sidebar-database-notifications-btn:has(.fi-sidebar-database-notifications-btn-label[style*="display: none"]):hover {
         transform: none !important;
     }
@@ -210,7 +278,7 @@
     }
 
     .fi-sidebar-database-notifications-btn .fi-icon {
-        color: #2563eb !important;
+        color: var(--primary-blue-dark) !important;
         flex-shrink: 0 !important;
     }
 
@@ -224,17 +292,17 @@
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-        font-weight: 600 !important; /* Match 600 weight of other menu items */
+        font-weight: 600 !important;
         font-size: 0.875rem !important;
     }
 
+    /* Badge styling */
     .fi-sidebar-database-notifications-btn-badge-ctn {
         margin-left: auto !important;
         flex-shrink: 0 !important;
     }
 
-    .fi-sidebar-database-notifications-btn-badge-ctn .fi-badge,
-    .fi-topbar-database-notifications-btn .fi-badge {
+    .fi-badge {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -242,18 +310,20 @@
         height: 1.35rem !important;
         padding: 0 0.35rem !important;
         border-radius: 999px !important;
-        background: #2563eb !important;
+        background: var(--primary-blue-dark) !important;
         color: #ffffff !important;
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
     }
 
-    .fi-sidebar-database-notifications-btn-badge-ctn .fi-badge span,
-    .fi-topbar-database-notifications-btn .fi-badge span {
+    .fi-badge span {
         line-height: 1 !important;
         font-size: 0.68rem !important;
         font-weight: 800 !important;
     }
 
+    /* ============================================================
+       TOPBAR NOTIFICATION BUTTON
+       ============================================================ */
     .fi-topbar-database-notifications-btn {
         border-radius: 8px !important;
         border: 1px solid rgba(226, 232, 240, 0.8) !important;
@@ -262,592 +332,585 @@
     }
 
     .dark .fi-topbar-database-notifications-btn {
-        border-color: rgba(51, 65, 85, 0.85) !important;
         background: rgba(15, 23, 42, 0.8) !important;
     }
 
-    /* ────────────────────────────────────────────────────────── */
-    /* DATABASE NOTIFICATIONS DROPDOWN (Vercel & Linear Redesign) */
-    /* ────────────────────────────────────────────────────────── */
-    
-    /* 1. Modal Window & Responsiveness */
-    .fi-no-database .fi-modal-window {
-        position: fixed !important;
-        top: 4.75rem !important; /* Float below header bar */
-        right: 1.5rem !important;
-        bottom: auto !important;
-        left: auto !important;
-        width: 440px !important; /* Desktop: Width 440px */
-        max-width: 440px !important;
-        height: auto !important;
-        max-height: 70vh !important; /* Tinggi maksimal 70vh */
-        border-radius: 16px !important; /* Border radius 16px */
-        border: 1px solid rgba(226, 232, 240, 0.8) !important;
-        background: #ffffff !important;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02) !important; /* Shadow lembut */
-        box-sizing: border-box !important;
-        overflow: hidden !important;
-        margin-top: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
+    /* ============================================================
+       DATABASE NOTIFICATIONS PANEL
+       ============================================================ */
+
+    /* ── 1. Panel Window ── */
+    .fi-no-database .fi-modal-window,
+    [data-fi-modal-id="database-notifications"] {
+        position: fixed;
+        top: 4.75rem;
+        right: 1.5rem;
+        width: 420px;
+        max-width: 420px;
+        height: auto;
+        max-height: 75vh;
+        border-radius: 12px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: #ffffff;
+        box-shadow: 
+            0 1px 3px 0 rgba(0, 0, 0, 0.05),
+            0 10px 15px -3px rgba(0, 0, 0, 0.05),
+            0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        animation: notif-panel-in 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 999;
     }
 
-    .dark .fi-no-database .fi-modal-window {
-        border-color: rgba(51, 65, 85, 0.5) !important;
-        background: #090f1e !important;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+    @keyframes notif-panel-in {
+        from {
+            opacity: 0;
+            transform: translateY(-4px) scale(0.99);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
 
-    /* Tablet Responsive */
+    .dark .fi-no-database .fi-modal-window,
+    .dark [data-fi-modal-id="database-notifications"] {
+        border-color: rgba(255, 255, 255, 0.08);
+        background: #0b1329;
+        box-shadow: 
+            0 10px 15px -3px rgba(0, 0, 0, 0.3),
+            0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    }
+
     @media (max-width: 768px) {
-        .fi-no-database .fi-modal-window {
-            width: 90% !important; /* Tablet: Width 90% */
-            max-width: 90% !important;
-            right: 5% !important;
-            left: 5% !important;
-            top: 5rem !important;
-            border-radius: 16px !important;
+        .fi-no-database .fi-modal-window,
+        [data-fi-modal-id="database-notifications"] {
+            width: calc(100vw - 2rem);
+            max-width: calc(100vw - 2rem);
+            right: 1rem;
+            top: 5rem;
         }
     }
 
-    /* Mobile Responsive (Floating bottom sheet style) */
     @media (max-width: 640px) {
-        .fi-no-database .fi-modal-window {
-            width: calc(100% - 1.5rem) !important; /* Mobile: Full width with safety margin */
-            max-width: calc(100% - 1.5rem) !important;
-            right: 0.75rem !important;
-            left: 0.75rem !important;
-            top: auto !important;
-            bottom: 0.75rem !important;
-            border-radius: 16px !important;
+        .fi-no-database .fi-modal-window,
+        [data-fi-modal-id="database-notifications"] {
+            width: calc(100% - 1rem);
+            max-width: calc(100% - 1rem);
+            right: 0.5rem;
+            left: 0.5rem;
+            top: auto;
+            bottom: 0.75rem;
+            border-radius: 14px;
         }
     }
 
-    /* 2. Modal Header & Close Button */
-    .fi-no-database .fi-modal-header {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 20 !important;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.7) !important; /* Thin divider line */
-        background: rgba(255, 255, 255, 0.94) !important;
-        backdrop-filter: blur(12px) !important;
-        padding: 1.25rem 1.25rem 1rem 1.25rem !important;
-        padding-right: 3.5rem !important; /* Keep room for the close button */
-        box-sizing: border-box !important;
+    /* ── 2. Panel Header ── */
+    .fi-no-database .fi-modal-header,
+    [data-fi-modal-id="database-notifications"] .fi-modal-header {
+        position: relative;
+        flex-shrink: 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        background: #ffffff;
+        padding: 16px;
+        box-sizing: border-box;
     }
 
-    .dark .fi-no-database .fi-modal-header {
-        border-bottom-color: rgba(51, 65, 85, 0.35) !important;
-        background: rgba(9, 15, 30, 0.94) !important;
+    .dark .fi-no-database .fi-modal-header,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-header {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+        background: #0b1329;
     }
 
-    .fi-no-database .fi-modal-close-btn {
-        position: absolute !important;
-        right: 1.25rem !important;
-        top: 1.25rem !important;
-        z-index: 9999 !important; /* Force on top of header contents */
-        pointer-events: auto !important;
-        cursor: pointer !important;
-        opacity: 0.45 !important;
-        transition: opacity 200ms ease !important;
+    /* Header title & actions inside header */
+    .fi-no-database .fi-modal-header > div:first-child,
+    [data-fi-modal-id="database-notifications"] .fi-modal-header > div:first-child {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
     }
 
-    .fi-no-database .fi-modal-close-btn:hover {
-        opacity: 0.8 !important;
-    }
-
-    /* Header title & badge */
-    .fi-no-database .fi-modal-header .fi-modal-heading {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 0.5rem !important;
-        color: #0f172a !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 18px !important; /* Judul lebih besar (18px) */
-        font-weight: 750 !important;
-        width: max-content !important;
-        max-width: calc(100vw - 8rem) !important;
-    }
-
-    .dark .fi-no-database .fi-modal-header .fi-modal-heading {
-        color: #f8fafc !important;
-    }
-
-    /* Small badge next to title */
-    .fi-no-database .fi-modal-header .fi-modal-heading .fi-badge {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        background-color: rgba(37, 99, 235, 0.08) !important;
-        color: #2563eb !important;
-        font-size: 11px !important; /* Badge jumlah notifikasi kecil */
-        font-weight: 750 !important;
-        padding: 0 0.4rem !important;
-        border-radius: 999px !important;
-        border: 1px solid rgba(37, 99, 235, 0.12) !important;
-        min-width: 1.2rem !important;
-        height: 1.2rem !important;
-        margin-left: 0.35rem !important;
-        box-shadow: none !important;
-    }
-
-    .dark .fi-no-database .fi-modal-header .fi-modal-heading .fi-badge {
-        background-color: rgba(96, 165, 250, 0.08) !important;
-        color: #60a5fa !important;
-        border-color: rgba(96, 165, 250, 0.15) !important;
-    }
-
-    /* Wrapper for header title & actions */
-    .fi-no-database .fi-modal-header > div {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 0.65rem !important;
-        width: 100% !important;
-    }
-
-    /* 3. Action Buttons */
-    .fi-no-database .fi-ac {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0.5rem !important;
-        margin-top: 0.15rem !important;
-        border-top: none !important;
-        padding-top: 0 !important;
-        justify-content: flex-start !important;
-    }
-
-    .fi-no-database .fi-ac a,
-    .fi-no-database .fi-ac button {
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        height: 34px !important; /* Height 34-36px */
-        padding: 0 0.85rem !important;
-        font-size: 13px !important; /* Font 13-14px */
-        font-weight: 600 !important;
-        border-radius: 8px !important; /* Rounded 8px */
-        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1) !important; /* Smooth transition 200ms */
-        text-decoration: none !important;
-        border: 1px solid transparent !important;
-        cursor: pointer !important;
-        white-space: nowrap !important;
-    }
-
-    /* ✓ Tandai semua */
-    .fi-no-database .fi-ac a:first-child,
-    .fi-no-database .fi-ac button:first-child {
-        background-color: #F5F9FF !important; /* Light blue */
-        color: #2563eb !important;
-        border: 1px solid rgba(59, 130, 246, 0.15) !important;
-    }
-
-    .fi-no-database .fi-ac a:first-child:hover,
-    .fi-no-database .fi-ac button:first-child:hover {
-        background-color: #2563eb !important;
-        color: #ffffff !important;
-        border-color: #2563eb !important;
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.08) !important;
-    }
-
-    .dark .fi-no-database .fi-ac a:first-child,
-    .dark .fi-no-database .fi-ac button:first-child {
-        background-color: rgba(96, 165, 250, 0.06) !important;
-        color: #60a5fa !important;
-        border-color: rgba(96, 165, 250, 0.15) !important;
-    }
-
-    .dark .fi-no-database .fi-ac a:first-child:hover,
-    .dark .fi-no-database .fi-ac button:first-child:hover {
-        background-color: #3b82f6 !important;
-        color: #ffffff !important;
-        border-color: #3b82f6 !important;
-    }
-
-    /* 🗑 Bersihkan */
-    .fi-no-database .fi-ac a:last-child,
-    .fi-no-database .fi-ac button:last-child {
-        background-color: rgba(244, 63, 94, 0.04) !important;
-        color: #e11d48 !important;
-        border: 1px solid rgba(244, 63, 94, 0.1) !important;
-    }
-
-    .fi-no-database .fi-ac a:last-child:hover,
-    .fi-no-database .fi-ac button:last-child:hover {
-        background-color: #e11d48 !important;
-        color: #ffffff !important;
-        border-color: #e11d48 !important;
-        box-shadow: 0 4px 10px rgba(225, 29, 72, 0.08) !important;
-    }
-
-    .dark .fi-no-database .fi-ac a:last-child,
-    .dark .fi-no-database .fi-ac button:last-child {
-        background-color: rgba(248, 113, 113, 0.06) !important;
-        color: #f87171 !important;
-        border-color: rgba(248, 113, 113, 0.15) !important;
-    }
-
-    .dark .fi-no-database .fi-ac a:last-child:hover,
-    .dark .fi-no-database .fi-ac button:last-child:hover {
-        background-color: #ef4444 !important;
-        color: #ffffff !important;
-        border-color: #ef4444 !important;
-    }
-
-    /* 4. Modal Scrollable Content Container */
-    .fi-no-database .fi-modal-content {
-        display: flex !important;
-        flex-direction: column !important;
-        padding: 1rem 1.25rem 1.25rem 1.25rem !important;
-        overflow-x: hidden !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Active List Container: has sticky header, scrollable body */
-    .fi-no-database:has(.fi-modal-header) .fi-modal-content {
-        align-items: stretch !important;
-        justify-content: flex-start !important;
-        text-align: left !important;
-        overflow-y: auto !important;
-        max-height: calc(70vh - 6.5rem) !important; /* Limit body height for scroll */
-        gap: 0px !important; /* Handled by margins on items */
-        padding: 0.85rem 1.25rem 1.25rem 1.25rem !important; /* Explicit padding to prevent cards from touching the edges */
-        scrollbar-width: thin !important; /* Firefox support */
-    }
-
-    /* Custom thin scrollbar to prevent layout shift and maintain symmetric padding */
-    .fi-no-database .fi-modal-content::-webkit-scrollbar {
-        width: 6px !important;
-        height: 6px !important;
-    }
-
-    .fi-no-database .fi-modal-content::-webkit-scrollbar-track {
-        background: transparent !important;
-    }
-
-    .fi-no-database .fi-modal-content::-webkit-scrollbar-thumb {
-        background-color: rgba(156, 163, 175, 0.35) !important;
-        border-radius: 999px !important;
-    }
-
-    .dark .fi-no-database .fi-modal-content::-webkit-scrollbar-thumb {
-        background-color: rgba(75, 85, 99, 0.45) !important;
-    }
-
-    /* 5. Notification Items Layout & Color States */
-    .fi-no-database .fi-no-notification-read-ctn,
-    .fi-no-database .fi-no-notification-unread-ctn {
-        display: block !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Card spacing 10px-12px */
-    .fi-no-database .fi-no-notification-read-ctn + .fi-no-notification-read-ctn,
-    .fi-no-database .fi-no-notification-unread-ctn + .fi-no-notification-unread-ctn,
-    .fi-no-database .fi-no-notification-read-ctn + .fi-no-notification-unread-ctn,
-    .fi-no-database .fi-no-notification-unread-ctn + .fi-no-notification-read-ctn {
-        margin-top: 11px !important;
-    }
-
-    .fi-no-database .fi-no-notification {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: flex-start !important;
-        gap: 0.85rem !important; /* Left status icon layout */
-        border-radius: 12px !important;
-        padding: 14px 16px !important; /* Padding 14-16px */
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        box-shadow: none !important; /* Remove excessive shadows */
-        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1) !important; /* Transition 200ms */
-    }
-
-    /* UNREAD: Background biru sangat muda (#F5F9FF), Border biru tipis */
-    .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification {
-        background-color: #F5F9FF !important;
-        border: 1px solid rgba(59, 130, 246, 0.15) !important;
-    }
-
-    .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification:hover {
-        background-color: #EBF3FF !important; /* Slightly darker hover background */
-    }
-
-    .dark .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.35) 0%, rgba(15, 23, 42, 0.5) 100%) !important;
-        border-color: rgba(96, 165, 250, 0.18) !important;
-    }
-
-    .dark .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification:hover {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.7) 100%) !important;
-    }
-
-    /* READ: Background putih, Border abu tipis */
-    .fi-no-database .fi-no-notification-read-ctn .fi-no-notification {
-        background-color: #ffffff !important;
-        border: 1px solid rgba(226, 232, 240, 0.8) !important;
-    }
-
-    .fi-no-database .fi-no-notification-read-ctn .fi-no-notification:hover {
-        background-color: #F8FAFC !important; /* Slightly darker hover background */
-    }
-
-    .dark .fi-no-database .fi-no-notification-read-ctn .fi-no-notification {
-        background-color: #0b1120 !important;
-        border-color: rgba(51, 65, 85, 0.4) !important;
-    }
-
-    .dark .fi-no-database .fi-no-notification-read-ctn .fi-no-notification:hover {
-        background-color: #10192d !important;
-    }
-
-    /* Typography & Hierarchy (Visual Reordering) */
-    .fi-no-database .fi-no-notification div:has(> .fi-no-notification-title) {
-        display: flex !important;
-        flex-direction: column !important;
-        flex-grow: 1 !important;
-        min-width: 0 !important;
-    }
-
-    .fi-no-database .fi-no-notification-title {
-        color: #0f172a !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 0.875rem !important;
-        font-weight: 700 !important; /* Judul bold */
-        line-height: 1.35 !important;
-        order: 1 !important; /* Title first */
-    }
-
-    .dark .fi-no-database .fi-no-notification-title {
-        color: #f1f5f9 !important;
-    }
-
-    .fi-no-database .fi-no-notification-body {
-        color: #475569 !important;
-        font-size: 0.8125rem !important; /* Deskripsi normal */
-        line-height: 1.45 !important;
-        margin-top: 0.25rem !important;
-        order: 2 !important; /* Description second */
-    }
-
-    .dark .fi-no-database .fi-no-notification-body {
-        color: #94a3b8 !important;
-    }
-
-    .fi-no-database .fi-no-notification-date {
-        color: #94a3b8 !important; /* Waktu warna abu kecil */
-        font-size: 0.7rem !important;
-        font-weight: 500 !important;
-        margin-top: 0.35rem !important;
-        display: block !important;
-        order: 3 !important; /* Date third (placed at the bottom) */
-    }
-
-    .dark .fi-no-database .fi-no-notification-date {
-        color: #64748b !important;
-    }
-
-    /* Status Icon on the left */
-    .fi-no-database .fi-no-notification .fi-icon-btn,
-    .fi-no-database .fi-no-notification .fi-no-notification-icon {
-        flex-shrink: 0 !important;
-        margin-top: 0.15rem !important;
-    }
-
-    /* Close/Dismiss button inside notifications card (X button on the right) */
-    .fi-no-database .fi-no-notification button[wire:click] {
-        opacity: 0.3 !important;
-        transform: scale(0.85) !important;
-        transition: all 200ms ease !important;
-        flex-shrink: 0 !important;
-        margin-left: auto !important;
-        align-self: flex-start !important;
-        margin-top: 0.1rem !important;
-    }
-
-    .fi-no-database .fi-no-notification button[wire:click]:hover {
-        opacity: 0.8 !important;
-        transform: scale(1) !important;
-        background-color: rgba(0, 0, 0, 0.04) !important;
-        border-radius: 4px !important;
-    }
-
-    .dark .fi-no-database .fi-no-notification button[wire:click]:hover {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-    }
-
-    /* 6. Empty State (Centered, Clean) */
-    .fi-no-database .fi-modal-content {
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-    }
-
-    /* Empty state icon ring styling */
-    .fi-no-database .fi-modal-icon-bg {
-        background-color: rgba(241, 245, 249, 0.8) !important;
-        color: #64748b !important;
-        width: 3.25rem !important;
-        height: 3.25rem !important;
-        border-radius: 999px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-shadow: none !important;
-        margin-bottom: 0.25rem !important;
-    }
-
-    .dark .fi-no-database .fi-modal-icon-bg {
-        background-color: rgba(30, 41, 59, 0.4) !important;
-        color: #94a3b8 !important;
-    }
-
-    /* Empty state title and subtitle styling */
-    .fi-no-database .fi-modal-content > div > .fi-modal-heading {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 0.95rem !important;
-        font-weight: 700 !important;
-        color: #1e293b !important;
-        margin-top: 0.5rem !important;
-    }
-
-    .dark .fi-no-database .fi-modal-content > div > .fi-modal-heading {
-        color: #f1f5f9 !important;
-    }
-
-    .fi-no-database .fi-modal-content > div > .fi-modal-description {
-        font-size: 0.8125rem !important;
-        color: #64748b !important;
-        margin-top: 0.25rem !important;
-        max-width: 280px !important;
-        line-height: 1.45 !important;
-    }
-
-    .dark .fi-no-database .fi-modal-content > div > .fi-modal-description {
-        color: #94a3b8 !important;
-    }
-
-    /* 7. General Clean-ups & Micro-interactions */
-
-    .simpad-notification-console {
-        display: grid;
-        gap: 0.85rem;
-    }
-
-    .simpad-notification-console__header {
+    /* Title row wrapper */
+    .fi-no-database .fi-modal-header .fi-modal-heading,
+    [data-fi-modal-id="database-notifications"] .fi-modal-header .fi-modal-heading {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-    }
-
-    .simpad-notification-console__header h2 {
-        margin: 0;
+        gap: 6px;
         color: #0f172a;
-        font-size: 1rem;
-        font-weight: 800;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        margin: 0;
     }
 
-    .dark .simpad-notification-console__header h2 {
+    .dark .fi-no-database .fi-modal-header .fi-modal-heading,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-header .fi-modal-heading {
         color: #f8fafc;
     }
 
-    .simpad-notification-console__header p {
-        margin: 0.2rem 0 0;
-        color: #64748b;
-        font-size: 0.8125rem;
-    }
-
-    .simpad-notification-console__actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: flex-end;
-    }
-
-    .simpad-notification-console__meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .simpad-notification-console__meta span {
-        border-radius: 999px;
-        border: 1px solid rgba(226, 232, 240, 0.95);
-        background: #f8fafc;
-        color: #475569;
-        padding: 0.3rem 0.65rem;
-        font-size: 0.75rem;
+    /* Count badge */
+    .fi-no-database .fi-modal-header .fi-modal-heading .fi-badge,
+    [data-fi-modal-id="database-notifications"] .fi-modal-header .fi-modal-heading .fi-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(59, 130, 246, 0.08);
+        color: #2563eb;
+        font-size: 10px;
         font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(59, 130, 246, 0.12);
+        min-width: 18px;
+        height: 18px;
+        box-shadow: none;
     }
 
-    .dark .simpad-notification-console__meta span {
-        border-color: rgba(51, 65, 85, 0.9);
-        background: rgba(15, 23, 42, 0.72);
+    .dark .fi-no-database .fi-modal-header .fi-modal-heading .fi-badge,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-header .fi-modal-heading .fi-badge {
+        background-color: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+        border-color: rgba(96, 165, 250, 0.2);
+    }
+
+    /* Close (✕) button */
+    .fi-no-database .fi-modal-close-btn,
+    [data-fi-modal-id="database-notifications"] .fi-modal-close-btn {
+        position: absolute;
+        right: 14px;
+        top: 14px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        opacity: 0.5;
+        cursor: pointer;
+        transition: opacity 120ms ease, background-color 120ms ease;
+        background: transparent;
+        border: none;
+    }
+
+    .fi-no-database .fi-modal-close-btn:hover,
+    [data-fi-modal-id="database-notifications"] .fi-modal-close-btn:hover {
+        opacity: 0.8;
+        background-color: rgba(15, 23, 42, 0.05);
+    }
+
+    .dark .fi-no-database .fi-modal-close-btn:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-close-btn:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* ── 3. Action Buttons ── */
+    .fi-no-database .fi-ac,
+    [data-fi-modal-id="database-notifications"] .fi-ac {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .fi-no-database .fi-ac a,
+    .fi-no-database .fi-ac button,
+    [data-fi-modal-id="database-notifications"] .fi-ac a,
+    [data-fi-modal-id="database-notifications"] .fi-ac button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        height: 26px;
+        padding: 0 10px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 6px;
+        transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    /* "Tandai semua" button */
+    .fi-no-database .fi-ac a:first-child,
+    .fi-no-database .fi-ac button:first-child,
+    [data-fi-modal-id="database-notifications"] .fi-ac a:first-child,
+    [data-fi-modal-id="database-notifications"] .fi-ac button:first-child {
+        background-color: #f1f5f9;
+        color: #334155;
+        border-color: rgba(203, 213, 225, 0.5);
+    }
+
+    .fi-no-database .fi-ac a:first-child:hover,
+    .fi-no-database .fi-ac button:first-child:hover,
+    [data-fi-modal-id="database-notifications"] .fi-ac a:first-child:hover,
+    [data-fi-modal-id="database-notifications"] .fi-ac button:first-child:hover {
+        background-color: #e2e8f0;
+        color: #0f172a;
+    }
+
+    .dark .fi-no-database .fi-ac a:first-child,
+    .dark .fi-no-database .fi-ac button:first-child,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac a:first-child,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac button:first-child {
+        background-color: rgba(255, 255, 255, 0.04);
         color: #cbd5e1;
+        border-color: rgba(255, 255, 255, 0.06);
     }
 
-    .simpad-notification-console__log {
-        min-height: 6rem;
-        max-height: 13rem;
+    .dark .fi-no-database .fi-ac a:first-child:hover,
+    .dark .fi-no-database .fi-ac button:first-child:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac a:first-child:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac button:first-child:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+
+    /* "Bersihkan" button */
+    .fi-no-database .fi-ac a:last-child:not(:first-child),
+    .fi-no-database .fi-ac button:last-child:not(:first-child),
+    [data-fi-modal-id="database-notifications"] .fi-ac a:last-child:not(:first-child),
+    [data-fi-modal-id="database-notifications"] .fi-ac button:last-child:not(:first-child) {
+        background-color: rgba(244, 63, 94, 0.05);
+        color: #e11d48;
+        border-color: rgba(244, 63, 94, 0.1);
+        margin-left: auto;
+    }
+
+    .fi-no-database .fi-ac a:last-child:hover,
+    .fi-no-database .fi-ac button:last-child:hover,
+    [data-fi-modal-id="database-notifications"] .fi-ac a:last-child:hover,
+    [data-fi-modal-id="database-notifications"] .fi-ac button:last-child:hover {
+        background-color: #e11d48;
+        color: #ffffff;
+        border-color: #e11d48;
+    }
+
+    .dark .fi-no-database .fi-ac a:last-child,
+    .dark .fi-no-database .fi-ac button:last-child,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac a:last-child,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac button:last-child {
+        background-color: rgba(239, 68, 68, 0.08);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.15);
+    }
+
+    .dark .fi-no-database .fi-ac a:last-child:hover,
+    .dark .fi-no-database .fi-ac button:last-child:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac a:last-child:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-ac button:last-child:hover {
+        background-color: #ef4444;
+        color: #ffffff;
+        border-color: #ef4444;
+    }
+
+    /* ── 4. Scrollable Content Area ── */
+    .fi-no-database .fi-modal-content,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content {
+        flex: 1 1 auto;
+        overflow-x: hidden;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 0; /* Horizontal padding is 0 to let the scrollbar sit cleanly at the right edge */
+        box-sizing: border-box;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(156, 163, 175, 0.2) transparent;
+        max-height: 300px !important; /* Limits the view dynamically to ~3 notifications, then scrolls */
+    }
+
+    .fi-no-database .fi-modal-content::-webkit-scrollbar,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .fi-no-database .fi-modal-content::-webkit-scrollbar-track,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .fi-no-database .fi-modal-content::-webkit-scrollbar-thumb,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.2);
+        border-radius: 99px;
+    }
+
+    /* ── 5. Notification Card Wrapper (Provides spacing from panel borders and scrollbar) ── */
+    .fi-no-database .fi-no-notification-read-ctn,
+    .fi-no-database .fi-no-notification-unread-ctn,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-read-ctn,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn {
+        width: auto;
+        margin: 0 16px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+
+    /* ── 6. Notification Card ── */
+    .fi-no-database .fi-no-notification,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 12px;
+        align-items: start;
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        box-sizing: border-box;
+        border: 1px solid rgba(226, 232, 240, 0.6);
+        transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+        cursor: default;
+    }
+
+    /* UNREAD Card Style (Soft blue background like GitHub/Vercel) */
+    .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn .fi-no-notification {
+        background-color: #eff6ff;
+        border-color: rgba(59, 130, 246, 0.12);
+        box-shadow: 0 1px 2px rgba(59, 130, 246, 0.02);
+    }
+
+    .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification:hover,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn .fi-no-notification:hover {
+        background-color: #e0f2fe;
+        border-color: rgba(59, 130, 246, 0.22);
+    }
+
+    .dark .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn .fi-no-notification {
+        background-color: rgba(30, 58, 138, 0.15);
+        border-color: rgba(96, 165, 250, 0.15);
+    }
+
+    .dark .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn .fi-no-notification:hover {
+        background-color: rgba(30, 58, 138, 0.25);
+        border-color: rgba(96, 165, 250, 0.25);
+    }
+
+    /* READ Card Style (White background) */
+    .fi-no-database .fi-no-notification-read-ctn .fi-no-notification,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-read-ctn .fi-no-notification {
+        background-color: #ffffff;
+        border-color: rgba(226, 232, 240, 0.8);
+    }
+
+    .fi-no-database .fi-no-notification-read-ctn .fi-no-notification:hover,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-read-ctn .fi-no-notification:hover {
+        background-color: #f8fafc;
+        border-color: rgba(203, 213, 225, 0.8);
+    }
+
+    .dark .fi-no-database .fi-no-notification-read-ctn .fi-no-notification,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-read-ctn .fi-no-notification {
+        background-color: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    .dark .fi-no-database .fi-no-notification-read-ctn .fi-no-notification:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-read-ctn .fi-no-notification:hover {
+        background-color: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* ── 7. Card Content Elements ── */
+
+    /* Left status icon container */
+    .fi-no-database .fi-no-notification .fi-icon-btn,
+    .fi-no-database .fi-no-notification .fi-no-notification-icon,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-icon-btn,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-no-notification-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 8px;
-        border: 1px solid rgba(15, 23, 42, 0.9);
-        background: #0f172a;
-        color: #cbd5e1;
-        padding: 0.8rem;
-        font-family: var(--mono-font-family), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 0.75rem;
-        line-height: 1.55;
+        background-color: rgba(148, 163, 184, 0.08);
+        color: #475569;
     }
 
-    .simpad-notification-console__log-line--success { color: #86efac; }
-    .simpad-notification-console__log-line--warning { color: #fde68a; }
-    .simpad-notification-console__log-line--danger { color: #fca5a5; }
-    .simpad-notification-console__log-line--info { color: #93c5fd; }
-    .simpad-notification-console__log-line--muted { color: #cbd5e1; }
-
-    @media (max-width: 768px) {
-        .simpad-notification-console__header {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
-        .simpad-notification-console__actions {
-            justify-content: flex-start;
-        }
+    .dark .fi-no-database .fi-no-notification .fi-icon-btn,
+    .dark .fi-no-database .fi-no-notification .fi-no-notification-icon,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-icon-btn,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-no-notification-icon {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #94a3b8;
     }
 
-    /* ────────────────────────────────────────────────────────── */
-    /* CLEAN & MODERN FORM & SECTION ELEMENTS (Vercel/Linear style) */
-    /* ────────────────────────────────────────────────────────── */
-
-    /* Global Main Content & Page Title adjustments */
-    .fi-main {
-        background-color: #fafafa !important;
-    }
-    .dark .fi-main {
-        background-color: #0b1120 !important;
+    /* Middle text wrapper container */
+    .fi-no-database .fi-no-notification > div:not(:last-child):not(.fi-icon-btn):not(.fi-no-notification-icon),
+    [data-fi-modal-id="database-notifications"] .fi-no-notification > div:not(:last-child):not(.fi-icon-btn):not(.fi-no-notification-icon) {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0; /* Prevents text overflow breaking layouts */
     }
 
-    .fi-header-heading {
-        font-family: 'Outfit', sans-serif !important;
-        font-weight: 800 !important;
-        letter-spacing: -0.02em !important;
-        color: #0f172a !important;
-    }
-    .dark .fi-header-heading {
-        color: #f8fafc !important;
+    /* Title text styling */
+    .fi-no-database .fi-no-notification-title,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-title {
+        color: #1e293b;
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
     }
 
-    /* Forms Section styling (Vercel-like Card Container) */
+    .dark .fi-no-database .fi-no-notification-title,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-title {
+        color: #f1f5f9;
+    }
+
+    /* Body description text */
+    .fi-no-database .fi-no-notification-body,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-body {
+        color: #475569;
+        font-size: 12.5px;
+        font-weight: 400;
+        line-height: 1.5;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+    }
+
+    .dark .fi-no-database .fi-no-notification-body,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-body {
+        color: #94a3b8;
+    }
+
+    /* Timestamp metadata text */
+    .fi-no-database .fi-no-notification-date,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-date {
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 500;
+        margin: 0;
+        display: block;
+    }
+
+    .dark .fi-no-database .fi-no-notification-date,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-date {
+        color: #64748b;
+    }
+
+    /* Clean Card Dismiss Button (✕) */
+    .fi-no-database .fi-no-notification button[wire\:click],
+    [data-fi-modal-id="database-notifications"] .fi-no-notification button[wire\:click] {
+        grid-column: 3;
+        align-self: start;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: opacity 120ms ease, transform 120ms ease, background-color 120ms ease;
+    }
+
+    /* Show dismiss button on hover of the card */
+    .fi-no-database .fi-no-notification:hover button[wire\:click],
+    [data-fi-modal-id="database-notifications"] .fi-no-notification:hover button[wire\:click] {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    .fi-no-database .fi-no-notification button[wire\:click]:hover,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification button[wire\:click]:hover {
+        opacity: 1;
+        background-color: rgba(15, 23, 42, 0.06);
+    }
+
+    .dark .fi-no-database .fi-no-notification button[wire\:click]:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification button[wire\:click]:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* ── 8. Empty State Design ── */
+    .fi-no-database .fi-modal-content > div:only-child,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content > div:only-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 32px 24px;
+        width: 100%;
+        min-height: 14rem;
+        gap: 0;
+        box-sizing: border-box;
+    }
+
+    .fi-no-database .fi-modal-icon-bg,
+    [data-fi-modal-id="database-notifications"] .fi-modal-icon-bg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        background-color: #f1f5f9;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        box-shadow: none;
+    }
+
+    .dark .fi-no-database .fi-modal-icon-bg,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-icon-bg {
+        background-color: rgba(255, 255, 255, 0.04);
+        color: #4b5563;
+    }
+
+    .fi-no-database .fi-modal-content > div > .fi-modal-heading,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content > div > .fi-modal-heading {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+
+    .dark .fi-no-database .fi-modal-content > div > .fi-modal-heading,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-content > div > .fi-modal-heading {
+        color: #f1f5f9;
+    }
+
+    .fi-no-database .fi-modal-content > div > .fi-modal-description,
+    [data-fi-modal-id="database-notifications"] .fi-modal-content > div > .fi-modal-description {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 4px;
+        max-width: 240px;
+        line-height: 1.5;
+    }
+
+    .dark .fi-no-database .fi-modal-content > div > .fi-modal-description,
+    .dark [data-fi-modal-id="database-notifications"] .fi-modal-content > div > .fi-modal-description {
+        color: #4b5563;
+    }
+
+    /* ============================================================
+       FORMS & SECTIONS
+       ============================================================ */
+
     .fi-section {
         border-radius: 16px !important;
         border: 1px solid rgba(226, 232, 240, 0.9) !important;
-        background-color: #ffffff !important;
+        background-color: var(--bg-white) !important;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
         overflow: hidden !important;
         transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
@@ -859,10 +922,9 @@
         box-shadow: none !important;
     }
 
-    /* Section Header spacing and separator */
     .fi-section-header {
         padding: 1.25rem 1.5rem !important;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        border-bottom: 1px solid var(--border-light) !important;
         background-color: #fcfdfe !important;
     }
 
@@ -872,10 +934,9 @@
     }
 
     .fi-section-header-title {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-size: 0.95rem !important;
         font-weight: 750 !important;
-        color: #0f172a !important;
+        color: var(--text-primary-light) !important;
         letter-spacing: -0.01em !important;
     }
 
@@ -883,27 +944,19 @@
         color: #f1f5f9 !important;
     }
 
-    .fi-section-header-description {
-        font-size: 0.8125rem !important;
-        color: #64748b !important;
-        margin-top: 0.2rem !important;
-    }
-
-    .dark .fi-section-header-description {
-        color: #94a3b8 !important;
-    }
-
     .fi-section-content {
         padding: 1.5rem !important;
     }
 
-    /* TextInput and Select elements (Inputs styling) */
+    /* ============================================================
+       INPUT STYLING
+       ============================================================ */
     .fi-input-wrp {
         border-radius: 8px !important;
         border: 1px solid rgba(203, 213, 225, 0.8) !important;
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02) !important;
         transition: all 0.2s ease !important;
-        background-color: #ffffff !important;
+        background-color: var(--bg-white) !important;
     }
 
     .dark .fi-input-wrp {
@@ -912,18 +965,18 @@
     }
 
     .fi-input-wrp:focus-within {
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 1px #2563eb, 0 4px 12px rgba(37, 99, 235, 0.05) !important;
+        border-color: var(--primary-blue-dark) !important;
+        box-shadow: 0 0 0 1px var(--primary-blue-dark), 0 4px 12px rgba(37, 99, 235, 0.05) !important;
     }
 
     .dark .fi-input-wrp:focus-within {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 1px #3b82f6, 0 4px 12px rgba(59, 130, 246, 0.1) !important;
+        border-color: var(--primary-blue) !important;
+        box-shadow: 0 0 0 1px var(--primary-blue), 0 4px 12px rgba(59, 130, 246, 0.1) !important;
     }
 
     .fi-input {
         font-size: 0.875rem !important;
-        color: #0f172a !important;
+        color: var(--text-primary-light) !important;
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
     }
@@ -932,22 +985,29 @@
         color: #f1f5f9 !important;
     }
 
-    /* Buttons styling (Clean rounded Vercel style) */
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
     .fi-btn {
         border-radius: 8px !important;
         font-size: 0.875rem !important;
         font-weight: 600 !important;
         padding: 0.5rem 1rem !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.2s var(--transition-smooth) !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        outline: none !important;
     }
 
-    /* Primary save button */
+    .fi-btn:focus-visible {
+        outline: 2px solid var(--primary-blue) !important;
+        outline-offset: 2px !important;
+    }
+
     .fi-btn-color-primary,
     .fi-btn[type="submit"] {
-        background-color: #2563eb !important;
+        background-color: var(--primary-blue-dark) !important;
         color: #ffffff !important;
-        border: 1px solid #2563eb !important;
+        border: 1px solid var(--primary-blue-dark) !important;
     }
 
     .fi-btn-color-primary:hover,
@@ -960,27 +1020,26 @@
 
     .dark .fi-btn-color-primary,
     .dark .fi-btn[type="submit"] {
-        background-color: #3b82f6 !important;
-        border-color: #3b82f6 !important;
+        background-color: var(--primary-blue) !important;
+        border-color: var(--primary-blue) !important;
     }
 
     .dark .fi-btn-color-primary:hover,
     .dark .fi-btn[type="submit"]:hover {
-        background-color: #2563eb !important;
-        border-color: #2563eb !important;
+        background-color: var(--primary-blue-dark) !important;
+        border-color: var(--primary-blue-dark) !important;
         box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25) !important;
     }
 
-    /* Secondary / cancel button */
     .fi-btn-color-gray {
-        background-color: #ffffff !important;
-        color: #475569 !important;
+        background-color: var(--bg-white) !important;
+        color: var(--text-secondary-light) !important;
         border: 1px solid rgba(226, 232, 240, 0.9) !important;
     }
 
     .fi-btn-color-gray:hover {
-        background-color: #f8fafc !important;
-        color: #0f172a !important;
+        background-color: var(--bg-light-gray) !important;
+        color: var(--text-primary-light) !important;
         border-color: rgba(203, 213, 225, 0.9) !important;
     }
 
@@ -996,11 +1055,14 @@
         border-color: rgba(71, 85, 105, 0.8) !important;
     }
 
-    /* ─── Topbar Layout (Glassmorphism Header) ─────────────── */
+    /* ============================================================
+       TOPBAR
+       ============================================================ */
     .fi-topbar {
         background-color: rgba(255, 255, 255, 0.8) !important;
         backdrop-filter: blur(12px) !important;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-bottom: 1px solid var(--border-light) !important;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.01) !important;
     }
 
@@ -1010,26 +1072,13 @@
         box-shadow: none !important;
     }
 
-    /* Breadcrumbs styling */
-    .fi-breadcrumbs-item-label {
-        font-size: 0.8125rem !important;
-        font-weight: 500 !important;
-        color: #64748b !important;
-    }
-
-    .fi-breadcrumbs-item-label:hover {
-        color: #0f172a !important;
-    }
-
-    .dark .fi-breadcrumbs-item-label:hover {
-        color: #f1f5f9 !important;
-    }
-
-    /* ─── Table Styling (Modern Data Grid) ───────────────── */
+    /* ============================================================
+       TABLE STYLING
+       ============================================================ */
     .fi-ta-ctn {
         border-radius: 16px !important;
         border: 1px solid rgba(226, 232, 240, 0.9) !important;
-        background-color: #ffffff !important;
+        background-color: var(--bg-white) !important;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
         overflow: hidden !important;
     }
@@ -1040,9 +1089,8 @@
         box-shadow: none !important;
     }
 
-    /* Table Headers */
     .fi-ta-header-cell {
-        background-color: #f8fafc !important;
+        background-color: var(--bg-light-gray) !important;
         border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
         padding-top: 0.85rem !important;
         padding-bottom: 0.85rem !important;
@@ -1054,21 +1102,15 @@
     }
 
     .fi-ta-header-cell-label {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-size: 0.72rem !important;
         font-weight: 750 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
-        color: #475569 !important;
+        color: var(--text-secondary-light) !important;
     }
 
     .dark .fi-ta-header-cell-label {
         color: #cbd5e1 !important;
-    }
-
-    /* Table Body Rows & Cells */
-    .fi-ta-row {
-        transition: background-color 0.15s ease !important;
     }
 
     .fi-ta-row:hover {
@@ -1090,88 +1132,14 @@
         color: #cbd5e1 !important;
     }
 
-    /* Table Search and Filters header bar */
-    .fi-ta-header {
-        background-color: #ffffff !important;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.6) !important;
-        padding: 1.25rem 1.5rem !important;
-    }
-
-    .dark .fi-ta-header {
-        background-color: #0d1527 !important;
-        border-bottom-color: rgba(51, 65, 85, 0.4) !important;
-    }
-
-    /* ─── Stats Overview Widget (Linear/Stripe style) ────── */
-    .fi-wi-stats-overview-card-ctn {
-        gap: 1.25rem !important;
-    }
-
-    .fi-wi-stats-overview-card {
-        border-radius: 16px !important;
-        border: 1px solid rgba(226, 232, 240, 0.9) !important;
-        background-color: #ffffff !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
-        padding: 1.5rem !important;
-        overflow: hidden !important;
-        position: relative !important;
-        transition: border-color 0.25s ease !important;
-    }
-
-    .dark .fi-wi-stats-overview-card {
-        border-color: rgba(51, 65, 85, 0.5) !important;
-        background-color: #0d1527 !important;
-        box-shadow: none !important;
-    }
-
-    .fi-wi-stats-overview-card:hover {
-        border-color: rgba(37, 99, 235, 0.4) !important;
-    }
-
-    .dark .fi-wi-stats-overview-card:hover {
-        border-color: rgba(59, 130, 246, 0.4) !important;
-    }
-
-    /* Stat Label */
-    .fi-wi-stats-overview-card .text-sm {
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 0.75rem !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
-        color: #64748b !important;
-    }
-
-    .dark .fi-wi-stats-overview-card .text-sm {
-        color: #94a3b8 !important;
-    }
-
-    /* Stat Value */
-    .fi-wi-stats-overview-card .text-3xl {
-        font-family: 'Outfit', sans-serif !important;
-        font-size: 1.75rem !important;
-        font-weight: 800 !important;
-        letter-spacing: -0.02em !important;
-        color: #0f172a !important;
-        margin-top: 0.35rem !important;
-    }
-
-    .dark .fi-wi-stats-overview-card .text-3xl {
-        color: #f8fafc !important;
-    }
-
-    /* Description / Subtext in Stats */
-    .fi-wi-stats-overview-card .text-xs {
-        font-size: 0.78rem !important;
-        margin-top: 0.5rem !important;
-    }
-
-    /* Premium Profile Card Header */
+    /* ============================================================
+       PROFILE CARD (INJECTED VIA JAVASCRIPT)
+       ============================================================ */
     .simpad-profile-card {
         display: flex !important;
         align-items: center !important;
         gap: 1.5rem !important;
-        background: #ffffff !important;
+        background: var(--bg-white) !important;
         border: 1px solid rgba(226, 232, 240, 0.9) !important;
         border-radius: 16px !important;
         padding: 1.5rem !important;
@@ -1185,6 +1153,14 @@
         box-shadow: none !important;
     }
 
+    @media (max-width: 640px) {
+        .simpad-profile-card {
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 1rem !important;
+        }
+    }
+
     .simpad-profile-card__avatar {
         display: flex !important;
         align-items: center !important;
@@ -1192,12 +1168,21 @@
         width: 64px !important;
         height: 64px !important;
         border-radius: 999px !important;
-        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%) !important;
+        background: var(--sidebar-active-gradient) !important;
         color: #ffffff !important;
         font-family: 'Outfit', sans-serif !important;
         font-size: 1.5rem !important;
         font-weight: 700 !important;
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25) !important;
+        flex-shrink: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .simpad-profile-card__avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 999px !important;
     }
 
     .simpad-profile-card__name {
@@ -1205,7 +1190,7 @@
         font-size: 1.5rem !important;
         font-weight: 800 !important;
         letter-spacing: -0.02em !important;
-        color: #0f172a !important;
+        color: var(--text-primary-light) !important;
         line-height: 1.2 !important;
     }
 
@@ -1218,12 +1203,19 @@
         align-items: center !important;
         gap: 0.75rem !important;
         margin-top: 0.35rem !important;
+        flex-wrap: wrap !important;
+    }
+
+    @media (max-width: 640px) {
+        .simpad-profile-card__meta {
+            justify-content: center !important;
+        }
     }
 
     .simpad-profile-card__badge {
         font-size: 0.72rem !important;
         font-weight: 750 !important;
-        color: #2563eb !important;
+        color: var(--primary-blue-dark) !important;
         background: rgba(37, 99, 235, 0.08) !important;
         padding: 0.25rem 0.65rem !important;
         border-radius: 999px !important;
@@ -1238,7 +1230,7 @@
 
     .simpad-profile-card__email {
         font-size: 0.8125rem !important;
-        color: #64748b !important;
+        color: var(--text-muted-light) !important;
     }
 
     .dark .simpad-profile-card__email {
@@ -1254,6 +1246,7 @@
         border-radius: 999px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.05em !important;
+        gap: 0.25rem !important;
     }
 
     .simpad-profile-card__google-status.linked {
@@ -1278,192 +1271,293 @@
         background: rgba(251, 191, 36, 0.1) !important;
     }
 
-    /* Split Column settings layout for Profile Page (Vercel Style) */
-    @media (min-width: 1024px) {
-        .simpad-profile-page form {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 2rem !important;
-        }
-
-        .simpad-profile-page .fi-section {
-            display: grid !important;
-            grid-template-columns: 1fr 2.15fr !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            gap: 3rem !important;
-            align-items: start !important;
-            padding: 0 !important;
-        }
-
-        .simpad-profile-page .fi-section-header {
-            background: transparent !important;
-            border-bottom: none !important;
-            padding: 0.5rem 0 !important;
-        }
-
-        .simpad-profile-page .fi-section-content {
-            background: #ffffff !important;
-            border: 1px solid rgba(226, 232, 240, 0.9) !important;
-            border-radius: 16px !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
-            padding: 1.75rem !important;
-        }
-
-        .dark .simpad-profile-page .fi-section-content {
-            background: #0d1527 !important;
-            border-color: rgba(51, 65, 85, 0.5) !important;
-        }
-
-        /* Fix alignment of button save area */
-        .simpad-profile-page form > div:last-child {
-            display: grid !important;
-            grid-template-columns: 1fr 2.15fr !important;
-            gap: 3rem !important;
-        }
-
-        .simpad-profile-page form > div:last-child > * {
-            grid-column: 2 !important;
-            display: flex !important;
-            justify-content: flex-end !important;
-        }
+    .simpad-profile-card__google-status svg {
+        width: 0.85rem !important;
+        height: 0.85rem !important;
+        flex-shrink: 0 !important;
     }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        let lastUnreadCount = 0;
-        let isFirstCheck = true;
+    (function () {
+        'use strict';
+
+        // ============================================================
+        // UTILITY: DEBOUNCE
+        // ============================================================
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // ============================================================
+        // AUDIO CONTEXT & NOTIFICATION CHIME
+        // ============================================================
         let audioContext = null;
 
-        // Clean synthesized notification chime using Web Audio API (Slack/Vercel style)
-        const playNotificationSound = () => {
-            try {
-                // Initialize AudioContext on first sound play to avoid browser warning
-                if (!audioContext) {
+        function getAudioContext() {
+            if (!audioContext) {
+                try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.warn('Web Audio API not supported:', e);
+                    return null;
                 }
-                
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().catch(() => { });
+            }
+            return audioContext;
+        }
 
-                const playChime = (frequency, startTime, duration) => {
-                    const osc = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
+        function playNotificationSound() {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            try {
+                const now = ctx.currentTime;
+
+                function playChime(frequency, startTime, duration) {
+                    const osc = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
 
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(frequency, startTime);
 
-                    // Envelope: fast attack, smooth decay
                     gainNode.gain.setValueAtTime(0, startTime);
                     gainNode.gain.linearRampToValueAtTime(0.18, startTime + 0.02);
                     gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
                     osc.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
+                    gainNode.connect(ctx.destination);
 
                     osc.start(startTime);
                     osc.stop(startTime + duration);
-                };
+                }
 
-                const now = audioContext.currentTime;
-                // High-pitched Slack-like double chime (C5 -> E5)
+                // Slack-style double chime: C5 -> E5
                 playChime(523.25, now, 0.25);
                 playChime(659.25, now + 0.06, 0.35);
             } catch (e) {
-                console.log('Web Audio API chime failed:', e);
+                console.warn('Notification chime failed:', e);
             }
-        };
+        }
 
-        // 1. Listen for Livewire/Filament instant toast notifications
-        window.addEventListener('notification-sent', () => {
-            playNotificationSound();
-        });
+        // ============================================================
+        // NOTIFICATION BADGE POLLING
+        // ============================================================
+        let lastUnreadCount = 0;
+        let isFirstCheck = true;
+        let pollInterval = null;
 
-        // 2. Poll for background database notification changes (from Livewire poll)
-        const checkBadgeCount = () => {
+        function getCurrentBadgeCount() {
             const badges = document.querySelectorAll(
                 '.fi-topbar-database-notifications-btn .fi-badge span, ' +
                 '.fi-sidebar-database-notifications-btn-badge-ctn .fi-badge span, ' +
                 '.fi-no-database .fi-modal-header .fi-badge'
             );
-            
+
             if (badges.length > 0) {
-                const count = parseInt(badges[0].textContent.trim()) || 0;
-                
-                // If count has increased and it is not the initial load check, play the chime
-                if (count > lastUnreadCount) {
-                    if (!isFirstCheck) {
-                        playNotificationSound();
-                    }
-                }
-                lastUnreadCount = count;
-            } else {
-                lastUnreadCount = 0;
+                const text = badges[0].textContent.trim();
+                const count = parseInt(text, 10);
+                return isNaN(count) ? 0 : count;
             }
+            return 0;
+        }
+
+        const checkBadgeCount = debounce(() => {
+            const count = getCurrentBadgeCount();
+
+            if (count > lastUnreadCount && !isFirstCheck) {
+                playNotificationSound();
+            }
+
+            lastUnreadCount = count;
             isFirstCheck = false;
-        };
+        }, 300);
 
-        // Check badge count every 2 seconds
-        setInterval(checkBadgeCount, 2000);
+        function startPolling() {
+            if (pollInterval) clearInterval(pollInterval);
+            checkBadgeCount(); // Immediate first check
+            pollInterval = setInterval(checkBadgeCount, 2000);
+        }
 
-        // Pre-initialize audio context on first click on page to guarantee playback
-        const initAudioOnInteraction = () => {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+        }
+
+        // ============================================================
+        // AUDIO CONTEXT INITIALIZATION ON USER INTERACTION
+        // ============================================================
+        function initAudioOnInteraction() {
+            getAudioContext();
             document.removeEventListener('click', initAudioOnInteraction);
             document.removeEventListener('keydown', initAudioOnInteraction);
-        };
-        document.addEventListener('click', initAudioOnInteraction);
-        document.addEventListener('keydown', initAudioOnInteraction);
-
-        // 3. Render custom profile page header if on profile page
-        if (window.location.pathname.endsWith('/profile')) {
-            const renderProfileHeader = () => {
-                const headerCtn = document.querySelector('.fi-header');
-                const mainForm = document.querySelector('.fi-main-content form, .fi-content form');
-                
-                if (headerCtn && mainForm && !document.querySelector('.simpad-profile-card')) {
-                    // Hide default plain header to avoid redundancy
-                    headerCtn.style.display = 'none';
-                    
-                    // Build Profile Card using Blade-initialized session values
-                    const profileCard = document.createElement('div');
-                    profileCard.className = 'simpad-profile-card';
-                    profileCard.innerHTML = `
-                        <div class="simpad-profile-card__avatar" style="overflow: hidden;">
-                            ${ "{{ $avatarUrl }}" !== "" ? `<img src="{{ $avatarUrl }}" alt="{{ $userName }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;">` : `{{ $initials }}` }
-                        </div>
-                        <div class="simpad-profile-card__info">
-                            <h1 class="simpad-profile-card__name">{{ $userName }}</h1>
-                            <div class="simpad-profile-card__meta">
-                                <span class="simpad-profile-card__badge">{{ $userRole }}</span>
-                                <span class="simpad-profile-card__email">{{ $userEmail }}</span>
-                                ${ "{{ $isGoogleLinked }}" === "1" ? `
-                                    <span class="simpad-profile-card__google-status linked">
-                                        <svg style="width: 0.85rem; height: 0.85rem; margin-right: 0.25rem; display: inline-block; vertical-align: middle;" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 6.12 1 1.16 5.92 1.16 12s4.96 11 11.08 11c6.39 0 10.646-4.414 10.646-10.725 0-.728-.078-1.284-.177-1.99H12.24z"/>
-                                        </svg>
-                                        Google Connected
-                                    </span>
-                                ` : `
-                                    <span class="simpad-profile-card__google-status unlinked">
-                                        Google Unlinked
-                                    </span>
-                                ` }
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Insert right before the form
-                    mainForm.parentNode.insertBefore(profileCard, mainForm);
-                }
-            };
-            
-            // Run immediately and after a short delay to ensure DOM is ready
-            renderProfileHeader();
-            setTimeout(renderProfileHeader, 500);
+            document.removeEventListener('touchstart', initAudioOnInteraction);
         }
-    });
+
+        // ============================================================
+        // LIVE WIRE EVENT LISTENER
+        // ============================================================
+        function setupLivewireListener() {
+            if (typeof window.Livewire !== 'undefined') {
+                window.Livewire.on('notification-sent', () => {
+                    playNotificationSound();
+                });
+            } else {
+                // Retry if Livewire hasn't loaded yet
+                setTimeout(setupLivewireListener, 500);
+            }
+        }
+
+        // ============================================================
+        // PROFILE PAGE: INJECT CUSTOM PROFILE CARD
+        // ============================================================
+        function getMetaContent(name) {
+            const meta = document.querySelector(`meta[name="${name}"]`);
+            return meta ? meta.getAttribute('content') : '';
+        }
+
+        function renderProfileCard() {
+            // Only run on profile page
+            if (!window.location.pathname.endsWith('/profile')) return;
+
+            // Prevent duplicate injection
+            if (document.querySelector('.simpad-profile-card')) return;
+
+            const headerCtn = document.querySelector('.fi-header');
+            const mainForm = document.querySelector('.fi-main-content form, .fi-content form');
+
+            if (!headerCtn || !mainForm) {
+                // DOM not ready, retry
+                setTimeout(renderProfileCard, 200);
+                return;
+            }
+
+            // Hide default header
+            headerCtn.style.display = 'none';
+
+            // Read data from meta tags (passed from Blade)
+            const userName = getMetaContent('simpad-user-name') || 'Pengguna';
+            const userRole = getMetaContent('simpad-user-role') || 'Pengguna';
+            const userEmail = getMetaContent('simpad-user-email') || '';
+            const initials = getMetaContent('simpad-user-initials') || 'SP';
+            const avatarUrl = getMetaContent('simpad-user-avatar');
+            const isGoogleLinked = getMetaContent('simpad-user-google-linked') === '1';
+
+            // Build profile card
+            const profileCard = document.createElement('div');
+            profileCard.className = 'simpad-profile-card';
+
+            // Avatar section
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'simpad-profile-card__avatar';
+            if (avatarUrl) {
+                const img = document.createElement('img');
+                img.src = avatarUrl;
+                img.alt = userName;
+                img.loading = 'lazy';
+                avatarDiv.appendChild(img);
+            } else {
+                avatarDiv.textContent = initials;
+            }
+
+            // Info section
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'simpad-profile-card__info';
+
+            const nameH1 = document.createElement('h1');
+            nameH1.className = 'simpad-profile-card__name';
+            nameH1.textContent = userName;
+
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'simpad-profile-card__meta';
+
+            // Role badge
+            const badge = document.createElement('span');
+            badge.className = 'simpad-profile-card__badge';
+            badge.textContent = userRole;
+
+            // Email
+            const emailSpan = document.createElement('span');
+            emailSpan.className = 'simpad-profile-card__email';
+            emailSpan.textContent = userEmail;
+
+            metaDiv.appendChild(badge);
+            metaDiv.appendChild(emailSpan);
+
+            // Google status
+            const googleStatus = document.createElement('span');
+            googleStatus.className = 'simpad-profile-card__google-status';
+
+            if (isGoogleLinked) {
+                googleStatus.classList.add('linked');
+                googleStatus.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 6.12 1 1.16 5.92 1.16 12s4.96 11 11.08 11c6.39 0 10.646-4.414 10.646-10.725 0-.728-.078-1.284-.177-1.99H12.24z"/>
+                    </svg>
+                    Google Connected
+                `;
+            } else {
+                googleStatus.classList.add('unlinked');
+                googleStatus.textContent = 'Google Unlinked';
+            }
+
+            metaDiv.appendChild(googleStatus);
+            infoDiv.appendChild(nameH1);
+            infoDiv.appendChild(metaDiv);
+
+            profileCard.appendChild(avatarDiv);
+            profileCard.appendChild(infoDiv);
+
+            // Insert before form
+            mainForm.parentNode.insertBefore(profileCard, mainForm);
+        }
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        function init() {
+            // Setup audio on first interaction
+            document.addEventListener('click', initAudioOnInteraction, { once: true });
+            document.addEventListener('keydown', initAudioOnInteraction, { once: true });
+            document.addEventListener('touchstart', initAudioOnInteraction, { once: true });
+
+            // Start notification polling
+            startPolling();
+
+            // Setup Livewire listener
+            setupLivewireListener();
+
+            // Render profile card if on profile page
+            renderProfileCard();
+
+            // Handle page visibility changes
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopPolling();
+                } else {
+                    isFirstCheck = true; // Reset to avoid false chime on return
+                    startPolling();
+                }
+            });
+        }
+
+        // Run on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
 </script>

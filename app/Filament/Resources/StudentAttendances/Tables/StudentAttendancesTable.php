@@ -4,14 +4,18 @@ namespace App\Filament\Resources\StudentAttendances\Tables;
 
 use App\Jobs\SendWhatsAppNotification;
 use App\Models\Student;
+use App\Models\SchoolClass;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -89,9 +93,41 @@ class StudentAttendancesTable
             ])
             ->defaultSort('date', 'desc')
             ->filters([
+                Filter::make('tanggal_hari_ini')
+                    ->label('Hari Ini')
+                    ->query(fn (Builder $query) => $query->whereDate('date', Carbon::today()))
+                    ->default(),
+                Filter::make('tanggal')
+                    ->label('Rentang Tanggal')
+                    ->form([
+                        DatePicker::make('dari_tanggal')
+                            ->label('Dari Tanggal')
+                            ->placeholder('dd/mm/yyyy'),
+                        DatePicker::make('sampai_tanggal')
+                            ->label('Sampai Tanggal')
+                            ->placeholder('dd/mm/yyyy'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['dari_tanggal'],
+                                fn (Builder $q, $date) => $q->whereDate('date', '>=', $date)
+                            )
+                            ->when(
+                                $data['sampai_tanggal'],
+                                fn (Builder $q, $date) => $q->whereDate('date', '<=', $date)
+                            );
+                    }),
                 SelectFilter::make('class_id')
-                    ->label('Filter Kelas')
-                    ->relationship('class', 'name')
+                    ->label('Kelas')
+                    ->options(function () {
+                        $user = Auth::user();
+                        $query = SchoolClass::query()->orderBy('name');
+                        if ($user->role !== 'super_admin' && $user->school_id) {
+                            $query->where('school_id', $user->school_id);
+                        }
+                        return $query->pluck('name', 'id');
+                    })
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('status')
@@ -235,7 +271,14 @@ class StudentAttendancesTable
                     ->form([
                         \Filament\Forms\Components\Select::make('class_id')
                             ->label('Pilih Kelas')
-                            ->options(\App\Models\SchoolClass::orderBy('name')->pluck('name', 'id'))
+                            ->options(function () {
+                                $user = auth()->user();
+                                $query = \App\Models\SchoolClass::query()->orderBy('name');
+                                if ($user->role !== 'super_admin' && $user->school_id) {
+                                    $query->where('school_id', $user->school_id);
+                                }
+                                return $query->pluck('name', 'id');
+                            })
                             ->required()
                             ->searchable()
                             ->preload(),

@@ -153,7 +153,7 @@ class AttendanceReport extends Page
             } else {
                 $month = (int) ($this->data['month'] ?? now()->month);
                 $year = (int) ($this->data['year'] ?? now()->year);
-                $studentId = $this->data['student_id'] ?? null;
+                $studentId = filled($this->data['student_id'] ?? null) ? (int) $this->data['student_id'] : null;
                 return $service->getMonthlyReport($month, $year, $classId, $schoolId, $studentId);
             }
         } catch (\Exception $e) {
@@ -201,40 +201,31 @@ class AttendanceReport extends Page
     }
 
     public function exportPdf()
-{
-    $report = $this->getReport();
+    {
+        $report = $this->getReport();
+        if (! $report) {
+            Notification::make()->title('Data tidak tersedia untuk diekspor.')->danger()->send();
+            return null;
+        }
 
-    if (! $report) {
-        Notification::make()
-            ->title('Data tidak tersedia.')
-            ->danger()
-            ->send();
+        $className = $report['class']['name'] ?? 'Kelas';
 
-        return;
+        if ($this->data['type'] === 'daily') {
+            $date = $report['date'];
+            $filename = "rekap_harian_{$className}_{$date}.pdf";
+            $pdf = Pdf::loadView('pdf.daily-attendance', $report);
+            return response()->streamDownload(
+                fn () => print($pdf->output()),
+                $filename
+            );
+        } else {
+            $monthName = Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->format('M');
+            $filename = "rekap_bulanan_{$className}_{$monthName}_{$this->data['year']}.pdf";
+            $pdf = Pdf::loadView('pdf.monthly-attendance', $report);
+            return response()->streamDownload(
+                fn () => print($pdf->output()),
+                $filename
+            );
+        }
     }
-
-    $class = StudentClass::find($this->data['class_id']);
-    $school = School::find($class->school_id);
-
-    $data = array_merge($report, [
-        'school_name'    => $school?->name,
-        'school_address' => $school?->address,
-        'school_phone'   => $school?->phone,
-        'school_email'   => $school?->email,
-        'school_logo'    => $school?->logo,
-    ]);
-
-    if ($this->data['type'] === 'daily') {
-        $data['date'] = $this->data['date'];
-
-        $pdf = Pdf::loadView('pdf.daily-attendance', $data);
-    } else {
-        $pdf = Pdf::loadView('pdf.monthly-attendance', $data);
-    }
-
-    return response()->streamDownload(
-        fn () => print($pdf->output()),
-        'laporan-presensi.pdf'
-    );
-}
 }

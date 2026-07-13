@@ -29,28 +29,40 @@ class StatsOverview extends BaseWidget
     {
         $today = Carbon::today()->toDateString();
         $yesterday = Carbon::yesterday()->toDateString();
+        $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
+
+        // Base queries
+        $attendanceQuery = StudentAttendance::query();
+        $studentQuery = Student::query();
+        $teacherQuery = Teacher::query();
+
+        if ($schoolId) {
+            $attendanceQuery->where('school_id', $schoolId);
+            $studentQuery->where('school_id', $schoolId);
+            $teacherQuery->where('school_id', $schoolId);
+        }
 
         // Today's attendance
-        $presentToday  = StudentAttendance::where('date', $today)->whereIn('status', ['present', 'late'])->count();
-        $absentToday   = StudentAttendance::where('date', $today)->whereIn('status', ['absent'])->count();
-        $permissionToday = StudentAttendance::where('date', $today)->whereIn('status', ['permission', 'sick'])->count();
+        $presentToday  = (clone $attendanceQuery)->where('date', $today)->whereIn('status', ['present', 'late'])->count();
+        $absentToday   = (clone $attendanceQuery)->where('date', $today)->whereIn('status', ['absent'])->count();
+        $permissionToday = (clone $attendanceQuery)->where('date', $today)->whereIn('status', ['permission', 'sick'])->count();
 
         // Trend sparklines (7 days)
         $trendDays = collect(range(6, 0))->map(fn($i) => now()->subDays($i)->toDateString());
 
         $hadirTrend = $trendDays->map(fn($d) =>
-            StudentAttendance::where('date', $d)->whereIn('status', ['present', 'late'])->count()
+            (clone $attendanceQuery)->where('date', $d)->whereIn('status', ['present', 'late'])->count()
         )->toArray();
 
         $alphaTrend = $trendDays->map(fn($d) =>
-            StudentAttendance::where('date', $d)->where('status', 'absent')->count()
+            (clone $attendanceQuery)->where('date', $d)->where('status', 'absent')->count()
         )->toArray();
 
-        $presentYesterday = StudentAttendance::where('date', $yesterday)->whereIn('status', ['present', 'late'])->count();
+        $presentYesterday = (clone $attendanceQuery)->where('date', $yesterday)->whereIn('status', ['present', 'late'])->count();
         $presentDiff = $presentToday - $presentYesterday;
 
-        $totalStudents = Student::count();
-        $totalTeachers = Teacher::count();
+        $totalStudents = $studentQuery->count();
+        $totalTeachers = $teacherQuery->count();
 
         return [
             Stat::make('Hadir Hari Ini', $presentToday)

@@ -26,7 +26,16 @@ class AlumniStatusChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $statusCounts = AlumniProfile::select('current_status', DB::raw('count(*) as total'))
+        $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
+
+        $query = AlumniProfile::query();
+        if ($schoolId) {
+            $query->whereHas('alumni', function ($q) use ($schoolId) {
+                $q->where('school_id', $schoolId);
+            });
+        }
+
+        $statusCounts = $query->select('current_status', DB::raw('count(*) as total'))
             ->groupBy('current_status')
             ->pluck('total', 'current_status')
             ->toArray();

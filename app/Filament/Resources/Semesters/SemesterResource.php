@@ -11,6 +11,7 @@ use App\Models\Semester;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class SemesterResource extends Resource
 {
@@ -63,6 +64,17 @@ class SemesterResource extends Resource
             'create' => CreateSemesters::route('/create'),
             'edit' => EditSemesters::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role !== 'super_admin') {
+            $query->where('school_id', auth()->user()->school_id);
+        }
+
+        return $query;
     }
 
     public static function shouldRegisterNavigation(): bool

@@ -27,6 +27,7 @@ class WeeklyAttendanceBarChart extends ChartWidget
     protected function getData(): array
     {
         $days = collect(range(6, 0))->map(fn($i) => now()->subDays($i)->toDateString());
+        $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
 
         $labels = [];
         $hadirData = [];
@@ -35,9 +36,14 @@ class WeeklyAttendanceBarChart extends ChartWidget
         foreach ($days as $date) {
             $labels[] = Carbon::parse($date)->locale('id')->isoFormat('ddd, D MMM');
 
-            $hadir = StudentAttendance::where('date', $date)
+            $baseQuery = StudentAttendance::where('date', $date);
+            if ($schoolId) {
+                $baseQuery->where('school_id', $schoolId);
+            }
+
+            $hadir = (clone $baseQuery)
                 ->whereIn('status', ['present', 'late'])->count();
-            $tidakHadir = StudentAttendance::where('date', $date)
+            $tidakHadir = (clone $baseQuery)
                 ->whereIn('status', ['absent', 'permission', 'sick'])->count();
 
             $hadirData[] = $hadir;

@@ -13,9 +13,11 @@ class ListStudentAttendances extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()
-                ->label('Tambah Presensi Siswa')
-                ->icon('heroicon-o-plus'),
+            \Filament\Actions\Action::make('manual_attendance')
+                ->label('Presensi Siswa (Per Kelas)')
+                ->icon('heroicon-o-pencil-square')
+                ->color('success')
+                ->url(fn () => StudentAttendanceResource::getUrl('manual')),
         ];
     }
 
@@ -23,7 +25,6 @@ class ListStudentAttendances extends ListRecords
     {
         return [
             \App\Filament\Widgets\StatsOverview::class,
-            \App\Filament\Widgets\AttendanceChartWidget::class,
         ];
     }
 }

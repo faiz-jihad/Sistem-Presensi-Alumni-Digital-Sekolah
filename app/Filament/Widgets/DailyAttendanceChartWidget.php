@@ -24,16 +24,21 @@ class DailyAttendanceChartWidget extends ChartWidget
     }
 
     protected int | string | array $columnSpan = [
-        'default' => 1,
-        'md' => 6,
-        'xl' => 4,
+        'default' => 12,
+        'lg' => 4,
     ];
 
     protected function getData(): array
     {
         $today = Carbon::today()->toDateString();
+        $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
 
-        $counts = StudentAttendance::where('date', $today)
+        $query = StudentAttendance::where('date', $today);
+        if ($schoolId) {
+            $query->where('school_id', $schoolId);
+        }
+
+        $counts = $query
             ->select('status', DB::raw('count(*) as total'))
             ->groupBy('status')
             ->pluck('total', 'status')
@@ -60,13 +65,15 @@ class DailyAttendanceChartWidget extends ChartWidget
                 [
                     'label' => 'Status Kehadiran',
                     'data' => $data,
-                    'borderWidth' => 0,
+                    'borderWidth' => 4,
+                    'borderColor' => 'transparent',
+                    'borderRadius' => 8,
                     'backgroundColor' => [
-                        'rgba(16, 185, 129, 0.85)', // Hadir (Emerald)
-                        'rgba(245, 158, 11, 0.85)', // Terlambat (Amber)
-                        'rgba(139, 92, 246, 0.85)', // Sakit (Violet)
-                        'rgba(59, 130, 246, 0.85)', // Izin (Blue)
-                        'rgba(239, 68, 68, 0.85)',  // Alpha (Rose)
+                        '#10b981', // Hadir (Emerald)
+                        '#f59e0b', // Terlambat (Amber)
+                        '#8b5cf6', // Sakit (Violet)
+                        '#3b82f6', // Izin (Blue)
+                        '#ef4444', // Alpa (Rose)
                     ],
                 ],
             ],
@@ -85,9 +92,17 @@ class DailyAttendanceChartWidget extends ChartWidget
             'plugins' => [
                 'legend' => [
                     'position' => 'bottom',
+                    'labels' => [
+                        'usePointStyle' => true,
+                        'padding' => 20,
+                        'font' => [
+                            'size' => 11,
+                            'weight' => '500',
+                        ],
+                    ],
                 ],
             ],
-            'cutout' => '62%',
+            'cutout' => '75%',
             'maintainAspectRatio' => false,
         ];
     }
