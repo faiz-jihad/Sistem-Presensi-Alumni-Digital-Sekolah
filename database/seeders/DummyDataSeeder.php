@@ -206,25 +206,32 @@ class DummyDataSeeder extends Seeder
         }
         $days = array_unique($days);
 
-        $scheduleBlocks = [
-            ['ch' => ['J1', 'J2'], 'subj' => 'PWB', 'teacher_idx' => 0],
-            ['ch' => ['J3', 'J4'], 'subj' => 'MTK', 'teacher_idx' => 1],
-            ['ch' => ['J5', 'J6'], 'subj' => 'BIN', 'teacher_idx' => 2],
-            ['ch' => ['J7', 'J8'], 'subj' => 'BIG', 'teacher_idx' => 3],
-            ['ch' => ['J1', 'J2'], 'subj' => 'BSD', 'teacher_idx' => 4],
-            ['ch' => ['J3', 'J4'], 'subj' => 'JRK', 'teacher_idx' => 5],
-            ['ch' => ['J5', 'J6'], 'subj' => 'PKK', 'teacher_idx' => 6],
-            ['ch' => ['J7', 'J8'], 'subj' => 'DGR', 'teacher_idx' => 7],
+        $subjectBlocks = [
+            ['subj' => 'PWB', 'teacher_idx' => 0],
+            ['subj' => 'MTK', 'teacher_idx' => 1],
+            ['subj' => 'BIN', 'teacher_idx' => 2],
+            ['subj' => 'BIG', 'teacher_idx' => 3],
+            ['subj' => 'BSD', 'teacher_idx' => 4],
+            ['subj' => 'JRK', 'teacher_idx' => 5],
+            ['subj' => 'PKK', 'teacher_idx' => 6],
+            ['subj' => 'DGR', 'teacher_idx' => 7],
+        ];
+
+        $timeSlots = [
+            ['J1', 'J2'],
+            ['J3', 'J4'],
+            ['J5', 'J6'],
         ];
 
         $scheduleCount = 0;
         foreach ($classes as $clsIdx => $class) {
             foreach ($days as $dayIdx => $day) {
                 // Rotasi jadwal per hari agar variatif
-                $blockOffset = ($clsIdx + $dayIdx) % count($scheduleBlocks);
+                $blockOffset = ($clsIdx + $dayIdx) % count($subjectBlocks);
                 for ($b = 0; $b < 3; $b++) { // 3 blok mata pelajaran per hari
-                    $block = $scheduleBlocks[($blockOffset + $b) % count($scheduleBlocks)];
-                    foreach ($block['ch'] as $chCode) {
+                    $block = $subjectBlocks[($blockOffset + $b) % count($subjectBlocks)];
+                    $chCodes = $timeSlots[$b];
+                    foreach ($chCodes as $chCode) {
                         if (isset($classHours[$chCode]) && isset($subjects[$block['subj']])) {
                             try {
                                 \App\Models\Schedule::firstOrCreate(
