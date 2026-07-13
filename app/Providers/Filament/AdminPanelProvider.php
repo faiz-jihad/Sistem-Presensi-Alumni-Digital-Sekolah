@@ -85,125 +85,154 @@ class AdminPanelProvider extends PanelProvider
                 'panels::head.end',
                 fn () => new \Illuminate\Support\HtmlString('
                     <style>
-                    /* Custom Auth Split Layout Styles */
+                    /* Full screen mountain background on wrapper */
                     .custom-auth-wrapper {
-                        display: flex;
-                        width: 100%;
-                        min-height: 100vh;
-                        flex-direction: column;
-                    }
-                    
-                    @media (min-width: 1024px) {
-                        .custom-auth-wrapper {
-                            flex-direction: row !important;
-                        }
-                        .lg\:flex-row-reverse {
-                            flex-direction: row-reverse !important;
-                        }
-                    }
-                    
-                    .custom-auth-empty-panel {
-                        position: relative;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        flex-grow: 1;
-                        padding-left: 1rem;
-                        padding-right: 1rem;
-                        background-color: var(--empty-panel-background-color, #1e3a8a);
-                        overflow: hidden;
-                    }
-                    
-                    @media (max-width: 1023px) {
-                        .custom-auth-empty-panel {
-                            display: none !important;
-                        }
-                    }
-                    
-                    .custom-auth-empty-panel .absolute {
-                        position: absolute !important;
-                    }
-                    .custom-auth-empty-panel .inset-0 {
-                        top: 0 !important;
-                        right: 0 !important;
-                        bottom: 0 !important;
-                        left: 0 !important;
-                    }
-                    .custom-auth-empty-panel .w-full {
+                        display: flex !important;
                         width: 100% !important;
-                    }
-                    .custom-auth-empty-panel .h-full {
-                        height: 100% !important;
-                    }
-                    .custom-auth-empty-panel .bg-cover {
-                        background-size: cover !important;
-                    }
-                    .custom-auth-empty-panel .bg-center {
-                        background-position: center !important;
+                        min-height: 100vh !important;
+                        background: url(\'' . asset('background.png') . '\') center center / cover no-repeat !important;
+                        position: relative !important;
                     }
                     
+                    /* Hide left panel entirely */
+                    .custom-auth-empty-panel {
+                        display: none !important;
+                    }
+                    
+                    /* Full screen transparent form panel (fills the wrapper) */
                     .custom-auth-form-panel {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        width: 100%;
-                        background-color: var(--form-panel-background-color, #ffffff);
-                        padding: 3rem 1.5rem;
+                        display: flex !important;
+                        flex-direction: column !important;
+                        justify-content: center !important;
+                        align-items: center !important;
+                        width: 100% !important;
+                        min-height: 100vh !important;
+                        background-color: transparent !important;
+                        padding: 1.5rem !important;
+                        flex-grow: 1 !important;
                     }
                     
-                    @media (min-width: 640px) {
-                        .custom-auth-form-panel {
-                            padding-left: 2.5rem;
-                            padding-right: 2.5rem;
-                        }
-                    }
-                    
-                    @media (min-width: 1024px) {
-                        .custom-auth-form-panel {
-                            width: var(--form-panel-width, 40%) !important;
-                            padding-left: 4rem;
-                            padding-right: 4rem;
-                        }
-                    }
-                    
-                    @media (min-width: 1280px) {
-                        .custom-auth-form-panel {
-                            padding-left: 6rem;
-                            padding-right: 6rem;
-                        }
-                    }
-                    
+                    /* Form wrapper centered inside the panel */
                     .custom-auth-form-wrapper {
-                        margin-left: auto;
-                        margin-right: auto;
-                        width: 100%;
-                        max-width: 24rem;
+                        margin-left: auto !important;
+                        margin-right: auto !important;
+                        width: 100% !important;
+                        max-width: 28rem !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
                     }
                     
-                    /* Styling Form Login */
+                    /* Styling Form Login (Glassmorphic Card) */
                     .fi-simple-layout {
                         background: transparent !important;
                     }
                     
-                    .fi-simple-main {
-                        background-color: rgba(255, 255, 255, 0.8) !important;
-                        backdrop-filter: blur(12px) !important;
-                        border: 1px solid rgba(229, 231, 235, 0.5) !important;
-                        border-radius: 1rem !important;
-                        padding: 2rem !important;
-                        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+                    .fi-simple-main,
+                    main,
+                    .fi-simple-layout main,
+                    .custom-auth-form-wrapper > div {
+                        background-color: rgba(245, 247, 250, 0.35) !important;
+                        backdrop-filter: blur(8px) !important;
+                        -webkit-backdrop-filter: blur(20px) !important;
+                        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+                        border-radius: 24px !important;
+                        padding: 2.5rem 2rem !important;
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
                         width: 100% !important;
                         max-width: 100% !important;
                     }
                     
-                    .dark .fi-simple-main {
-                        background-color: rgba(24, 24, 27, 0.8) !important;
-                        border-color: rgba(63, 63, 70, 0.4) !important;
+                    .dark .fi-simple-main,
+                    .dark main,
+                    .dark .fi-simple-layout main,
+                    .dark .custom-auth-form-wrapper > div {
+                        background-color: rgba(30, 41, 59, 0.45) !important;
+                        border-color: rgba(255, 255, 255, 0.15) !important;
                     }
                     
                     .fi-simple-main-ctn {
                         width: 100% !important;
                         max-width: 100% !important;
+                    }
+
+                    /* Heading and Labels styled in white */
+                    .fi-simple-header-heading {
+                        color: #3d3d3dff !important;
+                        font-weight: 700 !important;
+                        font-size: 1.75rem !important;
+                        text-align: center !important;
+                    }
+
+                    .fi-fo-field-wrp-label, .fi-label, label, label span, .fi-simple-main label span {
+                        color: #3d3d3dff !important;
+                        font-weight: 650 !important;
+                        font-size: 0.875rem !important;
+                    }
+
+                    /* Filament Input Styling (Glassmorphic Inputs) */
+                    .fi-input-wrp {
+                        background-color: rgba(255, 255, 255, 0.08) !important;
+                        border: 0.2px solid #434343ff !important;
+                        border-radius: 12px !important;
+                        box-shadow: none !important;
+                        transition: all 0.2s ease !important;
+                    }
+
+                    .fi-input-wrp:focus-within {
+                        border-color: #434343ff !important;
+                        background-color: rgba(255, 255, 255, 0.12) !important;
+                        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+                    }
+
+                    .fi-input-wrp input {
+                        background-color: transparent !important;
+                        color: #434343ff !important;
+                    }
+
+                    .fi-input-wrp input::placeholder {
+                        color: #434343ff !important;
+                    }
+
+                    /* Password hide/show button */
+                    .fi-input-wrp button {
+                        background-color: transparent !important;
+                        color: #434343ff !important;
+                    }
+                    .fi-input-wrp button:hover {
+                        color: #434343ff !important;
+                    }
+
+                    /* Button Login (Burgundy Color) */
+                    .fi-simple-main button[type="submit"], .fi-btn-color-primary {
+                        background-color: #802B47 !important;
+                        border-radius: 12px !important;
+                        color: #ffffff !important;
+                        font-weight: 700 !important;
+                        padding-top: 0.65rem !important;
+                        padding-bottom: 0.65rem !important;
+                        transition: all 0.25s ease !important;
+                        box-shadow: 0 4px 12px rgba(128, 43, 71, 0.4) !important;
+                        border: none !important;
+                        width: 100% !important;
+                        cursor: pointer !important;
+                    }
+
+                    .fi-simple-main button[type="submit"]:hover, .fi-btn-color-primary:hover {
+                        background-color: #682239 !important;
+                        box-shadow: 0 6px 16px rgba(128, 43, 71, 0.55) !important;
+                        transform: translateY(-1px) !important;
+                    }
+
+                    /* Remember Me Checkbox */
+                    .fi-checkbox {
+                        border-color: rgba(255, 255, 255, 0.3) !important;
+                        background-color: rgba(255, 255, 255, 0.08) !important;
+                        border-radius: 4px !important;
+                    }
+                    .fi-checkbox:checked {
+                        background-color: #802B47 !important;
+                        border-color: #802B47 !important;
                     }
 
                     /* Google Login Button Styles */
@@ -214,20 +243,19 @@ class AdminPanelProvider extends PanelProvider
                         gap: 0.75rem !important;
                         width: 100% !important;
                         padding: 0.625rem 1rem !important;
-                        border: 1px solid #d1d5db !important;
-                        border-radius: 0.75rem !important;
-                        background-color: #ffffff !important;
-                        color: #374151 !important;
+                        border-radius: 12px !important;
+                        background-color: white !important;
+                        color: #434343ff !important;
                         font-weight: 600 !important;
                         font-size: 0.875rem !important;
-                        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+                        box-shadow: none !important;
                         cursor: pointer !important;
                         transition: all 0.2s ease !important;
                     }
 
                     #google-login-btn:hover {
-                        background-color: #f9fafb !important;
-                        border-color: #c0c4cc !important;
+                        background-color: rgba(255, 255, 255, 0.62) !important;
+                        border-color: rgba(255, 255, 255, 0.25) !important;
                     }
 
                     #google-login-btn svg {
@@ -237,13 +265,13 @@ class AdminPanelProvider extends PanelProvider
                     }
 
                     .dark #google-login-btn {
-                        background-color: #0f172a !important;
-                        border-color: #334155 !important;
-                        color: #e2e8f0 !important;
+                        background-color: rgba(255, 255, 255, 0.08) !important;
+                        border-color: rgba(255, 255, 255, 0.15) !important;
+                        color: #434343ff !important;
                     }
 
                     .dark #google-login-btn:hover {
-                        background-color: #1e293b !important;
+                        background-color: rgba(255, 255, 255, 0.15) !important;
                     }
 
                     /* Divider Line */
@@ -251,17 +279,13 @@ class AdminPanelProvider extends PanelProvider
                         display: flex !important;
                         align-items: center !important;
                         width: 100% !important;
-                        margin-top: 1rem !important;
-                        margin-bottom: 0.5rem !important;
+                        margin-top: 0.5rem !important;
+                        margin-bottom: 1.5rem !important;
                     }
 
                     .custom-auth-divider-line {
                         flex-grow: 1 !important;
-                        border-top: 1px solid #e5e7eb !important;
-                    }
-
-                    .dark .custom-auth-divider-line {
-                        border-color: #334155 !important;
+                        border-top: 0.1rem solid rgba(0, 0, 0, 0.15) !important;
                     }
 
                     .custom-auth-divider-text {
@@ -272,7 +296,60 @@ class AdminPanelProvider extends PanelProvider
                         text-transform: uppercase !important;
                         letter-spacing: 0.05em !important;
                         font-weight: 700 !important;
-                        color: #9ca3af !important;
+                        color: rgba(0, 0, 0, 0.6) !important;
+                    }
+
+                    /* Error Messages */
+                    .fi-fo-field-wrp-error-message, .text-danger-600 {
+                        color: #ff6b6b !important;
+                    }
+
+                    /* Dark Mode Specific Overrides */
+                    .dark .fi-simple-header-heading {
+                        color: #ffffff !important;
+                    }
+
+                    .dark .fi-fo-field-wrp-label, 
+                    .dark .fi-label, 
+                    .dark label, 
+                    .dark label span, 
+                    .dark .fi-simple-main label span {
+                        color: rgba(255, 255, 255, 0.95) !important;
+                    }
+
+                    .dark .fi-input-wrp {
+                        background-color: rgba(255, 255, 255, 0.08) !important;
+                        border: 0.2px solid rgba(255, 255, 255, 0.25) !important;
+                    }
+
+                    .dark .fi-input-wrp:focus-within {
+                        border-color: rgba(255, 255, 255, 0.4) !important;
+                    }
+
+                    .dark .fi-input-wrp input {
+                        color: #ffffff !important;
+                    }
+
+                    .dark .fi-input-wrp input::placeholder {
+                        color: rgba(255, 255, 255, 0.4) !important;
+                    }
+
+                    .dark .fi-input-wrp button {
+                        background-color: transparent !important;
+                        color: rgba(255, 255, 255, 0.7) !important;
+                    }
+                    
+                    .dark .fi-input-wrp button:hover {
+                        color: #ffffff !important;
+                    }
+
+                    .dark #google-login-btn {
+                        border-color: rgba(255, 255, 255, 0.2) !important;
+                        color: #ffffff !important;
+                    }
+
+                    .dark .custom-auth-divider-text {
+                        color: rgba(255, 255, 255, 0.6) !important;
                     }
                     </style>
                 ')
