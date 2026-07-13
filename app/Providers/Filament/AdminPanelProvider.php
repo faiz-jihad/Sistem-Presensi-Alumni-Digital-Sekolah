@@ -356,6 +356,7 @@ class AdminPanelProvider extends PanelProvider
                     </style>
                 ')
             )
+            ->globalSearch(false)
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->databaseNotificationsPolling('5s')
