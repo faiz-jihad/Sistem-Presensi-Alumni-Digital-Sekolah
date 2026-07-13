@@ -69,8 +69,8 @@ class SendTeacherScheduleReminder extends Command
                 $startTime = $schedule->classHour ? Carbon::parse($schedule->classHour->start_time)->format('H:i') : '00:00';
                 
                 Notification::make()
-                    ->title('Pengingat Jadwal Mengajar 🗓️')
-                    ->body("Yth. Bapak/Ibu Guru, kelas Anda untuk mata pelajaran **{$subjectName}** di kelas **{$className}** akan dimulai dalam 15 menit (pukul **{$startTime}**). Harap mempersiapkan diri untuk melakukan presensi.")
+                    ->title('Pengingat Jadwal Mengajar')
+                    ->body("Yth. Bapak/Ibu Guru, kelas Anda untuk mata pelajaran {$subjectName} di kelas {$className} akan dimulai dalam 15 menit (pukul {$startTime}). Harap mempersiapkan diri untuk melakukan presensi.")
                     ->info()
                     ->sendToDatabase($teacher->user);
 

@@ -108,7 +108,7 @@ test('kirim pengingat jadwal mengajar ke guru 15 menit sebelum kelas dimulai', f
 
     // Filter notifikasi pengingat secara spesifik (menghindari collision dengan notifikasi model observer)
     $notifications = DatabaseNotification::where('notifiable_id', $teacherUser->id)->get();
-    $reminder = $notifications->first(fn ($n) => ($n->data['title'] ?? '') === 'Pengingat Jadwal Mengajar 🗓️');
+    $reminder = $notifications->first(fn ($n) => ($n->data['title'] ?? '') === 'Pengingat Jadwal Mengajar');
 
     expect($reminder)->not->toBeNull();
     expect($reminder->data['body'])->toContain('XII RPL 1');
@@ -199,9 +199,9 @@ test('tidak mengirim pengingat jika kelas dimulai lebih dari 15 menit', function
 
     Artisan::call('app:send-teacher-schedule-reminder');
 
-    // Pastikan notifikasi dengan title "Pengingat Jadwal Mengajar 🗓️" TIDAK terkirim
+    // Pastikan notifikasi dengan title "Pengingat Jadwal Mengajar" TIDAK terkirim
     $notifications = DatabaseNotification::where('notifiable_id', $teacherUser->id)->get();
-    $reminder = $notifications->first(fn ($n) => ($n->data['title'] ?? '') === 'Pengingat Jadwal Mengajar 🗓️');
+    $reminder = $notifications->first(fn ($n) => ($n->data['title'] ?? '') === 'Pengingat Jadwal Mengajar');
 
     expect($reminder)->toBeNull();
 
