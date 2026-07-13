@@ -8,6 +8,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/public-stats', function () {
+    $schoolsCount = \App\Models\School::where('status', 'active')->count();
+    $alumniCount = \App\Models\Alumni::count();
+    $attendanceCount = \App\Models\StudentAttendance::count();
+
+    return response()->json([
+        'schools' => $schoolsCount,
+        'alumni' => $alumniCount,
+        'attendance' => $attendanceCount,
+    ]);
+});
+
 
 
 Route::get('/storage/{filename}', function ($filename) {
