@@ -264,16 +264,6 @@ class AdminPanelProvider extends PanelProvider
                         flex-shrink: 0 !important;
                     }
 
-                    .dark #google-login-btn {
-                        background-color: rgba(255, 255, 255, 0.08) !important;
-                        border-color: rgba(255, 255, 255, 0.15) !important;
-                        color: #434343ff !important;
-                    }
-
-                    .dark #google-login-btn:hover {
-                        background-color: rgba(255, 255, 255, 0.15) !important;
-                    }
-
                     /* Divider Line */
                     .custom-auth-divider {
                         display: flex !important;
@@ -344,13 +334,25 @@ class AdminPanelProvider extends PanelProvider
                     }
 
                     .dark #google-login-btn {
+                        background-color: white !important;
                         border-color: rgba(255, 255, 255, 0.2) !important;
-                        color: #ffffff !important;
+                        color: #434343ff !important;
+                    }
+
+                    .dark #google-login-btn:hover {
+                        background-color: rgba(255, 255, 255, 0.62) !important;
+                        border-color: rgba(255, 255, 255, 0.25) !important;
                     }
 
                     .dark .custom-auth-divider-text {
-                        color: rgba(255, 255, 255, 0.6) !important;
+                        color: white !important;
                     }
+
+                    .dark .custom-auth-divider-line {
+                        flex-grow: 1 !important;
+                        border-top: 0.1rem solid rgba(255, 255, 255, 0.15) !important;
+                    }
+
                     </style>
                 ')
             )
