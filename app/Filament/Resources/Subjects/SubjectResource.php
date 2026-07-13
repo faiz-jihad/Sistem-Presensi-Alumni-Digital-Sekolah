@@ -37,7 +37,7 @@ class SubjectResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return in_array(auth()->user()->role, ['super_admin', 'admin', 'teacher'])
+        return in_array(auth()->user()->role, ['super_admin', 'admin'])
             && auth()->user()->hasFeature('has_presensi');
     }
 
@@ -61,6 +61,11 @@ class SubjectResource extends Resource
 
         if (auth()->user()->role !== 'super_admin') {
             $query->where('school_id', auth()->user()->school_id);
+        }
+
+        if (auth()->user()->role === 'teacher') {
+            $teacher = \App\Models\Teacher::where('user_id', auth()->user()->id)->first();
+            $query->whereHas('teachers', fn ($q) => $q->where('teachers.id', $teacher?->id ?? 0));
         }
 
         return $query;

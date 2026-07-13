@@ -18,4 +18,12 @@ class ListSchedules extends ListRecords
                 ->icon('heroicon-o-plus'),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\ScheduleStatsWidget::class,
+            \App\Filament\Widgets\TeacherCalendarWidget::class,
+        ];
+    }
 }

@@ -548,7 +548,7 @@
     {{-- QUICK ACTIONS --}}
     <div class="quick-actions-section">
         <div class="action-grid">
-            @if(in_array($user->role, ['super_admin', 'admin', 'teacher']))
+            @if(in_array($user->role, ['super_admin', 'admin']))
                 {{-- Kelola Siswa --}}
                 <a href="/admin/students" class="action-card siswa">
                     <div class="action-pattern"></div>
