@@ -58,6 +58,11 @@ class ScheduleResource extends Resource
             $query->where('school_id', auth()->user()->school_id);
         }
 
+        if (auth()->user()->role === 'teacher') {
+            $teacher = \App\Models\Teacher::where('user_id', auth()->user()->id)->first();
+            $query->where('teacher_id', $teacher?->id ?? 0);
+        }
+
         return $query;
     }
 
