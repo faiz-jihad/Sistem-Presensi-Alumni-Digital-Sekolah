@@ -92,7 +92,7 @@ class AdminPanelProvider extends PanelProvider
                         min-height: 100vh;
                         flex-direction: column;
                     }
-                    
+
                     @media (min-width: 1024px) {
                         .custom-auth-wrapper {
                             flex-direction: row !important;
@@ -101,7 +101,7 @@ class AdminPanelProvider extends PanelProvider
                             flex-direction: row-reverse !important;
                         }
                     }
-                    
+
                     .custom-auth-empty-panel {
                         position: relative;
                         display: flex;
@@ -113,13 +113,13 @@ class AdminPanelProvider extends PanelProvider
                         background-color: var(--empty-panel-background-color, #1e3a8a);
                         overflow: hidden;
                     }
-                    
+
                     @media (max-width: 1023px) {
                         .custom-auth-empty-panel {
                             display: none !important;
                         }
                     }
-                    
+
                     .custom-auth-empty-panel .absolute {
                         position: absolute !important;
                     }
@@ -141,7 +141,7 @@ class AdminPanelProvider extends PanelProvider
                     .custom-auth-empty-panel .bg-center {
                         background-position: center !important;
                     }
-                    
+
                     .custom-auth-form-panel {
                         display: flex;
                         flex-direction: column;
@@ -150,14 +150,14 @@ class AdminPanelProvider extends PanelProvider
                         background-color: var(--form-panel-background-color, #ffffff);
                         padding: 3rem 1.5rem;
                     }
-                    
+
                     @media (min-width: 640px) {
                         .custom-auth-form-panel {
                             padding-left: 2.5rem;
                             padding-right: 2.5rem;
                         }
                     }
-                    
+
                     @media (min-width: 1024px) {
                         .custom-auth-form-panel {
                             width: var(--form-panel-width, 40%) !important;
@@ -165,26 +165,26 @@ class AdminPanelProvider extends PanelProvider
                             padding-right: 4rem;
                         }
                     }
-                    
+
                     @media (min-width: 1280px) {
                         .custom-auth-form-panel {
                             padding-left: 6rem;
                             padding-right: 6rem;
                         }
                     }
-                    
+
                     .custom-auth-form-wrapper {
                         margin-left: auto;
                         margin-right: auto;
                         width: 100%;
                         max-width: 24rem;
                     }
-                    
+
                     /* Styling Form Login */
                     .fi-simple-layout {
                         background: transparent !important;
                     }
-                    
+
                     .fi-simple-main {
                         background-color: rgba(255, 255, 255, 0.8) !important;
                         backdrop-filter: blur(12px) !important;
@@ -195,12 +195,12 @@ class AdminPanelProvider extends PanelProvider
                         width: 100% !important;
                         max-width: 100% !important;
                     }
-                    
+
                     .dark .fi-simple-main {
                         background-color: rgba(24, 24, 27, 0.8) !important;
                         border-color: rgba(63, 63, 70, 0.4) !important;
                     }
-                    
+
                     .fi-simple-main-ctn {
                         width: 100% !important;
                         max-width: 100% !important;
@@ -277,6 +277,7 @@ class AdminPanelProvider extends PanelProvider
                     </style>
                 ')
             )
+            ->globalSearch(false)
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->databaseNotificationsPolling('5s')
