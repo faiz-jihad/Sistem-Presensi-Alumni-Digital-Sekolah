@@ -109,7 +109,7 @@ class AppServiceProvider extends ServiceProvider
                         
                     if ($studentUser) {
                         \Filament\Notifications\Notification::make()
-                            ->title('Sesi Presensi Dibuka 🔔')
+                            ->title('Sesi Presensi Dibuka')
                             ->body("Sesi presensi mata pelajaran {$subjectName} untuk kelas Anda telah dibuka. Silakan lakukan presensi!")
                             ->info()
                             ->sendToDatabase($studentUser);
@@ -134,7 +134,7 @@ class AppServiceProvider extends ServiceProvider
                             
                         if ($studentUser) {
                             \Filament\Notifications\Notification::make()
-                                ->title('Sesi Presensi Ditutup 🔏')
+                                ->title('Sesi Presensi Ditutup')
                                 ->body("Sesi presensi mata pelajaran {$subjectName} untuk kelas Anda telah ditutup. Terima kasih.")
                                 ->success()
                                 ->sendToDatabase($studentUser);
@@ -214,8 +214,8 @@ class AppServiceProvider extends ServiceProvider
                 ->get();
             if ($admins->isNotEmpty()) {
                 \Filament\Notifications\Notification::make()
-                    ->title('Pendaftaran Alumni Baru 🔔')
-                    ->body("Alumni **{$alumni->name}** (Lulusan {$alumni->graduation_year}) baru saja mendaftar. Menunggu verifikasi admin!")
+                    ->title('Pendaftaran Alumni Baru')
+                    ->body("Alumni {$alumni->name} (Lulusan {$alumni->graduation_year}) baru saja mendaftar. Menunggu verifikasi admin.")
                     ->info()
                     ->sendToDatabase($admins);
             }
@@ -227,7 +227,7 @@ class AppServiceProvider extends ServiceProvider
                 if ($user) {
                     if ($alumni->verification_status === 'verified') {
                         \Filament\Notifications\Notification::make()
-                            ->title('Akun Alumni Terverifikasi ✅')
+                            ->title('Akun Alumni Terverifikasi')
                             ->body('Selamat! Akun alumni Anda telah terverifikasi oleh Admin. Anda sekarang dapat mengakses seluruh fitur alumni.')
                             ->success()
                             ->sendToDatabase($user);
@@ -253,7 +253,7 @@ class AppServiceProvider extends ServiceProvider
                     } elseif ($alumni->verification_status === 'rejected') {
                         $reason = $alumni->verification_notes ?? 'Tidak ada alasan khusus yang diberikan.';
                         \Filament\Notifications\Notification::make()
-                            ->title('Pendaftaran Alumni Ditolak ❌')
+                            ->title('Pendaftaran Alumni Ditolak')
                             ->body("Maaf, pendaftaran alumni Anda ditolak. Alasan: {$reason}")
                             ->danger()
                             ->sendToDatabase($user);
@@ -279,8 +279,8 @@ class AppServiceProvider extends ServiceProvider
                     ->get();
                 if ($admins->isNotEmpty()) {
                     \Filament\Notifications\Notification::make()
-                        ->title('Pengajuan Kegiatan Alumni Baru 🗓️')
-                        ->body("Ada pengajuan kegiatan baru: **{$event->title}** oleh alumni. Silakan periksa untuk verifikasi.")
+                        ->title('Pengajuan Kegiatan Alumni Baru')
+                        ->body("Ada pengajuan kegiatan baru: {$event->title} oleh alumni. Silakan periksa untuk verifikasi.")
                         ->info()
                         ->sendToDatabase($admins);
                 }
@@ -295,8 +295,8 @@ class AppServiceProvider extends ServiceProvider
                 if ($event->approval_status === 'approved') {
                     if ($poster) {
                         \Filament\Notifications\Notification::make()
-                            ->title('Pengajuan Kegiatan Disetujui 🎉')
-                            ->body("Selamat! Pengajuan kegiatan Anda '**{$event->title}**' telah disetujui oleh admin.")
+                            ->title('Pengajuan Kegiatan Disetujui')
+                            ->body("Selamat! Pengajuan kegiatan Anda '{$event->title}' telah disetujui oleh admin.")
                             ->success()
                             ->sendToDatabase($poster);
                     }
@@ -306,16 +306,16 @@ class AppServiceProvider extends ServiceProvider
                     foreach ($alumniUsers as $user) {
                         if ($poster && $user->id === $poster->id) continue;
                         \Filament\Notifications\Notification::make()
-                            ->title('Kegiatan Alumni Baru 📅')
-                            ->body("Ada kegiatan alumni baru: **{$event->title}** pada tanggal " . \Carbon\Carbon::parse($event->event_date)->translatedFormat('d F Y') . ".")
+                            ->title('Kegiatan Alumni Baru')
+                            ->body("Ada kegiatan alumni baru: {$event->title} pada tanggal " . \Carbon\Carbon::parse($event->event_date)->translatedFormat('d F Y') . ".")
                             ->info()
                             ->sendToDatabase($user);
                     }
                 } elseif ($event->approval_status === 'rejected') {
                     if ($poster) {
                         \Filament\Notifications\Notification::make()
-                            ->title('Pengajuan Kegiatan Ditolak ❌')
-                            ->body("Maaf, pengajuan kegiatan Anda '**{$event->title}**' ditolak oleh admin.")
+                            ->title('Pengajuan Kegiatan Ditolak')
+                            ->body("Maaf, pengajuan kegiatan Anda '{$event->title}' ditolak oleh admin.")
                             ->danger()
                             ->sendToDatabase($poster);
                     }
@@ -340,8 +340,8 @@ class AppServiceProvider extends ServiceProvider
                     ->get();
                 if ($admins->isNotEmpty()) {
                     \Filament\Notifications\Notification::make()
-                        ->title('Pengajuan Lowongan Kerja Baru 💼')
-                        ->body("Ada pengajuan lowongan kerja baru: **{$job->title}** di **{$job->company_name}**. Menunggu persetujuan.")
+                        ->title('Pengajuan Lowongan Kerja Baru')
+                        ->body("Ada pengajuan lowongan kerja baru: {$job->title} di {$job->company_name}. Menunggu persetujuan.")
                         ->info()
                         ->sendToDatabase($admins);
                 }
@@ -354,8 +354,8 @@ class AppServiceProvider extends ServiceProvider
                 $poster = \App\Models\User::find($job->posted_by);
                 if ($poster) {
                     \Filament\Notifications\Notification::make()
-                        ->title('Lowongan Kerja Disetujui 🎉')
-                        ->body("Selamat! Lowongan kerja '**{$job->title}**' yang Anda ajukan telah disetujui dan aktif.")
+                        ->title('Lowongan Kerja Disetujui')
+                        ->body("Selamat! Lowongan kerja '{$job->title}' yang Anda ajukan telah disetujui dan aktif.")
                         ->success()
                         ->sendToDatabase($poster);
                 }
@@ -365,8 +365,8 @@ class AppServiceProvider extends ServiceProvider
                 foreach ($alumniUsers as $user) {
                     if ($poster && $user->id === $poster->id) continue;
                     \Filament\Notifications\Notification::make()
-                        ->title('Lowongan Kerja Baru 💼')
-                        ->body("Lowongan kerja baru tersedia: **{$job->title}** di **{$job->company_name}**.")
+                        ->title('Lowongan Kerja Baru')
+                        ->body("Lowongan kerja baru tersedia: {$job->title} di {$job->company_name}.")
                         ->info()
                         ->sendToDatabase($user);
                 }
@@ -381,7 +381,7 @@ class AppServiceProvider extends ServiceProvider
                 $className = $schedule->class?->name ?? 'Kelas';
                 
                 \Filament\Notifications\Notification::make()
-                    ->title('Jadwal Mengajar Diperbarui 🗓️')
+                    ->title('Jadwal Mengajar Diperbarui')
                     ->body("Anda memiliki jadwal mengajar baru/diperbarui: {$subjectName} di kelas {$className} untuk hari " . ($schedule->day ? $schedule->day->label() : '') . ".")
                     ->info()
                     ->sendToDatabase($teacher->user);
