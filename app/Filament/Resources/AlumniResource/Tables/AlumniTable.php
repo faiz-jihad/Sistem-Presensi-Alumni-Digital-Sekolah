@@ -7,6 +7,7 @@ use App\Models\Alumni;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -160,19 +161,25 @@ class AlumniTable
             ->searchable()
             ->searchPlaceholder('Cari alumni...')
             ->searchDebounce(300)
+            ->actionsPosition(Tables\Enums\RecordActionsPosition::BeforeColumns)
+            ->actionsColumnLabel('Aksi')
             ->actions([
-                Action::make('edit')
+                // Tampilkan Edit & Hapus secara inline jika status BUKAN pending
+                Action::make('edit_inline')
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square')
-                    ->url(fn (Alumni $record): string => AlumniResource::getUrl('edit', ['record' => $record])),
-                
-                Action::make('delete')
+                    ->url(fn (Alumni $record): string => AlumniResource::getUrl('edit', ['record' => $record]))
+                    ->visible(fn (Alumni $record) => $record->verification_status !== 'pending'),
+
+                Action::make('delete_inline')
                     ->label('Hapus')
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn (Alumni $record) => $record->delete()),
-                
+                    ->action(fn (Alumni $record) => $record->delete())
+                    ->visible(fn (Alumni $record) => $record->verification_status !== 'pending'),
+
+                // Tampilkan Verifikasi secara inline jika status ADALAH pending
                 Action::make('verify')
                     ->label('Verifikasi')
                     ->icon('heroicon-o-check-badge')
@@ -203,43 +210,58 @@ class AlumniTable
                             ->success()
                             ->send();
                     }),
-                
-                Action::make('reject')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn (Alumni $record) => $record->verification_status === 'pending')
-                    ->requiresConfirmation()
-                    ->modalHeading('Tolak Pendaftaran Alumni?')
-                    ->modalDescription('Alumni akan menerima notifikasi penolakan beserta alasannya.')
-                    ->form([
-                        Textarea::make('verification_notes')
-                            ->label('Alasan Penolakan')
-                            ->required()
-                            ->placeholder('Masukkan alasan penolakan data alumni...'),
-                    ])
-                    ->action(function (Alumni $record, array $data) {
-                        $record->update([
-                            'verification_status' => 'rejected',
-                            'verified_by'         => Auth::id(),
-                            'verified_at'         => now(),
-                            'verification_notes'  => $data['verification_notes'],
-                        ]);
 
-                        // Notifikasi ke user alumni di panel
-                        if ($record->user) {
+                // Tampilkan Grup Aksi jika status ADALAH pending
+                ActionGroup::make([
+                    Action::make('reject')
+                        ->label('Tolak')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Tolak Pendaftaran Alumni?')
+                        ->modalDescription('Alumni akan menerima notifikasi penolakan beserta alasannya.')
+                        ->form([
+                            Textarea::make('verification_notes')
+                                ->label('Alasan Penolakan')
+                                ->required()
+                                ->placeholder('Masukkan alasan penolakan data alumni...'),
+                        ])
+                        ->action(function (Alumni $record, array $data) {
+                            $record->update([
+                                'verification_status' => 'rejected',
+                                'verified_by'         => Auth::id(),
+                                'verified_at'         => now(),
+                                'verification_notes'  => $data['verification_notes'],
+                            ]);
+
+                            // Notifikasi ke user alumni di panel
+                            if ($record->user) {
+                                Notification::make()
+                                    ->title('Pendaftaran Alumni Ditolak ❌')
+                                    ->body("Maaf, data Anda ditolak. Alasan: {$data['verification_notes']}. Silakan hubungi admin sekolah.")
+                                    ->danger()
+                                    ->sendToDatabase($record->user);
+                            }
+
                             Notification::make()
-                                ->title('Pendaftaran Alumni Ditolak ❌')
-                                ->body("Maaf, data Anda ditolak. Alasan: {$data['verification_notes']}. Silakan hubungi admin sekolah.")
+                                ->title('Data alumni berhasil ditolak')
                                 ->danger()
-                                ->sendToDatabase($record->user);
-                        }
+                                ->send();
+                        }),
 
-                        Notification::make()
-                            ->title('Data alumni berhasil ditolak')
-                            ->danger()
-                            ->send();
-                    }),
+                    Action::make('edit')
+                        ->label('Edit')
+                        ->icon('heroicon-o-pencil-square')
+                        ->url(fn (Alumni $record): string => AlumniResource::getUrl('edit', ['record' => $record])),
+
+                    Action::make('delete')
+                        ->label('Hapus')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (Alumni $record) => $record->delete()),
+                ])
+                ->visible(fn (Alumni $record) => $record->verification_status === 'pending'),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class JobVacanciesTable
 {
@@ -156,6 +157,8 @@ class JobVacanciesTable
                 EditAction::make()
                     ->label('Edit'),
             ])
+            ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

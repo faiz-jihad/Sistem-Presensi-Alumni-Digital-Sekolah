@@ -63,7 +63,7 @@ class SemestersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('school_id')
+                SelectFilter::make('school')
                     ->label('Sekolah')
                     ->relationship('academicYear.school', 'name')
                     ->placeholder('Semua Sekolah')
@@ -104,6 +104,7 @@ class SemestersTable
             ->recordActions([
                 EditAction::make(),
             ])
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
     DeleteBulkAction::make(),

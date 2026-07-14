@@ -355,16 +355,16 @@
             <!-- Stats Row -->
             <div class="grid grid-cols-3 gap-0 reveal">
                 <div class="border-t border-edu-200 pt-6">
-                    <p class="heading-lg text-3xl sm:text-4xl text-edu-900">500+</p>
+                    <p class="heading-lg text-3xl sm:text-4xl text-edu-900" id="stat-schools">0</p>
                     <p class="mono-label text-[10px] text-edu-500 mt-1">Sekolah Aktif</p>
                 </div>
                 <div class="border-t border-edu-200 pt-6">
-                    <p class="heading-lg text-3xl sm:text-4xl text-edu-900">100K</p>
+                    <p class="heading-lg text-3xl sm:text-4xl text-edu-900" id="stat-alumni">0</p>
                     <p class="mono-label text-[10px] text-edu-500 mt-1">Alumni Terdata</p>
                 </div>
                 <div class="border-t border-edu-200 pt-6">
-                    <p class="heading-lg text-3xl sm:text-4xl text-edu-900">99.9%</p>
-                    <p class="mono-label text-[10px] text-edu-500 mt-1">Uptime Server</p>
+                    <p class="heading-lg text-3xl sm:text-4xl text-edu-900" id="stat-attendance">0</p>
+                    <p class="mono-label text-[10px] text-edu-500 mt-1">Presensi Terdata</p>
                 </div>
             </div>
 
@@ -639,6 +639,61 @@
                     }
                 });
             });
+
+            // ============================================================
+            // REAL-TIME STATS FETCH & ANIMATION
+            // ============================================================
+            async function fetchStats() {
+                try {
+                    const response = await fetch('/public-stats');
+                    const data = await response.json();
+                    
+                    animateCount('stat-schools', data.schools);
+                    animateCount('stat-alumni', data.alumni);
+                    animateCount('stat-attendance', data.attendance);
+                } catch (error) {
+                    console.error('Failed to fetch stats:', error);
+                    // Fallback to static numbers if request fails
+                    animateCount('stat-schools', 500);
+                    animateCount('stat-alumni', 100000);
+                    animateCount('stat-attendance', 25000);
+                }
+            }
+
+            function animateCount(id, target) {
+                const el = document.getElementById(id);
+                if (!el) return;
+
+                let start = 0;
+                const duration = 1500; // 1.5s
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Ease out expo formula for premium smooth slowing down
+                    const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                    
+                    const currentValue = start + (target - start) * easeProgress;
+                    
+                    if (target % 1 === 0) {
+                        // Integer formatting
+                        el.textContent = Math.floor(currentValue).toLocaleString('id-ID') + (target >= 1000 ? '+' : '');
+                    } else {
+                        // Float formatting
+                        el.textContent = currentValue.toFixed(1);
+                    }
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
+
+            fetchStats();
 
             console.log('%cSIMPAD%c — Sistem Presensi Alumni Digital',
                 'font-weight: 800; color: #1d4ed8;',

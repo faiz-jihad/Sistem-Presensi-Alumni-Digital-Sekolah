@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Schedules;
 
 use App\Filament\Resources\Schedules\Pages\CreateSchedule;
+use App\Filament\Resources\Schedules\Pages\CreateBreakSchedule;
 use App\Filament\Resources\Schedules\Pages\EditSchedule;
+use App\Filament\Resources\Schedules\Pages\EditBreakSchedule;
 use App\Filament\Resources\Schedules\Pages\ListSchedules;
 use App\Filament\Resources\Schedules\Schemas\ScheduleForm;
 use App\Filament\Resources\Schedules\Tables\SchedulesTable;
@@ -89,6 +91,8 @@ class ScheduleResource extends Resource
             'index' => ListSchedules::route('/'),
             'create' => CreateSchedule::route('/create'),
             'edit' => EditSchedule::route('/{record}/edit'),
+            'create-break' => CreateBreakSchedule::route('/create-break'),
+            'edit-break' => EditBreakSchedule::route('/{record}/edit-break'),
         ];
     }
 }

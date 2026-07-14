@@ -37,4 +37,8 @@ class CreateSchedule extends CreateRecord
         return 'Tambah';
     }
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

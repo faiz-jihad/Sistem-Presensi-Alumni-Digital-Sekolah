@@ -133,6 +133,7 @@ class StudentsTable
                 EditAction::make()
                     ->label('Edit'),
             ])
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

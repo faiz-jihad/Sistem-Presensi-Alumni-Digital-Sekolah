@@ -92,16 +92,27 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
         static::created(function ($user) {
             if ($user->role && in_array($user->role, self::SPATIE_ROLES)) {
-                $user->assignRole($user->role);
+                try {
+                    $user->assignRole($user->role);
+                } catch (\Throwable $e) {
+                    // Abaikan jika tabel role belum terisi / seeder belum berjalan
+                }
             }
         });
 
         static::updated(function ($user) {
             if ($user->isDirty('role') && in_array($user->role, self::SPATIE_ROLES)) {
-                $user->syncRoles([$user->role]);
+                try {
+                    $user->syncRoles([$user->role]);
+                } catch (\Throwable $e) {
+                    // Abaikan jika tabel role belum terisi / seeder belum berjalan
+                }
             } elseif ($user->isDirty('role') && !in_array($user->role, self::SPATIE_ROLES)) {
-                // Hapus spatie role jika role berubah ke non-Filament
-                $user->syncRoles([]);
+                try {
+                    $user->syncRoles([]);
+                } catch (\Throwable $e) {
+                    // Abaikan jika tabel role belum terisi / seeder belum berjalan
+                }
             }
         });
     }

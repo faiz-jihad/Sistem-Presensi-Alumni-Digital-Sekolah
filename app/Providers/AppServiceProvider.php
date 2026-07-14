@@ -299,6 +299,21 @@ class AppServiceProvider extends ServiceProvider
                             ->body("Selamat! Pengajuan kegiatan Anda '{$event->title}' telah disetujui oleh admin.")
                             ->success()
                             ->sendToDatabase($poster);
+
+                        // Email ke pengaju
+                        $posterEmail = $poster->email;
+                        if ($posterEmail && filter_var($posterEmail, FILTER_VALIDATE_EMAIL)) {
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($posterEmail)
+                                    ->send(new \App\Mail\AlumniEventApprovedMail($event));
+                            } catch (\Throwable $e) {
+                                \Illuminate\Support\Facades\Log::error('Gagal mengirim email persetujuan kegiatan alumni.', [
+                                    'event_id' => $event->id,
+                                    'email' => $posterEmail,
+                                    'error' => $e->getMessage(),
+                                ]);
+                            }
+                        }
                     }
 
                     // Notifikasi ke seluruh alumni tentang event baru
@@ -318,6 +333,21 @@ class AppServiceProvider extends ServiceProvider
                             ->body("Maaf, pengajuan kegiatan Anda '{$event->title}' ditolak oleh admin.")
                             ->danger()
                             ->sendToDatabase($poster);
+
+                        // Email ke pengaju
+                        $posterEmail = $poster->email;
+                        if ($posterEmail && filter_var($posterEmail, FILTER_VALIDATE_EMAIL)) {
+                            try {
+                                \Illuminate\Support\Facades\Mail::to($posterEmail)
+                                    ->send(new \App\Mail\AlumniEventRejectedMail($event));
+                            } catch (\Throwable $e) {
+                                \Illuminate\Support\Facades\Log::error('Gagal mengirim email penolakan kegiatan alumni.', [
+                                    'event_id' => $event->id,
+                                    'email' => $posterEmail,
+                                    'error' => $e->getMessage(),
+                                ]);
+                            }
+                        }
                     }
                 }
             }
@@ -358,6 +388,21 @@ class AppServiceProvider extends ServiceProvider
                         ->body("Selamat! Lowongan kerja '{$job->title}' yang Anda ajukan telah disetujui dan aktif.")
                         ->success()
                         ->sendToDatabase($poster);
+
+                    // Email ke poster alumni
+                    $posterEmail = $poster->email;
+                    if ($posterEmail && filter_var($posterEmail, FILTER_VALIDATE_EMAIL)) {
+                        try {
+                            \Illuminate\Support\Facades\Mail::to($posterEmail)
+                                ->send(new \App\Mail\JobVacancyApprovedMail($job));
+                        } catch (\Throwable $e) {
+                            \Illuminate\Support\Facades\Log::error('Gagal mengirim email persetujuan lowongan kerja.', [
+                                'job_id' => $job->id,
+                                'email' => $posterEmail,
+                                'error' => $e->getMessage(),
+                            ]);
+                        }
+                    }
                 }
 
                 // Notifikasi ke seluruh alumni

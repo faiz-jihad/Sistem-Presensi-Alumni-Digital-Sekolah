@@ -71,7 +71,9 @@ class SemesterResource extends Resource
         $query = parent::getEloquentQuery();
 
         if (auth()->user()->role !== 'super_admin') {
-            $query->where('school_id', auth()->user()->school_id);
+            $query->whereHas('academicYear', function ($q) {
+                $q->where('school_id', auth()->user()->school_id);
+            });
         }
 
         return $query;

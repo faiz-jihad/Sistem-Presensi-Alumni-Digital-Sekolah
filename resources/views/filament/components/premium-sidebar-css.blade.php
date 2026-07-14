@@ -1276,6 +1276,19 @@
         height: 0.85rem !important;
         flex-shrink: 0 !important;
     }
+
+    /* Target only class hour package and schedule break action modals */
+    .fi-modal:has(.custom-class-hour-modal) {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .custom-class-hour-modal {
+        height: 75vh !important;
+        max-height: 600px !important;
+        min-height: 400px !important;
+        overflow-y: scroll !important;
+    }
 </style>
 
 <script>

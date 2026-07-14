@@ -19,6 +19,16 @@ class ExportController extends BaseController
         private readonly ReportService $reportService
     ) {}
 
+    public function attendance(Request $request)
+    {
+        return $this->exportAttendance($request);
+    }
+
+    public function alumni(Request $request)
+    {
+        return $this->exportAlumni($request);
+    }
+
     /**
      * Ekspor laporan presensi harian/bulanan ke Excel
      */
@@ -54,7 +64,7 @@ class ExportController extends BaseController
                     new DailyAttendanceExport(
                         $report['students'],
                         "Harian {$class->name}",
-                        $report['school_name'] ?? $class->school?->name ?? 'Sekolah',
+                        $class->school ?: ($report['school_name'] ?? $class->school?->name ?? 'Sekolah'),
                         $class->name,
                         Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
                     ),
@@ -71,7 +81,7 @@ class ExportController extends BaseController
                     new MonthlyAttendanceExport(
                         $report['students'],
                         "Bulanan {$class->name}",
-                        $report['school_name'] ?? $class->school?->name ?? 'Sekolah',
+                        $class->school ?: ($report['school_name'] ?? $class->school?->name ?? 'Sekolah'),
                         $class->name,
                         Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y')
                     ),
@@ -127,8 +137,21 @@ class ExportController extends BaseController
                 ];
             })->toArray();
 
+            $schoolId = $request->input('school_id') ?? auth()->user()?->school_id;
+            $school = null;
+            if ($schoolId) {
+                $school = \App\Models\School::find($schoolId);
+            }
+            $graduationYear = $request->input('graduation_year');
+
             return Excel::download(
-                new AlumniExport($alumni, "Data Alumni"),
+                new AlumniExport(
+                    $alumni,
+                    "Data Alumni",
+                    $school,
+                    $graduationYear,
+                    null
+                ),
                 'export_alumni.xlsx'
             );
         } catch (\Exception $e) {

@@ -36,7 +36,7 @@ class LaporanResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Data Alumni';
+        return 'Laporan & Monitoring';
     }
 
     public static function getNavigationSort(): ?int

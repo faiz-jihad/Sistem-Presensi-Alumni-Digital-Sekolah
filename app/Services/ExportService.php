@@ -61,7 +61,7 @@ class ExportService
                             new DailyAttendanceExport(
                                 $reportData['students'],
                                 "Harian {$className}",
-                                $reportData['school_name'] ?? $schoolName,
+                                $school ?: ($reportData['school_name'] ?? $schoolName),
                                 $className,
                                 Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
                             ),
@@ -96,7 +96,7 @@ class ExportService
                             new MonthlyAttendanceExport(
                                 $reportData['students'],
                                 "Bulanan {$className}",
-                                $reportData['school_name'] ?? $schoolName,
+                                $school ?: ($reportData['school_name'] ?? $schoolName),
                                 $className,
                                 Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y')
                             ),
@@ -134,7 +134,13 @@ class ExportService
 
                 if ($export->file_type === 'xlsx') {
                     Excel::store(
-                        new AlumniExport($alumnis, "Data Alumni"),
+                        new AlumniExport(
+                            $alumnis,
+                            "Data Alumni",
+                            $school,
+                            $graduationYear,
+                            $verificationStatus
+                        ),
                         $filePath,
                         'public'
                     );
@@ -156,6 +162,128 @@ class ExportService
                         $filePath,
                         $pdf->output()
                     );
+                }
+            } elseif ($export->type === 'student_report') {
+                $classId = $filters['class_id'] ?? null;
+                $class = StudentClass::find($classId);
+                $className = $class ? $class->name : null;
+
+                $status = $filters['status'] ?? null;
+                $statusLabel = match ($status) {
+                    'active' => 'Aktif',
+                    'inactive' => 'Tidak Aktif',
+                    'graduated' => 'Lulus',
+                    default => 'Semua Status'
+                };
+
+                $query = \App\Models\Student::with(['class', 'parent'])->where('school_id', $schoolId);
+
+                if (!empty($classId)) {
+                    $query->where('class_id', $classId);
+                }
+
+                if (!empty($status)) {
+                    $query->where('status', $status);
+                }
+
+                $students = $query->orderBy('name')->get()->map(function ($st) use ($schoolId) {
+                    $studentUser = \App\Models\User::where('role', 'student')
+                        ->where('school_id', $schoolId)
+                        ->where(function ($q) use ($st) {
+                            $q->where('email', $st->nis)
+                              ->orWhere('name', $st->name);
+                        })->first();
+
+                    return [
+                        'nis' => $st->nis,
+                        'nisn' => $st->nisn,
+                        'name' => $st->name,
+                        'gender' => $st->gender,
+                        'birth_date' => $st->birth_date,
+                        'class_name' => $st->class?->name ?? '-',
+                        'parent_phone' => $st->parent_phone ?? '-',
+                        'email' => $studentUser?->email ?? '-',
+                        'status' => $st->status,
+                    ];
+                })->toArray();
+
+                if ($export->file_type === 'xlsx') {
+                    Excel::store(
+                        new \App\Exports\StudentExport(
+                            $students,
+                            "Data Siswa",
+                            $school,
+                            $className,
+                            $statusLabel
+                        ),
+                        $filePath,
+                        'public'
+                    );
+                } else {
+                    $pdf = Pdf::loadView('pdf.student', [
+                        'student_list' => $students,
+                        'school_name' => $school?->name,
+                        'school_address' => $school?->address,
+                        'school_phone' => $school?->phone,
+                        'school_email' => $school?->email,
+                        'school_logo' => $school?->logo,
+                        'class_name' => $className,
+                        'status_label' => $statusLabel,
+                    ]);
+                    Storage::disk('public')->put($filePath, $pdf->output());
+                }
+            } elseif ($export->type === 'teacher_report') {
+                $status = $filters['status'] ?? null;
+                $statusLabel = match ($status) {
+                    'active' => 'Aktif',
+                    'inactive' => 'Tidak Aktif',
+                    'retired' => 'Pensiun',
+                    default => 'Semua Status'
+                };
+
+                $query = \App\Models\Teacher::with(['user'])->where('school_id', $schoolId);
+
+                if (!empty($status)) {
+                    $query->where('status', $status);
+                }
+
+                $teachers = $query->orderBy('name')->get()->map(function ($tc) {
+                    return [
+                        'nip' => $tc->nip,
+                        'name' => $tc->name,
+                        'gender' => $tc->gender,
+                        'phone' => $tc->phone,
+                        'field_of_study' => $tc->field_of_study,
+                        'employment_status' => $tc->employment_status,
+                        'education_level' => $tc->education_level,
+                        'university' => $tc->university,
+                        'email' => $tc->user?->email ?? '-',
+                        'status' => $tc->status,
+                    ];
+                })->toArray();
+
+                if ($export->file_type === 'xlsx') {
+                    Excel::store(
+                        new \App\Exports\TeacherExport(
+                            $teachers,
+                            "Data Guru",
+                            $school,
+                            $statusLabel
+                        ),
+                        $filePath,
+                        'public'
+                    );
+                } else {
+                    $pdf = Pdf::loadView('pdf.teacher', [
+                        'teacher_list' => $teachers,
+                        'school_name' => $school?->name,
+                        'school_address' => $school?->address,
+                        'school_phone' => $school?->phone,
+                        'school_email' => $school?->email,
+                        'school_logo' => $school?->logo,
+                        'status_label' => $statusLabel,
+                    ]);
+                    Storage::disk('public')->put($filePath, $pdf->output());
                 }
             } else {
                 throw new \Exception("Tipe laporan tidak didukung.");

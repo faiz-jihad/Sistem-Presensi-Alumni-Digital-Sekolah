@@ -338,6 +338,7 @@ class StudentAttendancesTable
                             ->sendToDatabase(Auth::user());
                     }),
             ])
+            ->actionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()

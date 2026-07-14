@@ -115,6 +115,7 @@ class UsersTable
 
                 DeleteAction::make(),
             ])
+            ->actionsColumnLabel('Aksi')
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
