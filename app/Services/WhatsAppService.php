@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Log;
 class WhatsAppService
 {
     private string $apiUrl;
-    private string $apiToken;
+    private ?string $apiToken;
 
     public function __construct()
     {
-        $this->apiUrl = config('services.whatsapp.api_url', env('WHATSAPP_API_URL', 'https://api.fonnte.com/send'));
-        $this->apiToken = config('services.whatsapp.api_token', env('WHATSAPP_API_TOKEN', 'your-token-here'));
+        $this->apiUrl = config('services.whatsapp.api_url', env('WHATSAPP_API_URL', 'http://localhost:5000/send'));
+        $this->apiToken = config('services.whatsapp.api_token', env('WHATSAPP_API_TOKEN'));
     }
 
     /**
@@ -30,7 +30,6 @@ class WhatsAppService
             return false;
         }
 
-        // Bersihkan format nomor agar dimulai dengan 62 (atau format yang sesuai)
         $to = $this->formatPhoneNumber($to);
 
         if (empty($to)) {
@@ -38,32 +37,32 @@ class WhatsAppService
             return false;
         }
 
-        // Fallback jika token masih default/placeholder
-        if (empty($this->apiToken) || $this->apiToken === 'your-token-here' || $this->apiToken === 'token-kamu-disini') {
-            Log::info("WhatsApp (Simulated) to {$to}: {$message}");
-            return true;
-        }
-
         try {
-            $response = Http::withHeaders([
-                'Authorization' => $this->apiToken,
-            ])->asForm()->post($this->apiUrl, [
-                'target' => $to,
+            $request = Http::timeout(10)->acceptJson();
+
+            if (!empty($this->apiToken)) {
+                $request = $request->withHeaders([
+                    'Authorization' => $this->apiToken,
+                ]);
+            }
+
+            // Gunakan format local gateway ('number' bukan 'target')
+            $response = $request->post($this->apiUrl, [
+                'number' => $to,
                 'message' => $message,
-                'countryCode' => '62',
             ]);
 
             if ($response->successful()) {
                 $responseData = $response->json();
                 if (isset($responseData['status']) && $responseData['status'] === false) {
-                    Log::error("WhatsApp Fonnte failed to {$to}: " . ($responseData['reason'] ?? $response->body()));
+                    Log::error("WhatsApp local gateway failed to {$to}: " . ($responseData['message'] ?? $response->body()));
                     return false;
                 }
-                Log::info("WhatsApp sent successfully to {$to}. Response: " . $response->body());
+                Log::info("WhatsApp sent successfully to {$to} via local gateway.");
                 return true;
             }
 
-            Log::error("WhatsApp failed to {$to}. Response: " . $response->body());
+            Log::error("WhatsApp local gateway error to {$to}. Status: " . $response->status() . " Body: " . $response->body());
             return false;
         } catch (\Exception $e) {
             Log::error("WhatsApp exception to {$to}: " . $e->getMessage());
@@ -72,19 +71,44 @@ class WhatsAppService
     }
 
     /**
+     * Cek status gateway
+     */
+    public function getGatewayStatus(): array
+    {
+        $statusUrl = preg_replace('#/send$#', '/status', $this->apiUrl) ?: $this->apiUrl;
+
+        try {
+            $response = Http::timeout(3)->acceptJson()->get($statusUrl);
+            if ($response->successful()) {
+                $data = $response->json();
+                return [
+                    'ready' => (bool) ($data['whatsapp_ready'] ?? false),
+                    'qr' => $data['qr'] ?? null,
+                    'error' => null
+                ];
+            }
+        } catch (\Throwable $exception) {
+            // Abaikan error dan asumsikan offline
+        }
+
+        return [
+            'ready' => false,
+            'qr' => null,
+            'error' => 'Local WhatsApp Gateway tidak aktif. Pastikan menjalankan "node whatsapp-service.js".'
+        ];
+    }
+
+    /**
      * Format nomor telepon ke standar internasional Indonesia (62)
      */
     private function formatPhoneNumber(string $phone): string
     {
-        // Hapus karakter non-digit
         $phone = preg_replace('/[^0-9]/', '', $phone);
 
-        // Jika diawali dengan '0', ganti dengan '62'
         if (str_starts_with($phone, '0')) {
             $phone = '62' . substr($phone, 1);
         }
 
-        // Jika belum diawali '62' dan panjangnya wajar, asumsikan nomor lokal
         if (!str_starts_with($phone, '62') && strlen($phone) >= 9) {
             $phone = '62' . $phone;
         }

@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Student;
 use App\Services\ReportService;
+use App\Services\WhatsAppService;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
@@ -124,8 +125,13 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
     {
         $query = Student::where('status', 'active')
             ->where(function ($q) {
-                $q->whereNotNull('parent_phone')
-                  ->where('parent_phone', '!=', '');
+                $q->where(function ($sq) {
+                    $sq->whereNotNull('parent_phone')
+                       ->where('parent_phone', '!=', '');
+                })->orWhereHas('parent', function ($sq) {
+                    $sq->whereNotNull('phone')
+                       ->where('phone', '!=', '');
+                });
             });
 
         if (auth()->user()->role !== 'super_admin') {
@@ -147,9 +153,15 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
         }
 
         $totalStudents = (clone $query)->count();
-        $hasPhone = (clone $query)->whereNotNull('parent_phone')
-            ->where('parent_phone', '!=', '')
-            ->count();
+        $hasPhone = (clone $query)->where(function ($q) {
+            $q->where(function ($sq) {
+                $sq->whereNotNull('parent_phone')
+                   ->where('parent_phone', '!=', '');
+            })->orWhereHas('parent', function ($sq) {
+                $sq->whereNotNull('phone')
+                   ->where('phone', '!=', '');
+            });
+        })->count();
 
         return [
             'total_students' => $totalStudents,
@@ -195,6 +207,17 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
         $schoolId = auth()->user()->role !== 'super_admin' ? auth()->user()->school_id : null;
 
         try {
+            // Cek status gateway
+            if (! app(WhatsAppService::class)->getGatewayStatus()['ready']) {
+                Notification::make()
+                    ->title('Gateway WhatsApp Belum Siap')
+                    ->body('Scan QR WhatsApp terlebih dahulu untuk login.')
+                    ->danger()
+                    ->send();
+
+                return;
+            }
+
             if ($type === 'daily') {
                 $date  = $this->data['date'] ?? now()->toDateString();
                 $count = $service->sendDailyRecapToParents($date, $schoolId);
@@ -228,6 +251,13 @@ class WhatsappNotifPage extends Page implements HasForms, HasActions
     {
         return [
             $this->sendNotifAction(),
+        ];
+    }
+
+    public function getViewData(): array
+    {
+        return [
+            'gatewayStatus' => app(WhatsAppService::class)->getGatewayStatus(),
         ];
     }
 

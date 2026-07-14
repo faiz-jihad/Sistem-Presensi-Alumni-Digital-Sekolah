@@ -50,6 +50,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\StudentAttendances\Pages\ManualAttendance::class,
                 \App\Filament\Pages\WhatsappNotifPage::class,
                 \App\Filament\Pages\DashboardGrafik::class,
+                \App\Filament\Pages\Settings::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
