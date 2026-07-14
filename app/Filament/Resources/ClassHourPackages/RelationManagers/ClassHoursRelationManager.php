@@ -69,7 +69,7 @@ class ClassHoursRelationManager extends RelationManager
                     ->numeric()
                     ->placeholder('Contoh: 1, 2'),
                 Toggle::make('is_break')
-                    ->label('Jam Istirahat?')
+                    ->label('Apakah Jam Ini Merupakan Jam Istirahat?')
                     ->default(false),
                 Select::make('shift')
                     ->label('Shift')

@@ -79,7 +79,7 @@ class ClassHourResource extends Resource
                                 ->required()
                                 ->native(false),
                             \Filament\Forms\Components\Toggle::make('is_break')
-                                ->label('Jam Istirahat?')
+                                ->label('Apakah Jam Ini Merupakan Jam Istirahat?')
                                 ->default(false),
                         ]),
                     ])

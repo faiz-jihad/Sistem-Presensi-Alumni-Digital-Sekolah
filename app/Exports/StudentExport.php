@@ -172,7 +172,7 @@ class StudentExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSiz
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '2563EB'] // Blue for Students
+                    'startColor' => ['rgb' => '#1E88E5'] // Blue for Students
                 ]
             ],
         ];

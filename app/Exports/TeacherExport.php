@@ -182,7 +182,7 @@ class TeacherExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSiz
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '4F46E5'] // Indigo for Teachers
+                    'startColor' => ['rgb' => '#1E88E5'] // Indigo for Teachers
                 ]
             ],
         ];
