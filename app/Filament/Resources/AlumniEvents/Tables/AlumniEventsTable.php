@@ -12,6 +12,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class AlumniEventsTable
 {
@@ -112,6 +113,8 @@ class AlumniEventsTable
                 EditAction::make()
                     ->label('Edit'),
             ])
+            ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

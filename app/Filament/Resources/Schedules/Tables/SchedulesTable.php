@@ -9,6 +9,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Tables\Enums\RecordActionsPosition;
 
 class SchedulesTable
 {
@@ -145,6 +146,8 @@ class SchedulesTable
                         : \App\Filament\Resources\Schedules\ScheduleResource::getUrl('edit', ['record' => $record->id])
                     ),
             ])
+            ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

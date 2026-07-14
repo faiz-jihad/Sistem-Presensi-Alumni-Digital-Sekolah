@@ -105,6 +105,7 @@ class SubjectsTable
             ->recordActions([
                 EditAction::make(),
             ])
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

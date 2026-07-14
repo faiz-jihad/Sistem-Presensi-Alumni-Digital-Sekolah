@@ -104,6 +104,7 @@ class SemestersTable
             ->recordActions([
                 EditAction::make(),
             ])
+            ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
     DeleteBulkAction::make(),
