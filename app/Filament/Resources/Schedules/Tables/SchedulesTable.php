@@ -125,8 +125,25 @@ class SchedulesTable
                 ->icon('heroicon-m-funnel')
                 ->color('gray')
             )
+            ->headerActions([
+                \Filament\Actions\Action::make('create_break_schedule')
+                    ->label('Tambah Jam Istirahat')
+                    ->icon('heroicon-o-clock')
+                    ->color('warning')
+                    ->button()
+                    ->url(fn () => \App\Filament\Resources\Schedules\ScheduleResource::getUrl('create-break')),
+                \Filament\Actions\Action::make('create_schedule')
+                    ->label('Tambah Jadwal')
+                    ->icon('heroicon-o-plus')
+                    ->button()
+                    ->url(fn () => \App\Filament\Resources\Schedules\ScheduleResource::getUrl('create')),
+            ])
             ->recordActions([
-                EditAction::make(),
+                \Filament\Actions\EditAction::make()
+                    ->url(fn ($record) => $record->classHour?->is_break
+                        ? \App\Filament\Resources\Schedules\ScheduleResource::getUrl('edit-break', ['record' => $record->id])
+                        : \App\Filament\Resources\Schedules\ScheduleResource::getUrl('edit', ['record' => $record->id])
+                    ),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

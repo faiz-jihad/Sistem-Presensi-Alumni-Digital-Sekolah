@@ -11,6 +11,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -43,15 +45,24 @@ class ClassHoursRelationManager extends RelationManager
                     ->placeholder('Contoh: J1, J2, Istirahat'),
                 TimePicker::make('start_time')
                     ->label('Jam Mulai')
-                    ->required(),
+                    ->seconds(false)
+                    ->live()
+                    ->afterStateUpdated(function ($state, $set, $get) {
+                        self::updateDuration($set, $get);
+                    }),
                 TimePicker::make('end_time')
                     ->label('Jam Selesai')
-                    ->required(),
+                    ->seconds(false)
+                    ->live()
+                    ->afterStateUpdated(function ($state, $set, $get) {
+                        self::updateDuration($set, $get);
+                    }),
                 TextInput::make('duration_minutes')
                     ->label('Durasi (Menit)')
-                    ->required()
                     ->numeric()
-                    ->default(45),
+                    ->readOnly()
+                    ->default(45)
+                    ->required(),
                 TextInput::make('order')
                     ->label('Urutan Jam Ke-')
                     ->required()
@@ -82,6 +93,27 @@ class ClassHoursRelationManager extends RelationManager
             ]);
     }
 
+    public static function updateDuration($set, $get): void
+    {
+        $start = $get('start_time');
+        $end   = $get('end_time');
+
+        if (!$start || !$end) {
+            return;
+        }
+
+        try {
+            $startTime = \Carbon\Carbon::parse($start);
+            $endTime   = \Carbon\Carbon::parse($end);
+
+            $duration = $startTime->diffInMinutes($endTime, false);
+
+            $set('duration_minutes', max($duration, 0));
+        } catch (\Throwable $e) {
+            //
+        }
+    }
+
     public function table(Table $table): Table
     {
         return $table
@@ -91,43 +123,48 @@ class ClassHoursRelationManager extends RelationManager
                 TextColumn::make('order')
                     ->label('Urutan')
                     ->sortable(),
+
                 TextColumn::make('code')
-                    ->label('Kode Jam')
+                    ->label('Kode')
                     ->searchable()
                     ->sortable(),
+
                 TextColumn::make('start_time')
                     ->label('Jam Mulai')
                     ->time('H:i')
                     ->sortable(),
+
                 TextColumn::make('end_time')
                     ->label('Jam Selesai')
                     ->time('H:i')
                     ->sortable(),
+
                 TextColumn::make('duration_minutes')
-                    ->label('Durasi (Menit)')
+                    ->label('Durasi')
+                    ->suffix(' menit')
                     ->sortable(),
+
                 IconColumn::make('is_break')
-                    ->label('Istirahat?')
+                    ->label('Istirahat')
                     ->boolean(),
+
                 TextColumn::make('shift')
-                    ->label('Shift')
                     ->badge()
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'morning' => 'Pagi',
                         'afternoon' => 'Siang',
                         'evening' => 'Sore',
                         default => $state,
-                    })
-                    ->sortable(),
+                    }),
+
                 TextColumn::make('status')
-                    ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn ($state) => match ($state) {
                         'active' => 'success',
                         'inactive' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn ($state) => match ($state) {
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',
                         default => $state,

@@ -170,6 +170,9 @@ class AttendanceReport extends Page
         }
 
         $className = $report['class']['name'] ?? 'Kelas';
+        $classId = $this->data['class_id'] ?? null;
+        $class = StudentClass::find($classId);
+        $school = $class?->school;
 
         Notification::make()
             ->title('Ekspor Berhasil')
@@ -184,9 +187,12 @@ class AttendanceReport extends Page
                 new DailyAttendanceExport(
                     $report['students'],
                     "Harian {$className}",
-                    $report['school_name'] ?? 'Nama Sekolah',
+                    $report['school_name'] ?? $school?->name ?? 'Sekolah',
                     $className,
-                    Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
+                    Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y'),
+                    $school?->address,
+                    $school?->phone,
+                    $school?->email
                 ),
                 $filename
             );
@@ -197,9 +203,12 @@ class AttendanceReport extends Page
                 new MonthlyAttendanceExport(
                     $report['students'],
                     "Bulanan {$className}",
-                    $report['school_name'] ?? 'Nama Sekolah',
+                    $report['school_name'] ?? $school?->name ?? 'Sekolah',
                     $className,
-                    Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->locale('id')->isoFormat('MMMM Y')
+                    Carbon::createFromDate($this->data['year'], $this->data['month'], 1)->locale('id')->isoFormat('MMMM Y'),
+                    $school?->address,
+                    $school?->phone,
+                    $school?->email
                 ),
                 $filename
             );

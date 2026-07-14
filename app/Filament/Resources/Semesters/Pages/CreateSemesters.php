@@ -36,4 +36,9 @@ class CreateSemesters extends CreateRecord
         return parent::getCancelFormAction()
             ->label('Kembali');
     }    
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }

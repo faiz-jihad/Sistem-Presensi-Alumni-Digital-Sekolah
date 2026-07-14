@@ -109,6 +109,7 @@ class ScheduleForm
                                         if (!$packageId) return [];
                                         return \App\Models\ClassHour::where('class_hour_package_id', $packageId)
                                             ->where('status', 'active')
+                                            ->where('is_break', false)
                                             ->orderBy('order')
                                             ->get()
                                             ->mapWithKeys(function ($hour) {
