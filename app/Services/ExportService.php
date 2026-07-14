@@ -134,7 +134,13 @@ class ExportService
 
                 if ($export->file_type === 'xlsx') {
                     Excel::store(
-                        new AlumniExport($alumnis, "Data Alumni"),
+                        new AlumniExport(
+                            $alumnis,
+                            "Data Alumni",
+                            $school,
+                            $graduationYear,
+                            $verificationStatus
+                        ),
                         $filePath,
                         'public'
                     );
