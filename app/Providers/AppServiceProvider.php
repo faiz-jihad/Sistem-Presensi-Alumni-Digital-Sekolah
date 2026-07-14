@@ -433,7 +433,6 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        // Auto notify admin users for important Filament model changes.
         foreach ([
             \App\Models\AcademicYear::class,
             \App\Models\Alumni::class,
@@ -442,7 +441,6 @@ class AppServiceProvider extends ServiceProvider
             \App\Models\ClassHourPackage::class,
             \App\Models\Export::class,
             \App\Models\JobVacancy::class,
-            \App\Models\Package::class,
             \App\Models\PresensiSession::class,
             \App\Models\Schedule::class,
             \App\Models\School::class,

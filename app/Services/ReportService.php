@@ -76,22 +76,22 @@ class ReportService
         }
 
         return [
-        'class' => [
-        'id' => $class->id,
-        'name' => $class->name,
-        'grade' => $class->grade,
-        'major' => $class->major,
-        ],
+            'class' => [
+                'id' => $class->id,
+                'name' => $class->name,
+                'grade' => $class->grade,
+                'major' => $class->major,
+            ],
 
-        'school_name'    => $class->school?->name ?? '-',
-        'school_address' => $class->school?->address ?? '-',
-        'school_phone'   => $class->school?->phone ?? '-',
-        'school_email'   => $class->school?->email ?? '-',
+            'school_name'    => $class->school?->name ?? '-',
+            'school_address' => $class->school?->address ?? '-',
+            'school_phone'   => $class->school?->phone ?? '-',
+            'school_email'   => $class->school?->email ?? '-',
 
-        'date' => $date,
-        'summary' => $summary,
-        'students' => $reportData,
-    ];
+            'date' => $date,
+            'summary' => $summary,
+            'students' => $reportData,
+        ];
     }
 
     /**
@@ -121,7 +121,6 @@ class ReportService
             ->groupBy('student_id');
 
         $reportData = [];
-        $totalDaysInMonth = Carbon::parse($startDate)->daysInMonth;
 
         foreach ($students as $student) {
             $studentAtts = $attendances->get($student->id) ?? collect();
@@ -158,23 +157,23 @@ class ReportService
         }
 
         return [
-        'class' => [
-        'id' => $class->id,
-        'name' => $class->name,
-        'grade' => $class->grade,
-        'major' => $class->major,
-        ],
+            'class' => [
+                'id' => $class->id,
+                'name' => $class->name,
+                'grade' => $class->grade,
+                'major' => $class->major,
+            ],
 
-        'school_name'    => $class->school?->name ?? '-',
-        'school_address' => $class->school?->address ?? '-',
-        'school_phone'   => $class->school?->phone ?? '-',
-        'school_email'   => $class->school?->email ?? '-',
+            'school_name'    => $class->school?->name ?? '-',
+            'school_address' => $class->school?->address ?? '-',
+            'school_phone'   => $class->school?->phone ?? '-',
+            'school_email'   => $class->school?->email ?? '-',
 
-        'month' => $month,
-        'year' => $year,
-        'total_students' => $students->count(),
-        'students' => $reportData,
-    ];
+            'month' => $month,
+            'year' => $year,
+            'total_students' => $students->count(),
+            'students' => $reportData,
+        ];
     }
 
     /**
@@ -191,6 +190,16 @@ class ReportService
         
         $students = $query->get();
 
+        if ($students->isEmpty()) {
+            return 0;
+        }
+
+        // OPTIMASI: Eager load seluruh kehadiran siswa pada tanggal tersebut dalam 1 query saja (Menghindari N+1 query)
+        $attendances = StudentAttendance::whereIn('student_id', $students->pluck('id'))
+            ->where('date', $date)
+            ->get()
+            ->keyBy('student_id');
+
         $sentCount = 0;
 
         foreach ($students as $student) {
@@ -202,10 +211,8 @@ class ReportService
                 continue;
             }
 
-            // Ambil kehadiran untuk hari ini
-            $attendance = StudentAttendance::where('student_id', $student->id)
-                ->where('date', $date)
-                ->first();
+            // Ambil kehadiran dari memory collection, bukan query database lagi
+            $attendance = $attendances->get($student->id);
 
             $statusLabel = 'Alpha';
             $checkIn = '-';
@@ -259,8 +266,18 @@ class ReportService
         
         $students = $query->get();
 
+        if ($students->isEmpty()) {
+            return 0;
+        }
+
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->toDateString();
         $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->toDateString();
+
+        // OPTIMASI: Eager load seluruh kehadiran bulanan untuk siswa-siswa ini sekaligus (Menghindari N+1 query)
+        $allAttendances = StudentAttendance::whereIn('student_id', $students->pluck('id'))
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get()
+            ->groupBy('student_id');
 
         $sentCount = 0;
 
@@ -272,9 +289,8 @@ class ReportService
                 continue;
             }
 
-            $attendances = StudentAttendance::where('student_id', $student->id)
-                ->whereBetween('date', [$startDate, $endDate])
-                ->get();
+            // Ambil data kehadiran bulanan dari memory collection
+            $attendances = $allAttendances->get($student->id) ?? collect();
 
             $counts = [
                 'present' => 0,
