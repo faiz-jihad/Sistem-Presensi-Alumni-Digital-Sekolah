@@ -137,11 +137,17 @@ class ExportService
                         new AlumniExport(
                             $alumnis,
                             "Data Alumni",
+<<<<<<< HEAD
                             $school?->name ?? '',
                             $school?->address ?? '',
                             $school?->phone ?? '',
                             $graduationYear,
                             $verificationStatus,
+=======
+                            $school,
+                            $graduationYear,
+                            $verificationStatus
+>>>>>>> 2dabc117cd9a088802473afe70189f15777ec4d3
                         ),
                         $filePath,
                         'public'

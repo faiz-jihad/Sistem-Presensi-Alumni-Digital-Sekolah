@@ -94,12 +94,12 @@ class AdminPanelProvider extends PanelProvider
                         background: url(\'' . asset('background.png') . '\') center center / cover no-repeat !important;
                         position: relative !important;
                     }
-                    
+
                     /* Hide left panel entirely */
                     .custom-auth-empty-panel {
                         display: none !important;
                     }
-                    
+
                     /* Full screen transparent form panel (fills the wrapper) */
                     .custom-auth-form-panel {
                         display: flex !important;
@@ -112,7 +112,7 @@ class AdminPanelProvider extends PanelProvider
                         padding: 1.5rem !important;
                         flex-grow: 1 !important;
                     }
-                    
+
                     /* Form wrapper centered inside the panel */
                     .custom-auth-form-wrapper {
                         margin-left: auto !important;
@@ -123,12 +123,12 @@ class AdminPanelProvider extends PanelProvider
                         justify-content: center !important;
                         align-items: center !important;
                     }
-                    
+
                     /* Styling Form Login (Glassmorphic Card) */
                     .fi-simple-layout {
                         background: transparent !important;
                     }
-                    
+
                     .fi-simple-main,
                     main,
                     .fi-simple-layout main,
@@ -143,7 +143,7 @@ class AdminPanelProvider extends PanelProvider
                         width: 100% !important;
                         max-width: 100% !important;
                     }
-                    
+
                     .dark .fi-simple-main,
                     .dark main,
                     .dark .fi-simple-layout main,
@@ -151,7 +151,7 @@ class AdminPanelProvider extends PanelProvider
                         background-color: rgba(30, 41, 59, 0.45) !important;
                         border-color: rgba(255, 255, 255, 0.15) !important;
                     }
-                    
+
                     .fi-simple-main-ctn {
                         width: 100% !important;
                         max-width: 100% !important;
@@ -300,10 +300,10 @@ class AdminPanelProvider extends PanelProvider
                         color: #ffffff !important;
                     }
 
-                    .dark .fi-fo-field-wrp-label, 
-                    .dark .fi-label, 
-                    .dark label, 
-                    .dark label span, 
+                    .dark .fi-fo-field-wrp-label,
+                    .dark .fi-label,
+                    .dark label,
+                    .dark label span,
                     .dark .fi-simple-main label span {
                         color: rgba(255, 255, 255, 0.95) !important;
                     }
@@ -329,7 +329,7 @@ class AdminPanelProvider extends PanelProvider
                         background-color: transparent !important;
                         color: rgba(255, 255, 255, 0.7) !important;
                     }
-                    
+
                     .dark .fi-input-wrp button:hover {
                         color: #ffffff !important;
                     }
