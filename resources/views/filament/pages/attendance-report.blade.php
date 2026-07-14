@@ -21,7 +21,6 @@
         border: 1px solid rgba(37, 99, 235, 0.15);
         border-radius: 20px;
         padding: 28px;
-        overflow: hidden;
         box-shadow: 0 4px 24px rgba(37, 99, 235, 0.06), 0 1px 2px rgba(0,0,0,0.03);
     }
     .dark .ar-filter-panel {
@@ -29,7 +28,15 @@
         border-color: rgba(37, 99, 235, 0.25);
         box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
     }
-    .ar-filter-panel::before {
+    .ar-filter-bg-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .ar-filter-bg-glow::before {
         content: '';
         position: absolute;
         top: -60px;
@@ -40,7 +47,7 @@
         border-radius: 50%;
         pointer-events: none;
     }
-    .ar-filter-panel::after {
+    .ar-filter-bg-glow::after {
         content: '';
         position: absolute;
         bottom: -40px;
@@ -50,6 +57,10 @@
         background: radial-gradient(circle, rgba(16, 185, 129, 0.07) 0%, transparent 70%);
         border-radius: 50%;
         pointer-events: none;
+    }
+    .ar-filter-content {
+        position: relative;
+        z-index: 1;
     }
 
     .ar-filter-header {
@@ -696,20 +707,23 @@
 
     {{-- ===================== FILTER PANEL ===================== --}}
     <div class="ar-filter-panel">
-        <div class="ar-filter-header">
-            <div class="ar-filter-icon">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
-                </svg>
+        <div class="ar-filter-bg-glow"></div>
+        <div class="ar-filter-content">
+            <div class="ar-filter-header">
+                <div class="ar-filter-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="ar-filter-title">Filter Laporan</p>
+                    <p class="ar-filter-subtitle">Pilih kriteria untuk menampilkan rekap presensi harian atau bulanan.</p>
+                </div>
             </div>
-            <div>
-                <p class="ar-filter-title">Filter Laporan</p>
-                <p class="ar-filter-subtitle">Pilih kriteria untuk menampilkan rekap presensi harian atau bulanan.</p>
-            </div>
+            <form>
+                {{ $this->form }}
+            </form>
         </div>
-        <form>
-            {{ $this->form }}
-        </form>
     </div>
 
     {{-- ===================== REPORT DATA ===================== --}}

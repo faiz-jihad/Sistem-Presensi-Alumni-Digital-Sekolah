@@ -75,12 +75,19 @@ class DailyAttendanceExport implements FromArray, WithHeadings, WithTitle, Shoul
         // Tulis Kop Asal Sekolah
         $sheet->setCellValue('A1', 'LAPORAN REKAPITULASI PRESENSI HARIAN');
         $sheet->setCellValue('A2', 'Asal Sekolah: ' . $this->schoolName);
-        $sheet->setCellValue('A3', 'Kelas       : ' . $this->className);
-        $sheet->setCellValue('A4', 'Tanggal     : ' . $this->date);
+        $sheet->setCellValue('A3', 'Kelas: ' . $this->className);
+        $sheet->setCellValue('A4', 'Tanggal: ' . $this->date);
 
-        // Styling Kop
+        // Gabungkan sel untuk Kop agar berada di tengah
+        $sheet->mergeCells('A1:F1');
+        $sheet->mergeCells('A2:F2');
+        $sheet->mergeCells('A3:F3');
+        $sheet->mergeCells('A4:F4');
+
+        // Styling Kop & Penyelarasan Rata Tengah
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A2:A4')->getFont()->setBold(true);
+        $sheet->getStyle('A2:F4')->getFont()->setBold(true);
+        $sheet->getStyle('A1:F4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
         return [
             6 => [

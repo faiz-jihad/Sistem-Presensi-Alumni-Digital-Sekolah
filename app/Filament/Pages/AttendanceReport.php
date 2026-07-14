@@ -171,6 +171,12 @@ class AttendanceReport extends Page
 
         $className = $report['class']['name'] ?? 'Kelas';
 
+        Notification::make()
+            ->title('Ekspor Berhasil')
+            ->body('Laporan presensi berhasil diunduh dalam format Excel.')
+            ->success()
+            ->send();
+
         if ($this->data['type'] === 'daily') {
             $date = $report['date'];
             $filename = "rekap_harian_{$className}_{$date}.xlsx";
@@ -209,6 +215,12 @@ class AttendanceReport extends Page
         }
 
         $className = $report['class']['name'] ?? 'Kelas';
+
+        Notification::make()
+            ->title('Ekspor Berhasil')
+            ->body('Laporan presensi berhasil diunduh dalam format PDF.')
+            ->success()
+            ->send();
 
         if ($this->data['type'] === 'daily') {
             $date = $report['date'];

@@ -474,7 +474,7 @@
                             <span class="ma-stat-label">Terlambat</span>
                         </div>
                         <div class="ma-stat ma-stat-sakit">
-                            <x-heroicon-o-heart style="width:24px;height:24px;color:#7c3aed;" class="ma-stat-icon" />
+                            <x-heroicon-o-plus-circle style="width:24px;height:24px;color:#7c3aed;" class="ma-stat-icon" />
                             <span class="ma-stat-num" x-text="getSummary().sick"></span>
                             <span class="ma-stat-label">Sakit</span>
                         </div>

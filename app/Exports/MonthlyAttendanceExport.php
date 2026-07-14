@@ -72,12 +72,19 @@ class MonthlyAttendanceExport implements FromArray, WithHeadings, WithTitle, Sho
         // Tulis Kop Asal Sekolah
         $sheet->setCellValue('A1', 'LAPORAN REKAPITULASI PRESENSI BULANAN');
         $sheet->setCellValue('A2', 'Asal Sekolah: ' . $this->schoolName);
-        $sheet->setCellValue('A3', 'Kelas       : ' . $this->className);
-        $sheet->setCellValue('A4', 'Periode     : ' . $this->period);
+        $sheet->setCellValue('A3', 'Kelas: ' . $this->className);
+        $sheet->setCellValue('A4', 'Periode: ' . $this->period);
 
-        // Styling Kop
+        // Gabungkan sel untuk Kop agar berada di tengah
+        $sheet->mergeCells('A1:I1');
+        $sheet->mergeCells('A2:I2');
+        $sheet->mergeCells('A3:I3');
+        $sheet->mergeCells('A4:I4');
+
+        // Styling Kop & Penyelarasan Rata Tengah
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A2:A4')->getFont()->setBold(true);
+        $sheet->getStyle('A2:I4')->getFont()->setBold(true);
+        $sheet->getStyle('A1:I4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
         return [
             6 => [
