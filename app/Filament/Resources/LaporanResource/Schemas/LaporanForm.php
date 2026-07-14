@@ -30,10 +30,11 @@ class LaporanForm
                             ->label('Tipe Laporan')
                             ->options([
                                 'alumni_report' => 'Laporan Data Alumni',
+                                'student_report' => 'Laporan Data Siswa',
+                                'teacher_report' => 'Laporan Data Guru',
                             ])
                             ->default('alumni_report')
-                            ->disabled()
-                            ->dehydrated()
+                            ->live()
                             ->required(),
 
                         Select::make('file_type')
@@ -49,7 +50,6 @@ class LaporanForm
 
                 Section::make('Filter Laporan')
                     ->schema([
-                        // Ubah dari TextInput ke Select
                         Select::make('filters.graduation_year')
                             ->label('Tahun Lulus')
                             ->options(array_combine(
@@ -57,7 +57,8 @@ class LaporanForm
                                 range(date('Y'), 2000)
                             ))
                             ->placeholder('Semua Tahun')
-                            ->nullable(),
+                            ->nullable()
+                            ->visible(fn (callable $get) => $get('type') === 'alumni_report'),
 
                         Select::make('filters.verification_status')
                             ->label('Status Verifikasi')
@@ -67,7 +68,33 @@ class LaporanForm
                                 'rejected' => 'Ditolak',
                             ])
                             ->placeholder('Semua Status')
-                            ->nullable(),
+                            ->nullable()
+                            ->visible(fn (callable $get) => $get('type') === 'alumni_report'),
+
+                        Select::make('filters.class_id')
+                            ->label('Kelas')
+                            ->options(fn (callable $get) => StudentClass::where('school_id', $get('school_id'))->orderBy('name')->pluck('name', 'id'))
+                            ->placeholder('Semua Kelas')
+                            ->nullable()
+                            ->visible(fn (callable $get) => $get('type') === 'student_report'),
+
+                        Select::make('filters.status')
+                            ->label('Status')
+                            ->options(fn (callable $get) => $get('type') === 'student_report'
+                                ? [
+                                    'active' => 'Aktif',
+                                    'inactive' => 'Tidak Aktif',
+                                    'graduated' => 'Lulus',
+                                  ]
+                                : [
+                                    'active' => 'Aktif',
+                                    'inactive' => 'Tidak Aktif',
+                                    'retired' => 'Pensiun',
+                                  ]
+                            )
+                            ->placeholder('Semua Status')
+                            ->nullable()
+                            ->visible(fn (callable $get) => in_array($get('type'), ['student_report', 'teacher_report'])),
                     ])
                     ->columns(2),
             ]);

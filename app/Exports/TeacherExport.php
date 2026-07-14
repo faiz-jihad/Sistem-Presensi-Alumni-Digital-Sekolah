@@ -10,68 +10,57 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles, WithCustomStartCell
+class TeacherExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles, WithCustomStartCell
 {
-    private bool $isTracerMode = false;
-
     public function __construct(
         private array $data,
         private string $title,
         private $school = null,
-        private ?string $graduationYear = null,
-        private ?string $verificationStatus = null
-    ) {
-        if (!empty($this->data) && (isset($this->data[0]['detail']) || isset($this->data[0]['status']))) {
-            $this->isTracerMode = true;
-        }
-    }
+        private ?string $statusLabel = null
+    ) {}
 
     public function startCell(): string
     {
         return $this->school ? 'A10' : 'A1';
     }
 
-
-
     public function array(): array
     {
         $rows = [];
         $no = 1;
 
-        foreach ($this->data as $alumni) {
-            if ($this->isTracerMode) {
-                $rows[] = [
-                    $no++,
-                    $alumni['name'] ?? '-',
-                    $alumni['nisn'] ?? '-',
-                    $alumni['graduation_year'] ?? '-',
-                    $alumni['class_name'] ?? '-',
-                    $alumni['major'] ?? '-',
-                    $alumni['status'] ?? '-',
-                    $alumni['detail'] ?? '-',
-                ];
-            } else {
-                $gender = ($alumni['gender'] ?? '') === 'male' ? 'Laki-laki' : 'Perempuan';
-                $status = match ($alumni['verification_status'] ?? '') {
-                    'pending' => 'Menunggu Verifikasi',
-                    'verified' => 'Terverifikasi',
-                    'rejected' => 'Ditolak',
-                    default => $alumni['verification_status'] ?? '-'
-                };
+        foreach ($this->data as $teacher) {
+            $gender = ($teacher['gender'] ?? '') === 'male' ? 'Laki-laki' : 'Perempuan';
+            $status = match ($teacher['status'] ?? '') {
+                'active' => 'Aktif',
+                'inactive' => 'Tidak Aktif',
+                'retired' => 'Pensiun',
+                default => $teacher['status'] ?? '-'
+            };
 
-                $rows[] = [
-                    $no++,
-                    $alumni['name'] ?? '-',
-                    $alumni['nisn'] ?? '-',
-                    $gender,
-                    $alumni['graduation_year'] ?? '-',
-                    $alumni['class_name'] ?? '-',
-                    $alumni['major'] ?? '-',
-                    $alumni['email'] ?? '-',
-                    $alumni['phone'] ?? '-',
-                    $status,
-                ];
-            }
+            $employmentStatus = match ($teacher['employment_status'] ?? '') {
+                'pns' => 'PNS',
+                'pppk' => 'PPPK',
+                'honorer' => 'Honorer',
+                'gtt' => 'GTT',
+                'ptt' => 'PTT',
+                'kontrak' => 'Kontrak',
+                default => $teacher['employment_status'] ?? '-'
+            };
+
+            $rows[] = [
+                $no++,
+                $teacher['nip'] ?? '-',
+                $teacher['name'] ?? '-',
+                $gender,
+                $teacher['phone'] ?? '-',
+                $teacher['field_of_study'] ?? '-',
+                $employmentStatus,
+                $teacher['education_level'] ?? '-',
+                $teacher['university'] ?? '-',
+                $teacher['email'] ?? '-',
+                $status,
+            ];
         }
 
         return $rows;
@@ -79,30 +68,18 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
 
     public function headings(): array
     {
-        if ($this->isTracerMode) {
-            return [
-                'No',
-                'Nama Alumni',
-                'NISN',
-                'Tahun Lulus',
-                'Kelas',
-                'Jurusan',
-                'Status Pekerjaan',
-                'Detail Status',
-            ];
-        }
-
         return [
             'No',
-            'Nama Alumni',
-            'NISN',
+            'NIP',
+            'Nama Lengkap',
             'Jenis Kelamin',
-            'Tahun Lulus',
-            'Kelas',
-            'Jurusan',
+            'No Telepon',
+            'Mata Pelajaran Utama',
+            'Status Kepegawaian',
+            'Tingkat Pendidikan',
+            'Universitas',
             'Email',
-            'No HP',
-            'Status Verifikasi',
+            'Status',
         ];
     }
 
@@ -126,7 +103,7 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
                 $schoolEmail = $this->school->email ?? '-';
             }
 
-            $endColumn = $this->isTracerMode ? 'H' : 'J';
+            $endColumn = 'K'; // 11 columns
 
             // Merge cells for Kop rows
             $sheet->mergeCells("A1:{$endColumn}1");
@@ -150,22 +127,12 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
             $sheet->setCellValue('A6', '');
 
             // Title of report
-            $sheet->setCellValue('A7', 'LAPORAN DATA ALUMNI');
+            $sheet->setCellValue('A7', 'LAPORAN DATA GURU');
 
             // Filter info
-            $tahunLulus = $this->graduationYear ?: 'Semua Tahun';
-            if ($this->isTracerMode) {
-                $statusLabel = 'Tracer Study (Pekerjaan/Kuliah)';
-            } else {
-                $statusLabel = match ($this->verificationStatus) {
-                    'verified' => 'Terverifikasi',
-                    'pending' => 'Menunggu Verifikasi',
-                    'rejected' => 'Ditolak',
-                    default => 'Semua Status'
-                };
-            }
+            $statusStr = $this->statusLabel ?: 'Semua Status';
             $tanggalCetak = \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y HH:mm');
-            $sheet->setCellValue('A8', "Tahun Lulus: {$tahunLulus}   |   Status: {$statusLabel}   |   Tanggal Cetak: {$tanggalCetak}");
+            $sheet->setCellValue('A8', "Status: {$statusStr}   |   Tanggal Cetak: {$tanggalCetak}");
 
             // Center Align all header text
             $sheet->getStyle("A1:{$endColumn}8")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
@@ -174,9 +141,9 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
             $sheet->getStyle('A1')->getFont()->setSize(9)->setBold(true);
             $sheet->getStyle('A1')->getFont()->getColor()->setRGB('4B5563'); // Slate gray
 
-            // Styling Nama Sekolah (Premium Green, Larger)
+            // Styling Nama Sekolah (Premium Indigo/Purple, Larger)
             $sheet->getStyle('A2')->getFont()->setSize(16)->setBold(true);
-            $sheet->getStyle('A2')->getFont()->getColor()->setRGB('10B981'); // Brand green
+            $sheet->getStyle('A2')->getFont()->getColor()->setRGB('4F46E5'); // Indigo for teachers
 
             // Styling Alamat & Kontak
             $sheet->getStyle('A3:A4')->getFont()->setSize(9)->setItalic(true);
@@ -206,10 +173,9 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '10B981'] // Green for Alumni
+                    'startColor' => ['rgb' => '4F46E5'] // Indigo for Teachers
                 ]
             ],
         ];
     }
 }
-

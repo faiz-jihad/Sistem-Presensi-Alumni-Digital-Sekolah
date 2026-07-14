@@ -21,12 +21,16 @@ class LaporanTable
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'attendance_report' => 'Presensi Kehadiran',
                         'alumni_report' => 'Data Alumni',
+                        'student_report' => 'Data Siswa',
+                        'teacher_report' => 'Data Guru',
                         default => $state,
                     })
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'attendance_report' => 'info',
                         'alumni_report' => 'success',
+                        'student_report' => 'warning',
+                        'teacher_report' => 'gray',
                         default => 'gray',
                     }),
 
@@ -34,14 +38,35 @@ class LaporanTable
                     ->label('Filter/Kriteria')
                     ->state(function (Export $record): string {
                         $filters = $record->filters ?? [];
-                        $year = $filters['graduation_year'] ?? 'Semua Tahun';
-                        $status = match ($filters['verification_status'] ?? '') {
-                            'verified' => 'Terverifikasi',
-                            'pending' => 'Menunggu Verifikasi',
-                            'rejected' => 'Ditolak',
-                            default => 'Semua Status'
-                        };
-                        return "Alumni - Lulusan: {$year} ({$status})";
+                        if ($record->type === 'alumni_report') {
+                            $year = $filters['graduation_year'] ?? 'Semua Tahun';
+                            $status = match ($filters['verification_status'] ?? '') {
+                                'verified' => 'Terverifikasi',
+                                'pending' => 'Menunggu Verifikasi',
+                                'rejected' => 'Ditolak',
+                                default => 'Semua Status'
+                            };
+                            return "Alumni - Lulusan: {$year} ({$status})";
+                        } elseif ($record->type === 'student_report') {
+                            $classId = $filters['class_id'] ?? null;
+                            $className = $classId ? (\App\Models\StudentClass::find($classId)?->name ?? 'Kelas Tidak Ditemukan') : 'Semua Kelas';
+                            $status = match ($filters['status'] ?? '') {
+                                'active' => 'Aktif',
+                                'inactive' => 'Tidak Aktif',
+                                'graduated' => 'Lulus',
+                                default => 'Semua Status'
+                            };
+                            return "Siswa - Kelas: {$className} ({$status})";
+                        } elseif ($record->type === 'teacher_report') {
+                            $status = match ($filters['status'] ?? '') {
+                                'active' => 'Aktif',
+                                'inactive' => 'Tidak Aktif',
+                                'retired' => 'Pensiun',
+                                default => 'Semua Status'
+                            };
+                            return "Guru - Status: {$status}";
+                        }
+                        return '-';
                     }),
 
                 TextColumn::make('file_type')
