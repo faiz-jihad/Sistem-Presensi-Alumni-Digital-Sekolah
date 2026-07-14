@@ -174,9 +174,9 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
             $sheet->getStyle('A1')->getFont()->setSize(9)->setBold(true);
             $sheet->getStyle('A1')->getFont()->getColor()->setRGB('4B5563'); // Slate gray
 
-            // Styling Nama Sekolah (Premium Green, Larger)
+            // Styling Nama Sekolah (Premium Blue, Larger)
             $sheet->getStyle('A2')->getFont()->setSize(16)->setBold(true);
-            $sheet->getStyle('A2')->getFont()->getColor()->setRGB('10B981'); // Brand green
+            $sheet->getStyle('A2')->getFont()->getColor()->setRGB('2563EB'); // Brand blue
 
             // Styling Alamat & Kontak
             $sheet->getStyle('A3:A4')->getFont()->setSize(9)->setItalic(true);
@@ -197,6 +197,10 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
             $sheet->getStyle('A8')->getFont()->getColor()->setRGB('4B5563');
 
             $headerRow = 10;
+
+            // Rata kiri untuk kolom tabel (No, Nama, NISN, dsb.) beserta datanya
+            $highestRow = $sheet->getHighestRow();
+            $sheet->getStyle("A10:{$endColumn}{$highestRow}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
         } else {
             $headerRow = 1;
         }
@@ -206,7 +210,7 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '10B981'] // Green for Alumni
+                    'startColor' => ['rgb' => '2563EB'] // Blue for Alumni
                 ]
             ],
         ];
