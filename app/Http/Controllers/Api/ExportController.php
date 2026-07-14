@@ -64,7 +64,7 @@ class ExportController extends BaseController
                     new DailyAttendanceExport(
                         $report['students'],
                         "Harian {$class->name}",
-                        $report['school_name'] ?? $class->school?->name ?? 'Sekolah',
+                        $class->school ?: ($report['school_name'] ?? $class->school?->name ?? 'Sekolah'),
                         $class->name,
                         Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
                     ),
@@ -81,7 +81,7 @@ class ExportController extends BaseController
                     new MonthlyAttendanceExport(
                         $report['students'],
                         "Bulanan {$class->name}",
-                        $report['school_name'] ?? $class->school?->name ?? 'Sekolah',
+                        $class->school ?: ($report['school_name'] ?? $class->school?->name ?? 'Sekolah'),
                         $class->name,
                         Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y')
                     ),

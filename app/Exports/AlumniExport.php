@@ -115,10 +115,11 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
     {
         if ($this->school) {
             if (is_string($this->school)) {
+                $schoolModel = \App\Models\School::where('name', $this->school)->first() ?? \App\Models\School::first();
                 $schoolName = $this->school;
-                $schoolAddress = 'Alamat Sekolah';
-                $schoolPhone = '-';
-                $schoolEmail = '-';
+                $schoolAddress = $schoolModel->address ?? 'Alamat Sekolah';
+                $schoolPhone = $schoolModel->phone ?? '-';
+                $schoolEmail = $schoolModel->email ?? '-';
             } else {
                 $schoolName = $this->school->name ?? 'NAMA SEKOLAH';
                 $schoolAddress = $this->school->address ?? 'Alamat Sekolah';
@@ -174,9 +175,9 @@ class AlumniExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
             $sheet->getStyle('A1')->getFont()->setSize(9)->setBold(true);
             $sheet->getStyle('A1')->getFont()->getColor()->setRGB('4B5563'); // Slate gray
 
-            // Styling Nama Sekolah (Premium Blue, Larger)
+            // Styling Nama Sekolah (Premium Black, Larger)
             $sheet->getStyle('A2')->getFont()->setSize(16)->setBold(true);
-            $sheet->getStyle('A2')->getFont()->getColor()->setRGB('2563EB'); // Brand blue
+            $sheet->getStyle('A2')->getFont()->getColor()->setRGB('000000');
 
             // Styling Alamat & Kontak
             $sheet->getStyle('A3:A4')->getFont()->setSize(9)->setItalic(true);

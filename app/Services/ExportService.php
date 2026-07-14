@@ -61,7 +61,7 @@ class ExportService
                             new DailyAttendanceExport(
                                 $reportData['students'],
                                 "Harian {$className}",
-                                $reportData['school_name'] ?? $schoolName,
+                                $school ?: ($reportData['school_name'] ?? $schoolName),
                                 $className,
                                 Carbon::parse($date)->locale('id')->isoFormat('D MMMM Y')
                             ),
@@ -96,7 +96,7 @@ class ExportService
                             new MonthlyAttendanceExport(
                                 $reportData['students'],
                                 "Bulanan {$className}",
-                                $reportData['school_name'] ?? $schoolName,
+                                $school ?: ($reportData['school_name'] ?? $schoolName),
                                 $className,
                                 Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM Y')
                             ),
