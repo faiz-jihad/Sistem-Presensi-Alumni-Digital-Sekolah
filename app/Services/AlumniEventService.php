@@ -4,15 +4,15 @@ namespace App\Services;
 
 use App\Models\AlumniEvent;
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Collection;
 
 class AlumniEventService
 {
     /**
      * Mengambil daftar kegiatan alumni dengan eager loading
      */
-    public function listEvents(User $user): Collection
+    public function listEvents(User $user, int $perPage = 10): LengthAwarePaginator
     {
         $query = AlumniEvent::with(['school', 'postedBy']);
 
@@ -28,7 +28,7 @@ class AlumniEventService
             $query->where('school_id', $user->school_id);
         }
 
-        return $query->orderBy('event_date', 'asc')->get();
+        return $query->orderBy('event_date', 'asc')->paginate($perPage);
     }
 
     /**

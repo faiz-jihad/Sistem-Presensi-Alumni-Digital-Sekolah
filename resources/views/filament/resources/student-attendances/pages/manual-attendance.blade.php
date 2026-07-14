@@ -243,13 +243,25 @@
     .ma-btn-permission-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
     .dark .ma-btn-permission-inactive { background-color: #27272a !important; color: #52525b !important; }
 
-    .ma-btn-sick-active { background-color: #f59e0b !important; color: white !important; }
+    .ma-btn-sick-active { background-color: #ec4899 !important; color: white !important; }
     .ma-btn-sick-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
     .dark .ma-btn-sick-inactive { background-color: #27272a !important; color: #52525b !important; }
+
+    .ma-btn-late-active { background-color: #f59e0b !important; color: white !important; }
+    .ma-btn-late-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
+    .dark .ma-btn-late-inactive { background-color: #27272a !important; color: #52525b !important; }
 
     .ma-btn-absent-active { background-color: #ef4444 !important; color: white !important; }
     .ma-btn-absent-inactive { background-color: #f1f5f9 !important; color: #94a3b8 !important; }
     .dark .ma-btn-absent-inactive { background-color: #27272a !important; color: #52525b !important; }
+
+    .ma-btn-letter {
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        font-family: 'Inter', 'Segoe UI', sans-serif !important;
+        line-height: 1 !important;
+        pointer-events: none !important;
+    }
 </style>
 
 <div style="display:flex;flex-direction:column;gap:1.5rem;">
@@ -369,13 +381,15 @@
                                                                   backgroundColor: pastAtt.status === 'present' ? '#22c55e' :
                                                                                   pastAtt.status === 'late' ? '#f59e0b' :
                                                                                   pastAtt.status === 'permission' ? '#3b82f6' :
-                                                                                  pastAtt.status === 'sick' ? '#06b6d4' : '#ef4444'
+                                                                                  pastAtt.status === 'sick' ? '#ff59faff' 
+                                                                                  pastAtt.status === 'absent' ? '#f60b0bff'
                                                               }"
                                                               :title="pastAtt.status"
-                                                              x-text="pastAtt.status === 'present' ? '✓' :
+                                                              x-text="pastAtt.status === 'present' ? 'H' :
                                                                      pastAtt.status === 'late' ? 'T' :
                                                                      pastAtt.status === 'permission' ? 'I' :
-                                                                     pastAtt.status === 'sick' ? 'S' : 'A'">
+                                                                     pastAtt.status === 'sick' ? 'S' :
+                                                                     pastAtt.status === 'absent' ? 'A'">
                                                         </span>
                                                     </template>
                                                 </div>
@@ -393,7 +407,7 @@
                                                class="dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
                                     </div>
                                     {{-- Right Side: Quick Attendance Buttons (Alpine bound) --}}
-                                    <div style="display: flex !important; gap: 12px !important; align-items: center !important; flex-shrink: 0 !important;">
+                                    <div style="display: flex !important; gap: 8px !important; align-items: center !important; flex-shrink: 0 !important;">
 
                                         {{-- Hadir (present) --}}
                                         <button type="button"
@@ -401,9 +415,16 @@
                                                 class="ma-btn-status"
                                                 :class="attendances[idx] && attendances[idx].status === 'present' ? 'ma-btn-present-active' : 'ma-btn-present-inactive'"
                                                 title="Hadir">
-                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                            </svg>
+                                            <span class="ma-btn-letter">H</span>
+                                        </button>
+
+                                        {{-- Terlambat (late) --}}
+                                        <button type="button"
+                                                @click="setStudentStatus(student.id, 'late')"
+                                                class="ma-btn-status"
+                                                :class="attendances[idx] && attendances[idx].status === 'late' ? 'ma-btn-late-active' : 'ma-btn-late-inactive'"
+                                                title="Terlambat">
+                                            <span class="ma-btn-letter">T</span>
                                         </button>
 
                                         {{-- Izin (permission) --}}
@@ -412,7 +433,7 @@
                                                 class="ma-btn-status"
                                                 :class="attendances[idx] && attendances[idx].status === 'permission' ? 'ma-btn-permission-active' : 'ma-btn-permission-inactive'"
                                                 title="Izin">
-                                            <span style="font-weight: 800; font-size: 14px; font-family: sans-serif;">i</span>
+                                            <span class="ma-btn-letter">I</span>
                                         </button>
 
                                         {{-- Sakit (sick) --}}
@@ -421,9 +442,7 @@
                                                 class="ma-btn-status"
                                                 :class="attendances[idx] && attendances[idx].status === 'sick' ? 'ma-btn-sick-active' : 'ma-btn-sick-inactive'"
                                                 title="Sakit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:18px; height:18px;" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                                            </svg>
+                                            <span class="ma-btn-letter">S</span>
                                         </button>
 
                                         {{-- Alpha (absent) --}}
@@ -432,9 +451,7 @@
                                                 class="ma-btn-status"
                                                 :class="attendances[idx] && attendances[idx].status === 'absent' ? 'ma-btn-absent-active' : 'ma-btn-absent-inactive'"
                                                 title="Alpa">
-                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:16px; height:16px;" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                            </svg>
+                                            <span class="ma-btn-letter">A</span>
                                         </button>
 
                                     </div>

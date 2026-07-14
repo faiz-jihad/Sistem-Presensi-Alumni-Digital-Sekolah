@@ -134,6 +134,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     /**
      * Cek apakah user memiliki akses ke fitur berdasarkan paket sekolahnya
+     * Semua fitur diizinkan — sistem paket langganan telah dihapus
      */
     public function hasFeature(string $feature): bool
     {
@@ -154,17 +155,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
             return false;
         }
 
-        // Jika sekolah tidak diset paketnya, default izinkan semua fitur
-        if (!$school->package_id) {
-            return true;
-        }
-
-        $package = $school->package;
-        if (!$package) {
-            return true;
-        }
-
-        return (bool) $package->{$feature};
+        // Semua fitur diizinkan karena sistem paket langganan telah dihapus
+        return true;
     }
 
     /**

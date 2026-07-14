@@ -17,14 +17,7 @@ class AlumniService
      */
     public function register(array $data): array
     {
-        // 1. Cek paket sekolah untuk fitur alumni
-        $school = School::find($data['school_id']);
-        if ($school && $school->package_id) {
-            $package = $school->package;
-            if ($package && !$package->has_alumni) {
-                throw new \Exception('Sekolah pilihan Anda tidak berlangganan paket yang mendukung fitur alumni.', 403);
-            }
-        }
+        // Sistem paket langganan telah dihapus — semua sekolah dapat mengakses fitur alumni
 
         return DB::transaction(function () use ($data) {
             // 2. Buat user baru

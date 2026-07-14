@@ -30,10 +30,13 @@ class AlumniJobController extends BaseController
 
             $jobs = $this->jobService->listJobs($filters, $perPage);
 
-            return $this->success(
-                JobVacancyResource::collection($jobs),
-                'Daftar lowongan kerja berhasil diambil'
-            );
+            return $this->success([
+                'data' => JobVacancyResource::collection($jobs->getCollection())->resolve($request),
+                'current_page' => $jobs->currentPage(),
+                'last_page' => $jobs->lastPage(),
+                'per_page' => $jobs->perPage(),
+                'total' => $jobs->total(),
+            ], 'Daftar lowongan kerja berhasil diambil');
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
         }

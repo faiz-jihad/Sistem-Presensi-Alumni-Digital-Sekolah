@@ -26,11 +26,15 @@ class AlumniEventController extends BaseController
             if (!$request->user()) {
                 return $this->error('Unauthenticated.', 401);
             }
-            $events = $this->eventService->listEvents($request->user());
-            return $this->success(
-                AlumniEventResource::collection($events),
-                'Daftar event alumni berhasil diambil'
-            );
+            $perPage = max(1, min((int) $request->query('per_page', 10), 100));
+            $events = $this->eventService->listEvents($request->user(), $perPage);
+            return $this->success([
+                'data' => AlumniEventResource::collection($events->getCollection())->resolve($request),
+                'current_page' => $events->currentPage(),
+                'last_page' => $events->lastPage(),
+                'per_page' => $events->perPage(),
+                'total' => $events->total(),
+            ], 'Daftar event alumni berhasil diambil');
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 500);
         }

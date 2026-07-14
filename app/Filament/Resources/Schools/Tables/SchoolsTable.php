@@ -75,14 +75,6 @@ class SchoolsTable
                     ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('package.name')
-                    ->label('Paket Langganan')
-                    ->badge()
-                    ->color('primary')
-                    ->sortable()
-                    ->searchable()
-                    ->default('—'),
-                    
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y')
@@ -109,11 +101,6 @@ class SchoolsTable
                     ])
                     ->placeholder('Semua Status'),
 
-                SelectFilter::make('package_id')
-                    ->label('Paket Langganan')
-                    ->relationship('package', 'name')
-                    ->placeholder('Semua Paket')
-                    ->preload(),
             ])
             ->filtersFormColumns(2)
             ->filtersTriggerAction(fn ($action) => $action
