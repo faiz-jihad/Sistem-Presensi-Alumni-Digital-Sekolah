@@ -96,7 +96,7 @@ class StudentClassImport implements ToCollection, WithHeadingRow, SkipsOnError
 
     public function headingRow(): int
     {
-        return 4;
+        return 1;
     }
 
     public function getImportedCount(): int { return $this->importedCount; }

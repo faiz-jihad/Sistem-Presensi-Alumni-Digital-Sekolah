@@ -11,13 +11,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 
-class SubjectImportTemplateExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles, WithCustomStartCell
+class SubjectImportTemplateExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles
 {
-    public function startCell(): string
-    {
-        return 'A4';
-    }
-
     public function array(): array
     {
         return [
@@ -47,16 +42,8 @@ class SubjectImportTemplateExport implements FromArray, WithHeadings, WithTitle,
 
     public function styles(Worksheet $sheet)
     {
-        // Deskripsi di baris 1–3
-        $sheet->setCellValue('A1', 'TEMPLATE IMPORT MATA PELAJARAN — SIMPAD');
-        $sheet->setCellValue('A2', 'Keterangan: Kolom bertanda (*) wajib diisi. Baris contoh di bawah dapat dihapus sebelum upload.');
-        $sheet->setCellValue('A3', 'Beban Jam JP diisi dengan angka bilangan bulat (contoh: 4). Kelompok harus bernilai: general, specialized, local, atau extracurricular.');
-
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
-        $sheet->getStyle('A2:A3')->getFont()->setItalic(true)->setSize(10);
-
         return [
-            4 => [
+            1 => [
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
