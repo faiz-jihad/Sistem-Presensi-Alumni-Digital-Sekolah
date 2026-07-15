@@ -32,6 +32,24 @@ class Teacher extends Model
 
     /* ─── Relationships ─────────────────────────── */
 
+    protected static function booted()
+    {
+        static::deleted(function ($teacher) {
+            $user = $teacher->user()->withTrashed()->first();
+            if ($user) {
+                if ($teacher->isForceDeleting()) {
+                    $user->forceDelete();
+                } else {
+                    $user->delete();
+                }
+            }
+        });
+
+        static::restored(function ($teacher) {
+            $teacher->user()->withTrashed()->first()?->restore();
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
