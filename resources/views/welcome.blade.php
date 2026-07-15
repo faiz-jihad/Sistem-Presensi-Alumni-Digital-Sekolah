@@ -310,7 +310,7 @@
                 </div>
                 <span class="font-lexend font-bold text-edu-900 text-lg">SIMPAD</span>
             </div>
-            <a href="/admin/login" class="mono-label text-xs text-edu-700 link-underline hidden sm:block">
+            <a href="/admin/login" class="mono-label text-[11px] sm:text-xs text-edu-700 link-underline">
                 Masuk Dashboard →
             </a>
         </div>
@@ -330,7 +330,7 @@
             <!-- Main Headline -->
             <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
                 <div class="lg:col-span-8 reveal">
-                    <h1 class="heading-xl text-5xl sm:text-6xl lg:text-7xl xl:text-8xl text-edu-950">
+                    <h1 class="heading-xl text-4xl sm:text-6xl lg:text-7xl xl:text-8xl text-edu-950">
                         Sistem<br>
                         Presensi<br>
                         <span class="text-edu-600">Alumni</span>
@@ -353,7 +353,7 @@
             </div>
 
             <!-- Stats Row -->
-            <div class="grid grid-cols-3 gap-0 reveal">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 reveal">
                 <div class="border-t border-edu-200 pt-6">
                     <p class="heading-lg text-3xl sm:text-4xl text-edu-900" id="stat-schools">0</p>
                     <p class="mono-label text-[10px] text-edu-500 mt-1">Sekolah Aktif</p>
@@ -489,7 +489,7 @@
             </div>
 
             <!-- Feature Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 border border-edu-200">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-edu-200 border border-edu-200">
                 <!-- Feature 1 -->
                 <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200">
                     <span class="text-3xl block mb-5">⚡</span>
@@ -498,21 +498,21 @@
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200 border-l border-edu-200">
+                <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200">
                     <span class="text-3xl block mb-5">🔐</span>
                     <h4 class="heading-md text-lg text-edu-900 mb-2">QR Authentication</h4>
                     <p class="text-edu-500 text-sm leading-relaxed">Sistem autentikasi aman dengan QR Code unik untuk setiap pengguna.</p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200 border-t sm:border-t-0 lg:border-l border-edu-200">
+                <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200">
                     <span class="text-3xl block mb-5">📊</span>
                     <h4 class="heading-md text-lg text-edu-900 mb-2">Analytics</h4>
                     <p class="text-edu-500 text-sm leading-relaxed">Visualisasi data kehadiran dengan grafik interaktif dan laporan detail.</p>
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200 border-l border-t sm:border-t-0 border-edu-200">
+                <div class="p-8 bg-white hover:bg-edu-50 transition-colors duration-200">
                     <span class="text-3xl block mb-5">🔔</span>
                     <h4 class="heading-md text-lg text-edu-900 mb-2">Notifikasi</h4>
                     <p class="text-edu-500 text-sm leading-relaxed">Notifikasi otomatis ke orang tua saat siswa tidak hadir di sekolah.</p>

@@ -20,6 +20,11 @@
 
             margin-bottom:30px;
         }
+        @media (max-width: 768px) {
+            .hero-container {
+                padding: 24px;
+            }
+        }
         .hero-pattern-1 {
             position: absolute;
             top: 0;
@@ -116,7 +121,7 @@
             display:flex;
             align-items:center;
             justify-content:center;
-
+            
             height:38px;
             padding:0 14px;
             border-radius:999px;
@@ -165,12 +170,19 @@
             }
         }
         .summary-card{
-            width:150px;
+            flex: 1;
+            min-width: 0;
+            max-width: 150px;
             padding:20px;
             border-radius:18px;
             background:rgba(255,255,255,.15);
             backdrop-filter:blur(16px);
             transition:.3s;
+        }
+        @media (max-width: 768px) {
+            .summary-card {
+                max-width: none;
+            }
         }
         .summary-card:hover{
             transform:translateY(-6px);
