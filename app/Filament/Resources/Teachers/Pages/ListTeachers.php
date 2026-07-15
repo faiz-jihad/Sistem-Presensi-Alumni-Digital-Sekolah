@@ -34,8 +34,17 @@ class ListTeachers extends ListRecords
                 ->label('Impor Excel')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('warning')
-                ->form([
-                    FileUpload::make('file')
+                ->form(function () {
+                    $fields = [];
+                    if (auth()->user()->isSuperAdmin()) {
+                        $fields[] = \Filament\Forms\Components\Select::make('school_id')
+                            ->label('Pilih Sekolah')
+                            ->options(\App\Models\School::pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->required();
+                    }
+                    $fields[] = FileUpload::make('file')
                         ->label('File Excel Guru')
                         ->acceptedFileTypes([
                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -44,16 +53,17 @@ class ListTeachers extends ListRecords
                         ->disk('local')
                         ->directory('imports/teachers')
                         ->required()
-                        ->helperText('Unggah berkas .xlsx sesuai format template. Kolom wajib: NIP, Nama Lengkap, Email, Status.'),
-                ])
+                        ->helperText('Unggah berkas .xlsx sesuai format template. Kolom wajib: NIP, Nama Lengkap, Email, Status.');
+                    return $fields;
+                })
                 ->action(function (array $data) {
                     $user = auth()->user();
-                    $schoolId = $user->school_id;
+                    $schoolId = $user->isSuperAdmin() ? ($data['school_id'] ?? null) : $user->school_id;
 
                     if (!$schoolId) {
                         Notification::make()
-                            ->title('Sekolah tidak ditemukan. Pastikan akun Anda terhubung ke sekolah.')
-                            ->warning()
+                            ->title('Gagal: Sekolah harus dipilih')
+                            ->danger()
                             ->send();
                         return;
                     }

@@ -13,13 +13,16 @@ class DatabaseSeeder extends Seeder
 
     /**
      * Seed the application's database.
+     * ⚠️  Production-safe: hanya membuat role & super admin default.
+     *     Untuk data dummy (dev/staging), jalankan:
+     *     php artisan db:seed --class=DummyDataSeeder
      */
     public function run(): void
     {
-        // Jalankan RoleAndPermissionSeeder dulu agar role tersedia
+        // 1. Buat role & permission Spatie
         $this->call(RoleAndPermissionSeeder::class);
 
-        // Buat Super Admin default jika belum ada
+        // 2. Buat Super Admin default jika belum ada
         $admin = User::firstOrCreate(
             ['email' => 'admin@simpad.test'],
             [
@@ -31,13 +34,8 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Pastikan role Spatie di-assign ke admin ini
+        // 3. Pastikan role Spatie di-assign
         $admin->syncRoles(['super_admin']);
-
-        // Seed data dummy lengkap (sekolah, kelas, guru, siswa, jadwal, dll.)
-        $this->call([
-            DummyDataSeeder::class,
-            PresensiSessionSeeder::class,
-        ]);
     }
 }
+

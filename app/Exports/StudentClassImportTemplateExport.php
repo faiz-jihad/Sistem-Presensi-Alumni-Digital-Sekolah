@@ -9,33 +9,33 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SubjectImportTemplateExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles
+class StudentClassImportTemplateExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles
 {
     public function array(): array
     {
         return [
-            ['MTK', 'Matematika', 'MTK', 'general', 4, 'active', 'Mata pelajaran wajib untuk semua jurusan.'],
-            ['PW01', 'Pemrograman Web', 'Pemweb', 'specialized', 6, 'active', 'Pemrograman berbasis web menggunakan HTML, CSS, JS.'],
-            ['MLOK', 'Bahasa Daerah', 'B.Daerah', 'local', 2, 'active', 'Muatan lokal bahasa daerah setempat.'],
+            ['XII RPL 1', '12', '2026/2027', 'RPL', '198706052010011001', 36, 'Ruang 101', 'active'],
+            ['XI MIPA 2', '11', '2026/2027', 'MIPA', '', 36, 'Ruang 204', 'active'],
         ];
     }
 
     public function headings(): array
     {
         return [
-            'Kode Mapel',
-            'Nama Mata Pelajaran',
-            'Singkatan',
-            'Kelompok',
-            'Beban Jam JP',
-            'Status',
-            'Deskripsi',
+            'Nama Kelas *',
+            'Tingkat / Kelas (1-13) *',
+            'Tahun Ajaran *',
+            'Jurusan / Peminatan',
+            'NIP Wali Kelas',
+            'Kapasitas (Siswa)',
+            'Nama / Nomor Ruang Kelas',
+            'Status (active/inactive) *',
         ];
     }
 
     public function title(): string
     {
-        return 'Template Import Mata Pelajaran';
+        return 'Template Import Kelas';
     }
 
     public function styles(Worksheet $sheet)
@@ -45,7 +45,7 @@ class SubjectImportTemplateExport implements FromArray, WithHeadings, WithTitle,
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => 'F59E0B'],
+                    'startColor' => ['rgb' => '4F46E5'],
                 ],
             ],
         ];

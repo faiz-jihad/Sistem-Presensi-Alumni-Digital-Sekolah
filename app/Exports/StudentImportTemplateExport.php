@@ -23,16 +23,16 @@ class StudentImportTemplateExport implements FromArray, WithHeadings, WithTitle,
     public function headings(): array
     {
         return [
-            'NIS *',
+            'NIS',
             'NISN',
-            'Nama Lengkap Siswa *',
-            'Jenis Kelamin (Laki-laki/Perempuan) *',
-            'Tanggal Lahir (YYYY-MM-DD) *',
-            'Kelas (Nama Kelas)',
-            'Status (active/inactive/graduated) *',
+            'Nama Lengkap Siswa',
+            'Jenis Kelamin',
+            'Tanggal Lahir',
+            'Kelas',
+            'Status',
             'Nama Orang Tua',
             'No WA Orang Tua',
-            'Email Akun Siswa',
+            'Email',
             'Kata Sandi',
         ];
     }
@@ -44,17 +44,8 @@ class StudentImportTemplateExport implements FromArray, WithHeadings, WithTitle,
 
     public function styles(Worksheet $sheet)
     {
-        // Instruksi di baris 1–3
-        $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA SISWA — SIMPAD');
-        $sheet->setCellValue('A2', 'Keterangan: Kolom bertanda (*) wajib diisi. Baris contoh di bawah dapat dihapus sebelum upload.');
-        $sheet->setCellValue('A3', 'Kolom "Kelas" diisi dengan nama kelas persis seperti di sistem (contoh: X RPL 1).');
-
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
-        $sheet->getStyle('A2:A3')->getFont()->setItalic(true)->setSize(10);
-
-        // Style baris header (row 4 karena HeadingRow pakai row pertama, tapi kami mulai data dari row 2 otomatis)
         return [
-            4 => [
+            1 => [
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,

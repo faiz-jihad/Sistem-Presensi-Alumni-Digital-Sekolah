@@ -1,0 +1,63 @@
+name: Deploy to cPanel (FTP)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, mysql, zip
+          coverage: none
+
+      - name: composer.json cache validation
+        run: composer validate --no-check-publish
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: 📥 Install Dependencies
+        run: composer install --no-dev --optimize-autoloader --no-ansi --no-interaction --no-scripts --prefer-dist
+
+      - name: 📂 Sync files to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT || 21 }}
+          server-dir: ${{ secrets.FTP_TARGET_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/tests/**
+            **/.env
+            **/composer.json
+            **/composer.lock
+            **/package.json
+            **/package-lock.json
+            **/postcss.config.js
+            **/tailwind.config.js
+            **/vite.config.js
+            **/README.md
+            **/.env.example
+            **/phpunit.xml
+            **/ecosystem.config.cjs
+            **/whatsapp-service.js

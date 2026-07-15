@@ -64,9 +64,25 @@
             "npm install --ignore-scripts",
             "npm run build"
         ],
+        "deploy": [
+            "composer install --no-dev --optimize-autoloader",
+            "@php artisan config:cache",
+            "@php artisan route:cache",
+            "@php artisan view:cache",
+            "@php artisan event:cache",
+            "@php artisan icons:cache",
+            "@php artisan migrate --force",
+            "@php artisan filament:optimize",
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "deploy:fresh": [
+            "@composer deploy",
+            "@php artisan db:seed --force"
+        ],
+
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74,#86efac\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" \"node whatsapp-service.js\" --names='server,queue,vite,whatsapp'"
         ],
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",

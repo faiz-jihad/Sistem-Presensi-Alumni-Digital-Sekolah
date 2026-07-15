@@ -22,16 +22,16 @@ class TeacherImportTemplateExport implements FromArray, WithHeadings, WithTitle,
     public function headings(): array
     {
         return [
-            'NIP * (18 digit)',
-            'Nama Lengkap Guru *',
-            'Email Login *',
+            'NIP',
+            'Nama Lengkap Guru',
+            'Email',
             'Kata Sandi',
-            'Jenis Kelamin (Laki-laki/Perempuan)',
+            'Jenis Kelamin',
             'No Telepon',
             'Mata Pelajaran Utama',
-            'Status Kepegawaian (pns/pppk/honorer/gtt/ptt/kontrak)',
-            'Status (active/inactive/retired) *',
-            'Tanggal Mulai Bertugas (YYYY-MM-DD)',
+            'Status Kepegawaian',
+            'Status',
+            'Tanggal Mulai Bertugas',
             'Tingkat Pendidikan',
             'Universitas',
         ];
@@ -44,14 +44,8 @@ class TeacherImportTemplateExport implements FromArray, WithHeadings, WithTitle,
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA GURU — SIMPAD');
-        $sheet->setCellValue('A2', 'Keterangan: Kolom bertanda (*) wajib diisi. Baris contoh di bawah dapat dihapus sebelum upload.');
-
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
-        $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(10);
-
         return [
-            3 => [
+            1 => [
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
