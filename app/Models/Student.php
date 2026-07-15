@@ -31,6 +31,67 @@ class Student extends Model
         'status',
     ];
 
+    protected static function booted()
+    {
+        static::deleted(function ($student) {
+            // Find student's own login user record
+            $studentUser = \App\Models\User::withTrashed()
+                ->where('role', 'student')
+                ->where(function ($q) use ($student) {
+                    $q->where('email', $student->nis)
+                      ->orWhere('name', $student->name);
+                })->first();
+
+            if ($studentUser) {
+                if ($student->isForceDeleting()) {
+                    $studentUser->forceDelete();
+                } else {
+                    $studentUser->delete();
+                }
+            }
+
+            // Find parent user and delete if orphaned (i.e. has no other active students)
+            if ($student->parent_user_id) {
+                $parent = $student->parent()->withTrashed()->first();
+                if ($parent) {
+                    $hasOtherStudents = self::where('parent_user_id', $student->parent_user_id)
+                        ->where('id', '!=', $student->id)
+                        ->exists();
+
+                    if (!$hasOtherStudents) {
+                        if ($student->isForceDeleting()) {
+                            $parent->forceDelete();
+                        } else {
+                            $parent->delete();
+                        }
+                    }
+                }
+            }
+        });
+
+        static::restored(function ($student) {
+            // Restore student's own user record
+            $studentUser = \App\Models\User::onlyTrashed()
+                ->where('role', 'student')
+                ->where(function ($q) use ($student) {
+                    $q->where('email', $student->nis)
+                      ->orWhere('name', $student->name);
+                })->first();
+
+            if ($studentUser) {
+                $studentUser->restore();
+            }
+
+            // Restore parent user if soft-deleted
+            if ($student->parent_user_id) {
+                $parent = $student->parent()->onlyTrashed()->first();
+                if ($parent) {
+                    $parent->restore();
+                }
+            }
+        });
+    }
+
     /**
      * Relasi ke School
      */

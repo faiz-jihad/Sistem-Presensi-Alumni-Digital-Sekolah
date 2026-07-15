@@ -35,7 +35,12 @@ class AppServiceProvider extends ServiceProvider
 
         // Configure FileUpload placeholder globally
         \Filament\Forms\Components\FileUpload::configureUsing(function (\Filament\Forms\Components\FileUpload $component) {
-            $component->placeholder('<span class="filepond--label-action">unggah</span> atau drop file anda');
+            $component->placeholder('<span class="filepond--label-action">unggah</span> or drop file anda');
+        });
+
+        // Configure Table search debounce globally to 2 seconds
+        \Filament\Tables\Table::configureUsing(function (\Filament\Tables\Table $table) {
+            $table->searchDebounce('2000ms');
         });
 
         // ─── Policy Registration ────────────────────────────────────────────
