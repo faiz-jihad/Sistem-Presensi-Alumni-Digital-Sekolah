@@ -235,18 +235,27 @@ class AttendanceService
         $this->triggerWhatsAppNotification($student, $attendance);
         $this->sendAttendancePushNotification($student, $attendance);
 
-        // Kirim notifikasi Web Push & Database ke Guru yang mengajar
+        // Simpan langsung agar notifikasi guru tidak bergantung pada queue worker.
         try {
             $teacherUser = $session->openedBy ?? ($session->teacher?->user ?? null);
             if ($teacherUser) {
                 $statusLabel = $status === 'late' ? 'Terlambat' : 'Hadir';
-                $teacherUser->notify(new \App\Notifications\SiswaPresensiNotification(
-                    "Presensi Masuk Siswa 🔔",
-                    "Siswa {$student->name} telah mencatat kehadiran ({$statusLabel}) di kelas Anda."
-                ));
+                $this->storeAppNotification(
+                    $teacherUser,
+                    'Siswa Scan QR',
+                    "Siswa {$student->name} telah mencatat kehadiran ({$statusLabel}) di kelas Anda.",
+                    [
+                        'type' => 'student_attendance_scanned',
+                        'attendance_id' => $attendance->id,
+                        'student_id' => $student->id,
+                        'student_name' => $student->name,
+                        'status' => $status,
+                        'status_label' => $statusLabel,
+                    ]
+                );
             }
         } catch (\Throwable $e) {
-            Log::warning('Gagal mengirim Web Push ke guru: ' . $e->getMessage());
+            Log::warning('Gagal menyimpan notifikasi presensi guru: ' . $e->getMessage());
         }
 
         return $attendance;

@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
                         'notification_id' => $notification->id,
                         'url' => '/admin',
                     ]));
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     logger()->error('Failed to send Web Push notification from DatabaseNotification observer: ' . $e->getMessage());
                 }
 
@@ -85,7 +85,7 @@ class AppServiceProvider extends ServiceProvider
                             'result' => $result,
                         ]);
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     logger()->error('Failed to send FCM push notification from DatabaseNotification observer: ' . $e->getMessage());
                 }
             }

@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Models\User;
 use App\Services\AttendanceService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,8 +33,18 @@ function makeQrAttendanceFixture(array $sessionOverrides = []): array
         'npsn' => '12345678',
     ]);
 
+    $teacherUser = User::create([
+        'name' => 'Guru Test',
+        'email' => 'guru.test@example.com',
+        'password' => 'password123',
+        'role' => 'teacher',
+        'school_id' => $school->id,
+        'status' => 'active',
+    ]);
+
     $teacher = Teacher::create([
         'school_id' => $school->id,
+        'user_id' => $teacherUser->id,
         'nip' => '123456789012345678',
         'name' => 'Guru Test',
         'employment_status' => 'honorer',
@@ -94,6 +105,7 @@ function makeQrAttendanceFixture(array $sessionOverrides = []): array
         'class_id' => $class->id,
         'subject_id' => $subject->id,
         'teacher_id' => $teacher->id,
+        'opened_by' => $teacherUser->id,
         'class_hour_id' => $classHour->id,
         'semester_id' => $semester->id,
         'day' => 'saturday',
@@ -122,7 +134,7 @@ function makeQrAttendanceFixture(array $sessionOverrides = []): array
         'status' => 'active',
     ]);
 
-    return [$session, $student];
+    return [$session, $student, $teacherUser];
 }
 
 test('qr attendance can be recorded once per student per day', function () {
@@ -157,4 +169,19 @@ test('qr attendance is rejected after the session end time', function () {
         ->toThrow(Exception::class, 'Sesi presensi ini sudah berakhir.');
 
     expect(StudentAttendance::where('student_id', $student->id)->count())->toBe(0);
+});
+
+test('qr attendance stores teacher notification without queue worker', function () {
+    [$session, $student, $teacherUser] = makeQrAttendanceFixture();
+
+    app(AttendanceService::class)
+        ->recordSelfPresence($student->id, 'session_' . $session->id);
+
+    $notification = $teacherUser->notifications()
+        ->get()
+        ->first(fn ($item) => ($item->data['title'] ?? null) === 'Siswa Scan QR');
+
+    expect($notification)->not->toBeNull()
+        ->and($notification->data['title'] ?? null)->toBe('Siswa Scan QR')
+        ->and($notification->data['data']['student_id'] ?? null)->toBe($student->id);
 });

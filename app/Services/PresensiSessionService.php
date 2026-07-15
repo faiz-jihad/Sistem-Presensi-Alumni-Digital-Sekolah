@@ -614,7 +614,8 @@ class PresensiSessionService
             $this->triggerWhatsAppNotification($student, $attendance);
             $this->sendAttendancePushNotification($student, $attendance);
 
-            $teacherUser = $session->teacher?->user;
+            $session->loadMissing(['teacher.user', 'openedBy', 'class', 'schedule.class']);
+            $teacherUser = $session->teacher?->user ?? $session->openedBy;
             if ($teacherUser) {
                 $className = $session->class?->name ?? $session->schedule?->class?->name ?? 'Kelas';
                 $statusLabel = $status->value === AttendanceStatus::Late->value ? 'Terlambat' : 'Hadir';
@@ -916,7 +917,7 @@ class PresensiSessionService
         }
 
         try {
-            $session->loadMissing(['class', 'schedule.class', 'teacher.user']);
+            $session->loadMissing(['class', 'schedule.class', 'teacher.user', 'openedBy']);
             $className = $session->class?->name ?? $session->schedule?->class?->name ?? 'Kelas';
             $schoolId = $session->class?->school_id ?? $session->schedule?->class?->school_id;
             $dateText = Carbon::parse($session->date)->translatedFormat('d F Y');
@@ -937,6 +938,10 @@ class PresensiSessionService
 
             if ($session->teacher?->user) {
                 $recipients->push($session->teacher->user);
+            }
+
+            if ($session->openedBy) {
+                $recipients->push($session->openedBy);
             }
 
             $recipients = $recipients->unique('id')->values();

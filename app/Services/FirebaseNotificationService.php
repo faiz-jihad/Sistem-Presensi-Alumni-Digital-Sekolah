@@ -76,7 +76,7 @@ class FirebaseNotificationService
             $base64UrlSignature = $this->base64UrlEncode($signature);
             $jwt = $signatureInput . '.' . $base64UrlSignature;
 
-            $response = Http::asForm()->post($tokenUri, [
+            $response = Http::asForm()->timeout(15)->retry(2, 250)->post($tokenUri, [
                 'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
                 'assertion' => $jwt
             ]);
@@ -98,6 +98,11 @@ class FirebaseNotificationService
         $tokens = $user->fcmTokens()->pluck('token')->toArray();
 
         if (empty($tokens)) {
+            logger()->warning('FCM push skipped because user has no device token.', [
+                'user_id' => $user->id,
+                'role' => $user->role,
+            ]);
+
             return ['success' => false, 'message' => 'No active device tokens found for this user.'];
         }
 
@@ -136,7 +141,7 @@ class FirebaseNotificationService
                     'android' => [
                         'priority' => 'high',
                         'notification' => [
-                            'channel_id' => 'attendance_notifications_v2',
+                            'channel_id' => 'attendance_notifications_v3',
                             'sound' => 'bell',
                             'default_vibrate_timings' => true,
                         ],
@@ -163,7 +168,13 @@ class FirebaseNotificationService
                 $payload['message']['data'] = $stringData;
             }
 
-            $response = Http::withToken($accessToken)->post($url, $payload);
+            $payload['message']['data']['title'] = $title;
+            $payload['message']['data']['body'] = $body;
+
+            $response = Http::withToken($accessToken)
+                ->timeout(15)
+                ->retry(2, 250)
+                ->post($url, $payload);
 
             if ($response->successful()) {
                 $successCount++;
@@ -171,8 +182,10 @@ class FirebaseNotificationService
                 $failedCount++;
                 logger()->warning('FCM Notification failed for token: ' . $token . ' Response: ' . $response->body());
                 
-                // Jika token tidak valid / sudah dihapus di konsol Firebase, bersihkan dari DB
-                if ($response->status() === 400 || $response->status() === 404) {
+                $fcmErrorCode = $response->json('error.details.0.errorCode');
+
+                // Hanya hapus token yang benar-benar sudah tidak terdaftar.
+                if ($response->status() === 404 || $fcmErrorCode === 'UNREGISTERED') {
                     FcmToken::where('token', $token)->delete();
                 }
             }

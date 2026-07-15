@@ -1,2 +1,16 @@
 <?php
-// Empty migration - NISN and NIP size constraints are handled via auto-truncating in import classes.
+
+use Illuminate\Database\Migrations\Migration;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        // NISN and NIP size constraints are handled by the import classes.
+    }
+
+    public function down(): void
+    {
+        // No schema changes to reverse.
+    }
+};
