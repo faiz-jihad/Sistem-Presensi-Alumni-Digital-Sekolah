@@ -16,35 +16,41 @@ class AlumniObserver
             return;
         }
 
-        try {
-            $user = $alumni->user;
-
-            if (! $user) {
-                return;
+        if ($alumni->verification_status === 'verified') {
+            if ($alumni->user) {
+                try {
+                    Notification::make()
+                        ->title('Akun Alumni Terverifikasi')
+                        ->body('Selamat! Akun alumni Anda telah terverifikasi oleh Admin. Anda sekarang dapat mengakses seluruh fitur alumni.')
+                        ->success()
+                        ->sendToDatabase($alumni->user);
+                } catch (\Throwable $exception) {
+                    Log::error('Gagal menyimpan notifikasi verifikasi alumni.', [
+                        'alumni_id' => $alumni->id,
+                        'error' => $exception->getMessage(),
+                    ]);
+                }
             }
 
-            if ($alumni->verification_status === 'verified') {
-                Notification::make()
-                    ->title('Akun Alumni Terverifikasi')
-                    ->body('Selamat! Akun alumni Anda telah terverifikasi oleh Admin. Anda sekarang dapat mengakses seluruh fitur alumni.')
-                    ->success()
-                    ->sendToDatabase($user);
+            $this->sendVerifiedEmail($alumni);
 
-                $this->sendVerifiedEmail($alumni);
-            } elseif ($alumni->verification_status === 'rejected') {
+            return;
+        }
+
+        if ($alumni->verification_status === 'rejected' && $alumni->user) {
+            try {
                 $reason = $alumni->verification_notes ?? 'Tidak ada alasan khusus yang diberikan.';
-
                 Notification::make()
                     ->title('Pendaftaran Alumni Ditolak')
                     ->body("Maaf, pendaftaran alumni Anda ditolak. Alasan: {$reason}")
                     ->danger()
-                    ->sendToDatabase($user);
+                    ->sendToDatabase($alumni->user);
+            } catch (\Throwable $exception) {
+                Log::error('Gagal menyimpan notifikasi penolakan alumni.', [
+                    'alumni_id' => $alumni->id,
+                    'error' => $exception->getMessage(),
+                ]);
             }
-        } catch (\Throwable $exception) {
-            Log::error('Gagal memproses notifikasi verifikasi alumni.', [
-                'alumni_id' => $alumni->id,
-                'error' => $exception->getMessage(),
-            ]);
         }
     }
 
@@ -63,6 +69,11 @@ class AlumniObserver
 
         try {
             Mail::to($recipientEmail)->send(new AlumniAccountVerifiedMail($alumni));
+
+            Log::info('Email verifikasi akun alumni berhasil dikirim.', [
+                'alumni_id' => $alumni->id,
+                'email' => $recipientEmail,
+            ]);
         } catch (\Throwable $exception) {
             Log::error('Gagal mengirim email verifikasi akun alumni.', [
                 'alumni_id' => $alumni->id,

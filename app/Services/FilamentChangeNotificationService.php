@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -11,7 +12,11 @@ class FilamentChangeNotificationService
 {
     public function notifyModelChanged(Model $model, string $event): void
     {
-        if (! app()->runningInConsole() && ! auth()->check()) {
+        if (! auth()->check()) {
+            return;
+        }
+
+        if ($this->shouldIgnoreTechnicalUpdate($model, $event)) {
             return;
         }
 
@@ -36,7 +41,7 @@ class FilamentChangeNotificationService
             default => $notification->info(),
         };
 
-        $notification->sendToDatabase($recipients);
+        $this->sendImmediately($notification, $recipients);
     }
 
     public function sendToUsers(iterable $users, string $title, string $body, string $status = 'info'): void
@@ -58,7 +63,33 @@ class FilamentChangeNotificationService
             default => $notification->info(),
         };
 
-        $notification->sendToDatabase($recipients);
+        $this->sendImmediately($notification, $recipients);
+    }
+
+    private function sendImmediately(Notification $notification, iterable $recipients): void
+    {
+        collect($recipients)
+            ->filter(fn ($recipient) => $recipient instanceof Model || $recipient instanceof Authenticatable)
+            ->each(fn ($recipient) => $recipient->notifyNow($notification->toDatabase()));
+    }
+
+    private function shouldIgnoreTechnicalUpdate(Model $model, string $event): bool
+    {
+        if ($event !== 'updated' || ! $model instanceof User) {
+            return false;
+        }
+
+        $businessChanges = collect(array_keys($model->getChanges()))
+            ->reject(fn (string $attribute) => in_array($attribute, [
+                'updated_at',
+                'remember_token',
+                'last_login_at',
+                'last_login_ip',
+                'google_id',
+                'avatar_url',
+            ], true));
+
+        return $businessChanges->isEmpty();
     }
 
     private function adminRecipientsFor(Model $model): Collection

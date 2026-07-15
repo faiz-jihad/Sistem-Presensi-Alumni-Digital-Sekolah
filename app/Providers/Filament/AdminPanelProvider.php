@@ -369,12 +369,4 @@ class AdminPanelProvider extends PanelProvider
                     ->icon('heroicon-o-user'),
             ]);
     }
-
-    public function boot(): void
-    {
-        \Filament\Support\Facades\FilamentView::registerRenderHook(
-            'panels::body.end',
-            fn (): string => view('partials.webpush-subscribe')->render(),
-        );
-    }
 }

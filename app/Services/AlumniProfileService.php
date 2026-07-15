@@ -15,9 +15,7 @@ class AlumniProfileService
     public function updateProfile(Alumni $alumni, User $user, array $data): Alumni
     {
         return DB::transaction(function () use ($alumni, $user, $data) {
-            AlumniProfile::updateOrCreate(
-                ['alumni_id' => $alumni->id],
-                array_intersect_key($data, array_flip([
+            $profileData = array_intersect_key($data, array_flip([
                     'current_status',
                     'university_name',
                     'study_program',
@@ -28,7 +26,12 @@ class AlumniProfileService
                     'province',
                     'whatsapp',
                     'linkedin_url',
-                ]))
+                ]));
+            $profileData['profile_completed_at'] = now();
+
+            AlumniProfile::updateOrCreate(
+                ['alumni_id' => $alumni->id],
+                $profileData
             );
 
             // Update nomor HP user jika whatsapp diisi

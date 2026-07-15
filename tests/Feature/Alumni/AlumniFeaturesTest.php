@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\School;
+use App\Models\Alumni;
 use App\Models\User;
 use App\Models\AlumniEvent;
 use App\Models\JobVacancy;
@@ -16,6 +17,87 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 uses(RefreshDatabase::class);
+
+test('mengirim email ketika alumni diverifikasi admin', function () {
+    Mail::fake();
+
+    $school = School::create([
+        'name' => 'SMK Negeri 1 Jakarta',
+        'npsn' => '12345678',
+        'status' => 'active',
+    ]);
+    $user = User::create([
+        'name' => 'Alumni User',
+        'email' => 'akun-alumni@example.com',
+        'password' => bcrypt('password'),
+        'role' => 'alumni',
+        'school_id' => $school->id,
+        'status' => 'active',
+    ]);
+    $admin = User::create([
+        'name' => 'Admin Sekolah',
+        'email' => 'admin@example.com',
+        'password' => bcrypt('password'),
+        'role' => 'admin',
+        'school_id' => $school->id,
+        'status' => 'active',
+    ]);
+    $alumni = Alumni::create([
+        'school_id' => $school->id,
+        'user_id' => $user->id,
+        'nisn' => '1000000001',
+        'name' => 'Alumni User',
+        'gender' => 'male',
+        'graduation_year' => 2026,
+        'class_name' => 'XII RPL 1',
+        'email' => 'alumni@example.com',
+        'verification_status' => 'pending',
+    ]);
+
+    app(\App\Services\AlumniVerificationService::class)
+        ->approveAlumni($alumni, $admin);
+
+    Mail::assertSent(\App\Mail\AlumniAccountVerifiedMail::class, function ($mail) use ($alumni) {
+        return $mail->hasTo('alumni@example.com') && $mail->alumni->is($alumni);
+    });
+});
+
+test('menggunakan email akun ketika email alumni kosong', function () {
+    Mail::fake();
+
+    $school = School::create([
+        'name' => 'SMK Negeri 2 Jakarta',
+        'npsn' => '87654321',
+        'status' => 'active',
+    ]);
+    $user = User::create([
+        'name' => 'Alumni Kedua',
+        'email' => 'fallback@example.com',
+        'password' => bcrypt('password'),
+        'role' => 'alumni',
+        'school_id' => $school->id,
+        'status' => 'active',
+    ]);
+    $alumni = Alumni::create([
+        'school_id' => $school->id,
+        'user_id' => $user->id,
+        'nisn' => '1000000002',
+        'name' => 'Alumni Kedua',
+        'gender' => 'female',
+        'graduation_year' => 2026,
+        'class_name' => 'XII RPL 2',
+        'verification_status' => 'pending',
+    ]);
+
+    $alumni->update([
+        'verification_status' => 'verified',
+        'verified_at' => now(),
+    ]);
+
+    Mail::assertSent(\App\Mail\AlumniAccountVerifiedMail::class, function ($mail) use ($alumni) {
+        return $mail->hasTo('fallback@example.com') && $mail->alumni->is($alumni);
+    });
+});
 
 test('mengirim email ketika pengajuan kegiatan alumni disetujui', function () {
     Mail::fake();

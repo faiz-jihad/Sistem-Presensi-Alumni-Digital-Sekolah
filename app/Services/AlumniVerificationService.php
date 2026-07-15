@@ -52,14 +52,6 @@ class AlumniVerificationService
                 'verification_notes'  => null,
             ]);
 
-            if ($alumni->user) {
-                Notification::make()
-                    ->title('Akun Anda Telah Diverifikasi ✅')
-                    ->body("Selamat! Data alumni Anda telah disetujui oleh admin. Anda kini dapat mengakses semua fitur alumni.")
-                    ->success()
-                    ->sendToDatabase($alumni->user);
-            }
-
             return $alumni;
         });
     }
@@ -80,14 +72,6 @@ class AlumniVerificationService
                 'verified_at'         => now(),
                 'verification_notes'  => $reason ?? 'Tidak ada alasan yang diberikan.',
             ]);
-
-            if ($alumni->user) {
-                Notification::make()
-                    ->title('Pendaftaran Alumni Ditolak ❌')
-                    ->body("Maaf, data alumni Anda ditolak. Alasan: " . ($reason ?? 'Tidak ada alasan yang diberikan.') . ". Silakan hubungi admin sekolah untuk informasi lebih lanjut.")
-                    ->danger()
-                    ->sendToDatabase($alumni->user);
-            }
 
             return $alumni;
         });

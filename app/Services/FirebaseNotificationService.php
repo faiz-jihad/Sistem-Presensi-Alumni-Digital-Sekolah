@@ -157,6 +157,18 @@ class FirebaseNotificationService
                             ],
                         ],
                     ],
+                    'webpush' => [
+                        'headers' => [
+                            'Urgency' => 'high',
+                        ],
+                        'notification' => [
+                            'icon' => url('/favicon.ico'),
+                            'badge' => url('/favicon.ico'),
+                            'tag' => isset($data['notification_id'])
+                                ? 'simpad-' . $data['notification_id']
+                                : 'simpad-notification',
+                        ],
+                    ],
                 ]
             ];
 
@@ -173,7 +185,7 @@ class FirebaseNotificationService
 
             $response = Http::withToken($accessToken)
                 ->timeout(15)
-                ->retry(2, 250)
+                ->retry(2, 250, throw: false)
                 ->post($url, $payload);
 
             if ($response->successful()) {

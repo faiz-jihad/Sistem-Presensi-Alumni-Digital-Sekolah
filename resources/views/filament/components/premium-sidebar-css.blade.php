@@ -345,11 +345,11 @@
         position: fixed;
         top: 4.75rem;
         right: 1.5rem;
-        width: 420px;
-        max-width: 420px;
+        width: 400px;
+        max-width: 400px;
         height: auto;
-        max-height: 75vh;
-        border-radius: 12px;
+        max-height: min(680px, calc(100vh - 6.5rem));
+        border-radius: 14px;
         border: 1px solid rgba(226, 232, 240, 0.8);
         background: #ffffff;
         box-shadow: 
@@ -405,6 +405,18 @@
             bottom: 0.75rem;
             border-radius: 14px;
         }
+
+        .fi-no-database .fi-modal-content,
+        [data-fi-modal-id="database-notifications"] .fi-modal-content {
+            max-height: min(60vh, 420px) !important;
+        }
+
+        .fi-no-database .fi-no-notification,
+        [data-fi-modal-id="database-notifications"] .fi-no-notification {
+            grid-template-columns: 34px minmax(0, 1fr) 22px;
+            gap: 10px;
+            padding: 12px;
+        }
     }
 
     /* ── 2. Panel Header ── */
@@ -414,7 +426,7 @@
         flex-shrink: 0;
         border-bottom: 1px solid rgba(226, 232, 240, 0.8);
         background: #ffffff;
-        padding: 16px;
+        padding: 18px 48px 14px 18px;
         box-sizing: border-box;
     }
 
@@ -429,7 +441,7 @@
     [data-fi-modal-id="database-notifications"] .fi-modal-header > div:first-child {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
         width: 100%;
     }
 
@@ -440,7 +452,7 @@
         align-items: center;
         gap: 6px;
         color: #0f172a;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 700;
         letter-spacing: -0.01em;
         line-height: 1.2;
@@ -455,19 +467,7 @@
     /* Count badge */
     .fi-no-database .fi-modal-header .fi-modal-heading .fi-badge,
     [data-fi-modal-id="database-notifications"] .fi-modal-header .fi-modal-heading .fi-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(59, 130, 246, 0.08);
-        color: #2563eb;
-        font-size: 10px;
-        font-weight: 700;
-        padding: 1px 6px;
-        border-radius: 999px;
-        border: 1px solid rgba(59, 130, 246, 0.12);
-        min-width: 18px;
-        height: 18px;
-        box-shadow: none;
+        display: none;
     }
 
     .dark .fi-no-database .fi-modal-header .fi-modal-heading .fi-badge,
@@ -481,16 +481,16 @@
     .fi-no-database .fi-modal-close-btn,
     [data-fi-modal-id="database-notifications"] .fi-modal-close-btn {
         position: absolute;
-        right: 14px;
-        top: 14px;
+        right: 16px;
+        top: 16px;
         z-index: 10;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        opacity: 0.5;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        opacity: 0.6;
         cursor: pointer;
         transition: opacity 120ms ease, background-color 120ms ease;
         background: transparent;
@@ -513,7 +513,7 @@
     [data-fi-modal-id="database-notifications"] .fi-ac {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
     }
 
     .fi-no-database .fi-ac a,
@@ -524,9 +524,9 @@
         align-items: center;
         justify-content: center;
         gap: 4px;
-        height: 26px;
-        padding: 0 10px;
-        font-size: 11px;
+        height: 30px;
+        padding: 0 11px;
+        font-size: 12px;
         font-weight: 600;
         border-radius: 6px;
         transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
@@ -617,12 +617,12 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
         padding: 12px 0; /* Horizontal padding is 0 to let the scrollbar sit cleanly at the right edge */
         box-sizing: border-box;
         scrollbar-width: thin;
         scrollbar-color: rgba(156, 163, 175, 0.2) transparent;
-        max-height: 300px !important; /* Limits the view dynamically to ~3 notifications, then scrolls */
+        max-height: 420px !important;
     }
 
     .fi-no-database .fi-modal-content::-webkit-scrollbar,
@@ -647,7 +647,7 @@
     [data-fi-modal-id="database-notifications"] .fi-no-notification-read-ctn,
     [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn {
         width: auto;
-        margin: 0 16px;
+        margin: 0 12px;
         box-sizing: border-box;
         flex-shrink: 0;
     }
@@ -656,12 +656,12 @@
     .fi-no-database .fi-no-notification,
     [data-fi-modal-id="database-notifications"] .fi-no-notification {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: 36px minmax(0, 1fr) 24px;
         gap: 12px;
         align-items: start;
         width: 100%;
-        padding: 16px;
-        border-radius: 12px;
+        padding: 14px;
+        border-radius: 10px;
         box-sizing: border-box;
         border: 1px solid rgba(226, 232, 240, 0.6);
         transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
@@ -671,15 +671,15 @@
     /* UNREAD Card Style (Soft blue background like GitHub/Vercel) */
     .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification,
     [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn .fi-no-notification {
-        background-color: #eff6ff;
-        border-color: rgba(59, 130, 246, 0.12);
-        box-shadow: 0 1px 2px rgba(59, 130, 246, 0.02);
+        background-color: #f8fbff;
+        border-color: #bfdbfe;
+        box-shadow: inset 3px 0 0 #3b82f6;
     }
 
     .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification:hover,
     [data-fi-modal-id="database-notifications"] .fi-no-notification-unread-ctn .fi-no-notification:hover {
-        background-color: #e0f2fe;
-        border-color: rgba(59, 130, 246, 0.22);
+        background-color: #eff6ff;
+        border-color: #93c5fd;
     }
 
     .dark .fi-no-database .fi-no-notification-unread-ctn .fi-no-notification,
@@ -722,13 +722,11 @@
     /* ── 7. Card Content Elements ── */
 
     /* Left status icon container */
-    .fi-no-database .fi-no-notification .fi-icon-btn,
     .fi-no-database .fi-no-notification .fi-no-notification-icon,
-    [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-icon-btn,
     [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-no-notification-icon {
         flex-shrink: 0;
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -737,9 +735,7 @@
         color: #475569;
     }
 
-    .dark .fi-no-database .fi-no-notification .fi-icon-btn,
     .dark .fi-no-database .fi-no-notification .fi-no-notification-icon,
-    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-icon-btn,
     .dark [data-fi-modal-id="database-notifications"] .fi-no-notification .fi-no-notification-icon {
         background-color: rgba(255, 255, 255, 0.05);
         color: #94a3b8;
@@ -750,20 +746,41 @@
     [data-fi-modal-id="database-notifications"] .fi-no-notification > div:not(:last-child):not(.fi-icon-btn):not(.fi-no-notification-icon) {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         gap: 4px;
         min-width: 0; /* Prevents text overflow breaking layouts */
+        text-align: left;
+    }
+
+    .fi-no-database .fi-no-notification-main,
+    .fi-no-database .fi-no-notification-text,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-main,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-text {
+        width: 100%;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .fi-no-database .fi-no-notification-text,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
     }
 
     /* Title text styling */
     .fi-no-database .fi-no-notification-title,
     [data-fi-modal-id="database-notifications"] .fi-no-notification-title {
         color: #1e293b;
-        font-size: 13.5px;
-        font-weight: 600;
+        width: 100%;
+        font-size: 14px;
+        font-weight: 700;
         line-height: 1.4;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: normal;
+        text-align: left;
     }
 
     .dark .fi-no-database .fi-no-notification-title,
@@ -781,6 +798,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: normal;
+        order: 2;
+        text-align: left;
     }
 
     .dark .fi-no-database .fi-no-notification-body,
@@ -796,6 +815,8 @@
         font-weight: 500;
         margin: 0;
         display: block;
+        order: 3;
+        text-align: left;
     }
 
     .dark .fi-no-database .fi-no-notification-date,
@@ -804,8 +825,8 @@
     }
 
     /* Clean Card Dismiss Button (✕) */
-    .fi-no-database .fi-no-notification button[wire\:click],
-    [data-fi-modal-id="database-notifications"] .fi-no-notification button[wire\:click] {
+    .fi-no-database .fi-no-notification-close-btn,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-close-btn {
         grid-column: 3;
         align-self: start;
         width: 20px;
@@ -817,32 +838,32 @@
         border: none;
         background: transparent;
         cursor: pointer;
-        opacity: 0;
-        transform: scale(0.9);
+        opacity: 0.5;
+        transform: scale(1);
         transition: opacity 120ms ease, transform 120ms ease, background-color 120ms ease;
     }
 
     /* Show dismiss button on hover of the card */
-    .fi-no-database .fi-no-notification:hover button[wire\:click],
-    [data-fi-modal-id="database-notifications"] .fi-no-notification:hover button[wire\:click] {
-        opacity: 0.5;
+    .fi-no-database .fi-no-notification:hover .fi-no-notification-close-btn,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification:hover .fi-no-notification-close-btn {
+        opacity: 0.75;
         transform: scale(1);
     }
 
-    .fi-no-database .fi-no-notification button[wire\:click]:hover,
-    [data-fi-modal-id="database-notifications"] .fi-no-notification button[wire\:click]:hover {
+    .fi-no-database .fi-no-notification-close-btn:hover,
+    [data-fi-modal-id="database-notifications"] .fi-no-notification-close-btn:hover {
         opacity: 1;
         background-color: rgba(15, 23, 42, 0.06);
     }
 
-    .dark .fi-no-database .fi-no-notification button[wire\:click]:hover,
-    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification button[wire\:click]:hover {
+    .dark .fi-no-database .fi-no-notification-close-btn:hover,
+    .dark [data-fi-modal-id="database-notifications"] .fi-no-notification-close-btn:hover {
         background-color: rgba(255, 255, 255, 0.08);
     }
 
     /* ── 8. Empty State Design ── */
-    .fi-no-database .fi-modal-content > div:only-child,
-    [data-fi-modal-id="database-notifications"] .fi-modal-content > div:only-child {
+    .fi-no-database .fi-modal-content > div:only-child:not(.fi-no-notification-read-ctn):not(.fi-no-notification-unread-ctn),
+    [data-fi-modal-id="database-notifications"] .fi-modal-content > div:only-child:not(.fi-no-notification-read-ctn):not(.fi-no-notification-unread-ctn) {
         display: flex;
         flex-direction: column;
         align-items: center;

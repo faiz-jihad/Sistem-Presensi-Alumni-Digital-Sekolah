@@ -52,13 +52,23 @@ Route::post('/admin/device-token', function (Illuminate\Http\Request $request) {
         return response()->json(['message' => 'Unauthenticated.'], 401);
     }
 
-    $fcmToken = \App\Models\FcmToken::updateOrCreate(
-        ['token' => $request->token],
-        [
-            'user_id' => auth()->id(),
-            'device_type' => 'web',
-        ]
-    );
+    $fcmToken = \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+        $fcmToken = \App\Models\FcmToken::updateOrCreate(
+            ['token' => $request->token],
+            [
+                'user_id' => auth()->id(),
+                'device_type' => 'web',
+            ]
+        );
+
+        \App\Models\FcmToken::query()
+            ->where('user_id', auth()->id())
+            ->where('device_type', 'web')
+            ->whereKeyNot($fcmToken->getKey())
+            ->delete();
+
+        return $fcmToken;
+    });
 
     return response()->json([
         'success' => true,

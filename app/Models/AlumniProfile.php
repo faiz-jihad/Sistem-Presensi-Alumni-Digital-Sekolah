@@ -24,6 +24,11 @@ class AlumniProfile extends Model
         'province',
         'whatsapp',
         'linkedin_url',
+        'profile_completed_at',
+    ];
+
+    protected $casts = [
+        'profile_completed_at' => 'datetime',
     ];
 
     public function alumni(): BelongsTo

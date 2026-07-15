@@ -20,9 +20,9 @@ class UpdateAlumniProfileRequest extends FormRequest
             'company_name'    => 'nullable|required_if:current_status,working,studying_working|string|max:255',
             'job_position'    => 'nullable|required_if:current_status,working,studying_working|string|max:255',
             'business_name'   => 'nullable|required_if:current_status,entrepreneur|string|max:255',
-            'city'            => 'nullable|string|max:100',
-            'province'        => 'nullable|string|max:100',
-            'whatsapp'        => 'nullable|string|max:20',
+            'city'            => 'required|string|max:100',
+            'province'        => 'required|string|max:100',
+            'whatsapp'        => 'required|string|max:20',
             'linkedin_url'    => 'nullable|url|max:255',
         ];
     }
@@ -37,6 +37,9 @@ class UpdateAlumniProfileRequest extends FormRequest
             'company_name.required_if'     => 'Nama perusahaan wajib diisi jika status bekerja aktif.',
             'job_position.required_if'     => 'Posisi pekerjaan wajib diisi jika status bekerja aktif.',
             'business_name.required_if'    => 'Nama usaha wajib diisi jika status wirausaha aktif.',
+            'city.required'                 => 'Kota atau kabupaten wajib diisi.',
+            'province.required'             => 'Provinsi wajib diisi.',
+            'whatsapp.required'             => 'Nomor WhatsApp wajib diisi.',
             'linkedin_url.url'             => 'Format URL LinkedIn tidak valid.',
         ];
     }

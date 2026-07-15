@@ -1,10 +1,7 @@
-// Import the Firebase scripts inside the service worker
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
+importScripts('/js/core-app.js');
+importScripts('/js/core-msg.js');
 
-// Parse Firebase configuration dynamically from query parameters passed during registration
-const urlParams = new URLSearchParams(location.search);
-
+const urlParams = new URLSearchParams(self.location.search);
 const firebaseConfig = {
     apiKey: urlParams.get('apiKey'),
     authDomain: urlParams.get('authDomain'),
@@ -14,22 +11,57 @@ const firebaseConfig = {
     appId: urlParams.get('appId'),
 };
 
-// Initialize the Firebase app in the service worker
 firebase.initializeApp(firebaseConfig);
-
-// Retrieve an instance of Firebase Cloud Messaging
 const messaging = firebase.messaging();
 
-// Handle background messages
-messaging.onBackgroundMessage((payload) => {
-    console.log('[firebase-messaging-sw.js] Received background message: ', payload);
-    
-    const notificationTitle = payload.notification?.title || payload.data?.title || 'Notifikasi Baru';
-    const notificationOptions = {
-        body: payload.notification?.body || payload.data?.body || '',
-        icon: '/favicon.ico',
-        data: payload.data || {}
-    };
+self.addEventListener('install', function () {
+    self.skipWaiting();
+});
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+self.addEventListener('activate', function (event) {
+    event.waitUntil(self.clients.claim());
+});
+
+messaging.onBackgroundMessage(function (payload) {
+    if (payload.notification) return;
+
+    const data = payload.data || {};
+    const title = data.title || 'Notifikasi Baru';
+
+    self.registration.showNotification(title, {
+        body: data.body || '',
+        icon: data.icon || '/favicon.ico',
+        badge: data.badge || '/favicon.ico',
+        tag: data.notification_id
+            ? 'simpad-' + data.notification_id
+            : 'simpad-notification',
+        data: Object.assign({ url: '/admin' }, data),
+    });
+});
+
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+
+    const targetUrl = new URL(
+        event.notification.data && event.notification.data.url
+            ? event.notification.data.url
+            : '/admin',
+        self.location.origin
+    ).href;
+
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then(function (clientList) {
+                for (let index = 0; index < clientList.length; index++) {
+                    const client = clientList[index];
+                    if (client.url === targetUrl && 'focus' in client) {
+                        return client.focus();
+                    }
+                }
+
+                if (self.clients.openWindow) {
+                    return self.clients.openWindow(targetUrl);
+                }
+            })
+    );
 });

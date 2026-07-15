@@ -196,15 +196,6 @@ class AlumniTable
                             'verification_notes'  => null,
                         ]);
 
-                        // Notifikasi ke user alumni di panel
-                        if ($record->user) {
-                            Notification::make()
-                                ->title('Akun Anda Telah Diverifikasi ✅')
-                                ->body("Selamat! Data alumni Anda telah disetujui. Anda kini dapat mengakses semua fitur alumni.")
-                                ->success()
-                                ->sendToDatabase($record->user);
-                        }
-
                         Notification::make()
                             ->title('Alumni berhasil diverifikasi')
                             ->success()
@@ -233,15 +224,6 @@ class AlumniTable
                                 'verified_at'         => now(),
                                 'verification_notes'  => $data['verification_notes'],
                             ]);
-
-                            // Notifikasi ke user alumni di panel
-                            if ($record->user) {
-                                Notification::make()
-                                    ->title('Pendaftaran Alumni Ditolak ❌')
-                                    ->body("Maaf, data Anda ditolak. Alasan: {$data['verification_notes']}. Silakan hubungi admin sekolah.")
-                                    ->danger()
-                                    ->sendToDatabase($record->user);
-                            }
 
                             Notification::make()
                                 ->title('Data alumni berhasil ditolak')
