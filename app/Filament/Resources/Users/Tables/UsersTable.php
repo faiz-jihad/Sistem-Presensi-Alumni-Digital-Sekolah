@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -101,6 +102,9 @@ class UsersTable
                             $query->whereNull('google_id');
                         }
                     }),
+
+                TrashedFilter::make()
+                    ->label('Sampah (Soft Delete)'),
             ])
             ->filtersFormColumns(2)
             ->filtersTriggerAction(fn ($action) => $action

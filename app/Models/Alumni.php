@@ -37,6 +37,24 @@ class Alumni extends Model
         'verified_at' => 'datetime',
     ];
 
+    protected static function booted()
+    {
+        static::deleted(function ($alumni) {
+            $user = $alumni->user()->withTrashed()->first();
+            if ($user) {
+                if ($alumni->isForceDeleting()) {
+                    $user->forceDelete();
+                } else {
+                    $user->delete();
+                }
+            }
+        });
+
+        static::restored(function ($alumni) {
+            $alumni->user()->withTrashed()->first()?->restore();
+        });
+    }
+
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
