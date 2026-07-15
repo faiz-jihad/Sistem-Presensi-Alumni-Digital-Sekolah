@@ -115,7 +115,6 @@ class FilamentChangeNotificationService
             \App\Models\ClassHourPackage::class => 'Paket jam pelajaran',
             \App\Models\Export::class => 'Laporan',
             \App\Models\JobVacancy::class => 'Lowongan kerja',
-            \App\Models\Package::class => 'Paket sekolah',
             \App\Models\PresensiSession::class => 'Sesi presensi',
             \App\Models\Schedule::class => 'Jadwal',
             \App\Models\School::class => 'Sekolah',

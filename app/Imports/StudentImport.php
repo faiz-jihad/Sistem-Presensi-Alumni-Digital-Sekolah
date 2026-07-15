@@ -31,8 +31,8 @@ class StudentImport implements ToCollection, WithHeadingRow, SkipsOnError
     {
         foreach ($rows as $row) {
             // Normalisasi key (lowercase + ganti spasi/strip dengan underscore)
-            $nis    = trim($row['nis'] ?? '');
-            $nisn   = trim($row['nisn'] ?? '');
+            $nis    = str_replace(' ', '', trim($row['nis'] ?? ''));
+            $nisn   = substr(preg_replace('/[^0-9]/', '', trim($row['nisn'] ?? '')), 0, 10);
             $name   = trim($row['nama_lengkap_siswa'] ?? $row['nama'] ?? '');
             $gender = strtolower(trim($row['jenis_kelamin'] ?? ''));
             $gender = in_array($gender, ['laki-laki', 'male', 'l']) ? 'male' : 'female';

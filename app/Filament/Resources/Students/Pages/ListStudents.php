@@ -36,8 +36,17 @@ class ListStudents extends ListRecords
                 ->label('Impor Excel')
                 ->icon('heroicon-o-arrow-up-tray')
                 ->color('warning')
-                ->form([
-                    FileUpload::make('file')
+                ->form(function () {
+                    $fields = [];
+                    if (auth()->user()->isSuperAdmin()) {
+                        $fields[] = \Filament\Forms\Components\Select::make('school_id')
+                            ->label('Pilih Sekolah')
+                            ->options(\App\Models\School::pluck('name', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->required();
+                    }
+                    $fields[] = FileUpload::make('file')
                         ->label('File Excel Siswa')
                         ->acceptedFileTypes([
                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -46,25 +55,17 @@ class ListStudents extends ListRecords
                         ->disk('local')
                         ->directory('imports/students')
                         ->required()
-                        ->helperText('Unggah berkas .xlsx sesuai format template. Kolom wajib: NIS, Nama Lengkap, Jenis Kelamin, Tanggal Lahir, Status.'),
-                ])
+                        ->helperText('Unggah berkas .xlsx sesuai format template. Kolom wajib: NIS, Nama Lengkap, Jenis Kelamin, Tanggal Lahir, Status.');
+                    return $fields;
+                })
                 ->action(function (array $data) {
                     $user = auth()->user();
-                    $schoolId = $user->school_id;
+                    $schoolId = $user->isSuperAdmin() ? ($data['school_id'] ?? null) : $user->school_id;
 
-                    if (!$schoolId && $user->role !== 'super_admin') {
-                        Notification::make()
-                            ->title('Gagal: Sekolah tidak ditemukan')
-                            ->danger()
-                            ->send();
-                        return;
-                    }
-
-                    // Jika super_admin tanpa school, gunakan school pertama (atau bisa ditambahkan select school)
                     if (!$schoolId) {
                         Notification::make()
-                            ->title('Super Admin harus memilih sekolah terlebih dahulu')
-                            ->warning()
+                            ->title('Gagal: Sekolah harus dipilih')
+                            ->danger()
                             ->send();
                         return;
                     }

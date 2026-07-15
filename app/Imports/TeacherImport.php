@@ -27,7 +27,7 @@ class TeacherImport implements ToCollection, WithHeadingRow, SkipsOnError
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $nip   = trim($row['nip'] ?? '');
+            $nip   = substr(preg_replace('/[^0-9]/', '', trim($row['nip'] ?? '')), 0, 18);
             $name  = trim($row['nama_lengkap_guru'] ?? $row['nama'] ?? '');
             $email = trim($row['email'] ?? '');
             $password = trim($row['kata_sandi'] ?? $row['password'] ?? 'password123');
