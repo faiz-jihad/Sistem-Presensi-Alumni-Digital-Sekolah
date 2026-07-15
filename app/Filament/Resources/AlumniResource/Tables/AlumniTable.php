@@ -160,7 +160,6 @@ class AlumniTable
             )
             ->searchable()
             ->searchPlaceholder('Cari alumni...')
-            ->searchDebounce(300)
             ->actionsPosition(Tables\Enums\RecordActionsPosition::BeforeColumns)
             ->actionsColumnLabel('Aksi')
             ->actions([

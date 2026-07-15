@@ -359,6 +359,7 @@ class AdminPanelProvider extends PanelProvider
                 ')
             )
             ->globalSearch(false)
+            ->globalSearchDebounce('2000ms')
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->databaseNotificationsPolling('5s')
