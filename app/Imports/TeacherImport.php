@@ -27,17 +27,17 @@ class TeacherImport implements ToCollection, WithHeadingRow, SkipsOnError
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $nip   = substr(preg_replace('/[^0-9]/', '', trim($row['nip'] ?? '')), 0, 18);
-            $name  = trim($row['nama_lengkap_guru'] ?? $row['nama'] ?? '');
-            $email = trim($row['email'] ?? '');
+            $nip   = substr(preg_replace('/[^0-9]/', '', trim($row['nip_18_digit'] ?? $row['nip'] ?? '')), 0, 18);
+            $name  = trim($row['nama_lengkap_guru_'] ?? $row['nama_lengkap_guru'] ?? $row['nama'] ?? '');
+            $email = trim($row['email_login_'] ?? $row['email_login'] ?? $row['email'] ?? '');
             $password = trim($row['kata_sandi'] ?? $row['password'] ?? 'password123');
-            $gender = strtolower(trim($row['jenis_kelamin'] ?? ''));
+            $gender = strtolower(trim($row['jenis_kelamin_laki_laki_perempuan'] ?? $row['jenis_kelamin'] ?? ''));
             $gender = in_array($gender, ['laki-laki', 'male', 'l']) ? 'male' : 'female';
             $phone = trim($row['no_telepon'] ?? '');
             $fieldOfStudy = trim($row['mata_pelajaran_utama'] ?? '');
-            $employmentStatus = strtolower(trim($row['status_kepegawaian'] ?? 'honorer'));
-            $status = strtolower(trim($row['status'] ?? 'active'));
-            $joinDate = $row['tanggal_mulai_bertugas'] ?? null;
+            $employmentStatus = strtolower(trim($row['status_kepegawaian_pns_pppk_honorer_gtt_ptt_kontrak'] ?? $row['status_kepegawaian'] ?? 'honorer'));
+            $status = strtolower(trim($row['status_active_inactive_retired'] ?? $row['status'] ?? 'active'));
+            $joinDate = $row['tanggal_mulai_bertugas_yyyy_mm_dd'] ?? $row['tanggal_mulai_bertugas'] ?? null;
             $educationLevel = trim($row['tingkat_pendidikan'] ?? '');
             $university = trim($row['universitas'] ?? '');
 
@@ -95,6 +95,11 @@ class TeacherImport implements ToCollection, WithHeadingRow, SkipsOnError
 
             $this->importedCount++;
         }
+    }
+
+    public function headingRow(): int
+    {
+        return 4;
     }
 
     public function getImportedCount(): int { return $this->importedCount; }

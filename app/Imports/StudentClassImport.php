@@ -26,9 +26,9 @@ class StudentClassImport implements ToCollection, WithHeadingRow, SkipsOnError
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $name = trim($row['nama_kelas'] ?? '');
+            $name = trim($row['nama_kelas_'] ?? $row['nama_kelas'] ?? '');
             $grade = trim($row['tingkat_kelas_1_13'] ?? $row['tingkat'] ?? '');
-            $ayName = trim($row['tahun_ajaran'] ?? '');
+            $ayName = trim($row['tahun_ajaran_'] ?? $row['tahun_ajaran'] ?? '');
             $major = trim($row['jurusan_peminatan'] ?? $row['jurusan'] ?? '');
             $nip = trim($row['nip_wali_kelas'] ?? '');
             $capacity = isset($row['kapasitas_siswa']) ? (int) $row['kapasitas_siswa'] : (isset($row['kapasitas']) ? (int) $row['kapasitas'] : 36);
@@ -92,6 +92,11 @@ class StudentClassImport implements ToCollection, WithHeadingRow, SkipsOnError
 
             $this->importedCount++;
         }
+    }
+
+    public function headingRow(): int
+    {
+        return 4;
     }
 
     public function getImportedCount(): int { return $this->importedCount; }

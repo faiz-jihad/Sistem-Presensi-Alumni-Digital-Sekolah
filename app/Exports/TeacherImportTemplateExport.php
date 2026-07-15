@@ -9,8 +9,15 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class TeacherImportTemplateExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles
+use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+
+class TeacherImportTemplateExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles, WithCustomStartCell
 {
+    public function startCell(): string
+    {
+        return 'A4';
+    }
+
     public function array(): array
     {
         return [
@@ -22,16 +29,16 @@ class TeacherImportTemplateExport implements FromArray, WithHeadings, WithTitle,
     public function headings(): array
     {
         return [
-            'NIP',
-            'Nama Lengkap Guru',
-            'Email',
+            'NIP * (18 digit)',
+            'Nama Lengkap Guru *',
+            'Email Login *',
             'Kata Sandi',
-            'Jenis Kelamin',
+            'Jenis Kelamin (Laki-laki/Perempuan)',
             'No Telepon',
             'Mata Pelajaran Utama',
-            'Status Kepegawaian',
-            'Status',
-            'Tanggal Mulai Bertugas',
+            'Status Kepegawaian (pns/pppk/honorer/gtt/ptt/kontrak)',
+            'Status (active/inactive/retired) *',
+            'Tanggal Mulai Bertugas (YYYY-MM-DD)',
             'Tingkat Pendidikan',
             'Universitas',
         ];
@@ -44,8 +51,16 @@ class TeacherImportTemplateExport implements FromArray, WithHeadings, WithTitle,
 
     public function styles(Worksheet $sheet)
     {
+        // Deskripsi di baris 1–3
+        $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA GURU — SIMPAD');
+        $sheet->setCellValue('A2', 'Keterangan: Kolom bertanda (*) wajib diisi. Baris contoh di bawah dapat dihapus sebelum upload.');
+        $sheet->setCellValue('A3', 'NIP harus berisi angka sepanjang maksimal 18 digit (tanpa spasi/titik).');
+
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(13);
+        $sheet->getStyle('A2:A3')->getFont()->setItalic(true)->setSize(10);
+
         return [
-            1 => [
+            4 => [
                 'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,

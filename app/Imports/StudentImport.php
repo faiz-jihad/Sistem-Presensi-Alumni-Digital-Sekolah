@@ -30,17 +30,17 @@ class StudentImport implements ToCollection, WithHeadingRow, SkipsOnError
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            // Normalisasi key (lowercase + ganti spasi/strip dengan underscore)
-            $nis    = str_replace(' ', '', trim($row['nis'] ?? ''));
+            // Normalisasi key (descriptive & simple fallback)
+            $nis    = str_replace(' ', '', trim($row['nis_'] ?? $row['nis'] ?? ''));
             $nisn   = substr(preg_replace('/[^0-9]/', '', trim($row['nisn'] ?? '')), 0, 10);
-            $name   = trim($row['nama_lengkap_siswa'] ?? $row['nama'] ?? '');
-            $gender = strtolower(trim($row['jenis_kelamin'] ?? ''));
+            $name   = trim($row['nama_lengkap_siswa_'] ?? $row['nama_lengkap_siswa'] ?? $row['nama'] ?? '');
+            $gender = strtolower(trim($row['jenis_kelamin_laki_laki_perempuan'] ?? $row['jenis_kelamin'] ?? ''));
             $gender = in_array($gender, ['laki-laki', 'male', 'l']) ? 'male' : 'female';
-            $birthDate = $row['tanggal_lahir'] ?? null;
-            $status = strtolower(trim($row['status'] ?? 'active'));
-            $email  = trim($row['email'] ?? '');
+            $birthDate = $row['tanggal_lahir_yyyy_mm_dd'] ?? $row['tanggal_lahir'] ?? null;
+            $status = strtolower(trim($row['status_active_inactive_graduated'] ?? $row['status'] ?? 'active'));
+            $email  = trim($row['email_akun_siswa'] ?? $row['email'] ?? '');
             $password = trim($row['kata_sandi'] ?? $row['password'] ?? '');
-            $className = trim($row['kelas'] ?? '');
+            $className = trim($row['kelas_nama_kelas'] ?? $row['kelas'] ?? '');
             $parentName = trim($row['nama_orang_tua'] ?? '');
             $parentPhone = trim($row['no_wa_orang_tua'] ?? '');
 
@@ -107,6 +107,11 @@ class StudentImport implements ToCollection, WithHeadingRow, SkipsOnError
 
             $this->importedCount++;
         }
+    }
+
+    public function headingRow(): int
+    {
+        return 4;
     }
 
     public function getImportedCount(): int { return $this->importedCount; }

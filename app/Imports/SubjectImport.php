@@ -24,12 +24,12 @@ class SubjectImport implements ToCollection, WithHeadingRow, SkipsOnError
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $code        = trim($row['kode_mapel'] ?? '');
-            $name        = trim($row['nama_mata_pelajaran'] ?? $row['nama'] ?? '');
+            $code        = trim($row['kode_mapel_'] ?? $row['kode_mapel'] ?? '');
+            $name        = trim($row['nama_mata_pelajaran_'] ?? $row['nama_mata_pelajaran'] ?? $row['nama'] ?? '');
             $shortName   = trim($row['singkatan'] ?? '');
-            $group       = strtolower(trim($row['kelompok'] ?? 'general'));
-            $creditHours = (int) ($row['beban_jam_jp'] ?? 2);
-            $status      = strtolower(trim($row['status'] ?? 'active'));
+            $group       = strtolower(trim($row['kelompok_general_specialized_local_extracurricular'] ?? $row['kelompok'] ?? 'general'));
+            $creditHours = (int) ($row['beban_jam_jp_'] ?? $row['beban_jam_jp'] ?? 2);
+            $status      = strtolower(trim($row['status_active_inactive'] ?? $row['status'] ?? 'active'));
             $description = trim($row['deskripsi'] ?? '');
 
             if (empty($code) || empty($name)) {
@@ -58,6 +58,11 @@ class SubjectImport implements ToCollection, WithHeadingRow, SkipsOnError
 
             $this->importedCount++;
         }
+    }
+
+    public function headingRow(): int
+    {
+        return 4;
     }
 
     public function getImportedCount(): int { return $this->importedCount; }
