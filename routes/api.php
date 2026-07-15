@@ -57,7 +57,7 @@ Route::prefix('v1')->group(function () {
         });
 
         // Alumni Profile
-        Route::middleware(['role:alumni', 'feature:has_alumni'])->group(function () {
+        Route::middleware('role:alumni')->group(function () {
             Route::get('/alumni/profile', [AlumniProfileController::class, 'show']);
             Route::put('/alumni/profile', [AlumniProfileController::class, 'update']);
         });

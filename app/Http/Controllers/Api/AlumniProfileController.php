@@ -8,7 +8,6 @@ use App\Http\Resources\AlumniResource;
 use App\Services\AlumniProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class AlumniProfileController extends BaseController
 {
@@ -23,7 +22,6 @@ class AlumniProfileController extends BaseController
     {
         $user = $request->user();
 
-        // Otorisasi role via Policy/Gate
         if ($user->role !== 'alumni') {
             return $this->forbidden('Hanya alumni yang memiliki data profil alumni.');
         }
@@ -32,10 +30,6 @@ class AlumniProfileController extends BaseController
 
         if (!$alumni) {
             return $this->error('Profil alumni tidak ditemukan.', 404);
-        }
-
-        if (!Gate::forUser($user)->allows('viewProfile', $alumni)) {
-            return $this->forbidden();
         }
 
         return $this->success(
@@ -59,10 +53,6 @@ class AlumniProfileController extends BaseController
 
         if (!$alumni) {
             return $this->error('Data alumni tidak ditemukan.', 404);
-        }
-
-        if (!Gate::forUser($user)->allows('updateProfile', $alumni)) {
-            return $this->forbidden();
         }
 
         try {
