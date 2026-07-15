@@ -133,6 +133,25 @@ class FirebaseNotificationService
                         'title' => $title,
                         'body' => $body,
                     ],
+                    'android' => [
+                        'priority' => 'high',
+                        'notification' => [
+                            'channel_id' => 'attendance_notifications_v2',
+                            'sound' => 'bell',
+                            'default_vibrate_timings' => true,
+                        ],
+                    ],
+                    'apns' => [
+                        'headers' => [
+                            'apns-priority' => '10',
+                        ],
+                        'payload' => [
+                            'aps' => [
+                                'sound' => 'bell.wav',
+                                'badge' => 1,
+                            ],
+                        ],
+                    ],
                 ]
             ];
 

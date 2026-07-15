@@ -17,6 +17,12 @@ class AlumniPolicy
             return true;
         }
 
+        // Alumni tetap boleh membaca dan memperbarui profil miliknya sendiri.
+        // Status sekolah tidak boleh memblokir halaman profil pribadi.
+        if (in_array($ability, ['viewProfile', 'updateProfile'], true)) {
+            return null;
+        }
+
         if (!$user->isSchoolActive()) {
             return false;
         }

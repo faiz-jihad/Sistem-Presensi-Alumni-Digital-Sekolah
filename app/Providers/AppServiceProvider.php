@@ -38,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
 
         // ─── Policy Registration ────────────────────────────────────────────
         Gate::policy(PresensiSession::class, AttendanceSessionPolicy::class);
+        Gate::policy(\App\Models\Alumni::class, \App\Policies\AlumniPolicy::class);
+        Gate::policy(\App\Models\SchoolClass::class, \App\Policies\SchoolClassPolicy::class);
         Gate::policy(\App\Models\Schedule::class, \App\Policies\MasterDataPolicy::class);
         Gate::policy(\App\Models\Subject::class, \App\Policies\MasterDataPolicy::class);
         Gate::policy(\App\Models\ClassHour::class, \App\Policies\MasterDataPolicy::class);
@@ -75,7 +77,14 @@ class AppServiceProvider extends ServiceProvider
                     }
                     $payload['notification_id'] = $notification->id;
 
-                    $firebaseService->sendPushNotification($user, $title, $body, $payload);
+                    $result = $firebaseService->sendPushNotification($user, $title, $body, $payload);
+                    if (! ($result['success'] ?? false)) {
+                        logger()->warning('FCM push notification was not delivered.', [
+                            'user_id' => $user->id,
+                            'notification_id' => $notification->id,
+                            'result' => $result,
+                        ]);
+                    }
                 } catch (\Exception $e) {
                     logger()->error('Failed to send FCM push notification from DatabaseNotification observer: ' . $e->getMessage());
                 }
