@@ -114,8 +114,9 @@ class UserForm
                 DateTimePicker::make('email_verified_at')
                     ->label('Diverifikasi Pada')
                     ->placeholder('Tanggal verifikasi email')
+                    ->default(now())
                     ->disabled()
-                    ->dehydrated(false),
+                    ->dehydrated(true),
             ]);
     }
 }

@@ -107,6 +107,7 @@ class StudentAttendancesTable
                             ->label('Sampai Tanggal')
                             ->placeholder('dd/mm/yyyy'),
                     ])
+                    ->columns(2)
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
@@ -147,6 +148,13 @@ class StudentAttendancesTable
                         'rejected' => 'Ditolak',
                     ]),
             ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
+            ->filtersFormColumns(2)
+            ->filtersTriggerAction(fn ($action) => $action
+                ->button()
+                ->label('Filter')
+                ->icon('heroicon-m-funnel')
+                ->color('gray')
+            )
             ->actions([
                 EditAction::make()
                     ->label('Edit')

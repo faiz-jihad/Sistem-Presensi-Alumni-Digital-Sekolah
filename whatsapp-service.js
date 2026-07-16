@@ -209,7 +209,11 @@ app.get('/status', (req, res) => {
     res.json({
         status: true,
         whatsapp_ready: isReady,
-        qr: isReady ? null : latestQr
+        qr: isReady ? null : latestQr,
+        user: isReady && client.info ? {
+            name: client.info.pushname || 'WhatsApp Client',
+            number: client.info.wid ? client.info.wid.user : null
+        } : null
     });
 });
 

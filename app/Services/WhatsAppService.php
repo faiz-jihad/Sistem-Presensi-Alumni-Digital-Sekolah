@@ -84,6 +84,7 @@ class WhatsAppService
                 return [
                     'ready' => (bool) ($data['whatsapp_ready'] ?? false),
                     'qr' => $data['qr'] ?? null,
+                    'user' => $data['user'] ?? null,
                     'error' => null
                 ];
             }
@@ -94,6 +95,7 @@ class WhatsAppService
         return [
             'ready' => false,
             'qr' => null,
+            'user' => null,
             'error' => 'Local WhatsApp Gateway tidak aktif. Pastikan menjalankan "node whatsapp-service.js".'
         ];
     }
