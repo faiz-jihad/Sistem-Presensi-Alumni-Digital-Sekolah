@@ -62,8 +62,29 @@ class AppServiceProvider extends ServiceProvider
             
             if ($user instanceof \App\Models\User) {
                 $data = $notification->data;
-                $title = $data['title'] ?? 'Notifikasi Baru';
-                $body = $data['body'] ?? '';
+                if (is_string($data)) {
+                    $data = json_decode($data, true) ?? [];
+                }
+
+                logger()->info('Notification Created Event Fired.', [
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'data_keys' => is_array($data) ? array_keys($data) : null,
+                    'data' => $data,
+                ]);
+
+                $title = $data['title'] ?? null;
+                if (empty($title)) {
+                    $classParts = explode('\\', $notification->type);
+                    $className = end($classParts);
+                    $title = preg_replace('/(?<!^)[A-Z]/', ' $0', $className);
+                    $title = preg_replace('/ Notification$/', '', $title) ?: 'Notifikasi Baru';
+                }
+
+                $body = $data['body'] ?? null;
+                if (empty($body)) {
+                    $body = 'Ada informasi terbaru untuk Anda.';
+                }
                 
                 // Bersihkan tag HTML (seperti markdown/formatting text dari Filament)
                 $title = strip_tags($title);
@@ -440,7 +461,7 @@ class AppServiceProvider extends ServiceProvider
         // ─── Desktop Browser Native Notifications Hook ───────────────────────
         \Filament\Support\Facades\FilamentView::registerRenderHook(
             \Filament\View\PanelsRenderHook::BODY_END,
-            fn () => view('filament.components.firebase-script')
+            fn () => view('partials.webpush-subscribe')
         );
 
         // ─── Premium Sidebar CSS Style Hook ───────────────────────────

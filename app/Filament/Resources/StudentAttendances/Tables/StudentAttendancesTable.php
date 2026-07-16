@@ -146,7 +146,7 @@ class StudentAttendancesTable
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                     ]),
-            ])
+            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
             ->actions([
                 EditAction::make()
                     ->label('Edit')

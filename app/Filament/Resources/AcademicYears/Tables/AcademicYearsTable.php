@@ -81,7 +81,7 @@ class AcademicYearsTable
 
                 TrashedFilter::make()
                     ->label('Sampah (Soft Delete)'),
-            ])
+            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->filtersTriggerAction(fn ($action) => $action
                 ->button()

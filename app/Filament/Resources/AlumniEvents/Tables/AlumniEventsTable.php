@@ -74,7 +74,7 @@ class AlumniEventsTable
                         '1' => 'Aktif',
                         '0' => 'Tidak Aktif',
                     ]),
-            ])
+            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
             ->recordActions([
                 Action::make('approve_event')
                     ->label('Setujui')

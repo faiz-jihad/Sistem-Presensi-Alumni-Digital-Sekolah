@@ -17,6 +17,7 @@
     ========================================== */
     .ar-filter-panel {
         position: relative;
+        z-index: 30;
         background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
         border: 1px solid rgba(37, 99, 235, 0.15);
         border-radius: 20px;

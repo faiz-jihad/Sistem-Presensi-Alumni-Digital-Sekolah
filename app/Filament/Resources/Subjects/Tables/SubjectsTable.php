@@ -33,7 +33,7 @@ class SubjectsTable
                 TextColumn::make('group')
                     ->label('Kelompok')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state) => match ($state) {
                         'general' => 'Umum',
                         'specialized' => 'Kejuruan / Peminatan',
                         'local' => 'Muatan Lokal',
@@ -49,16 +49,16 @@ class SubjectsTable
                     ->label('Sekolah')
                     ->searchable()
                     ->sortable()
-                    ->visible(fn () => auth()->user()->role === 'super_admin'),
+                    ->visible(fn() => auth()->user()->role === 'super_admin'),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'active' => 'success',
                         'inactive' => 'danger',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',
                         default => $state,
@@ -72,7 +72,7 @@ class SubjectsTable
                     ->placeholder('Semua Sekolah')
                     ->preload()
                     ->searchable()
-                    ->visible(fn () => auth()->user()->isSuperAdmin()),
+                    ->visible(fn() => auth()->user()->isSuperAdmin()),
 
                 SelectFilter::make('group')
                     ->label('Kelompok Pelajaran')
@@ -94,13 +94,14 @@ class SubjectsTable
 
                 TrashedFilter::make()
                     ->label('Sampah (Soft Delete)'),
-            ])
+            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
             ->filtersFormColumns(2)
-            ->filtersTriggerAction(fn ($action) => $action
-                ->button()
-                ->label('Filter')
-                ->icon('heroicon-m-funnel')
-                ->color('gray')
+            ->filtersTriggerAction(
+                fn($action) => $action
+                    ->button()
+                    ->label('Filter')
+                    ->icon('heroicon-m-funnel')
+                    ->color('gray')
             )
             ->recordActions([
                 EditAction::make(),

@@ -126,7 +126,7 @@ class JobVacanciesTable
                         'engineering'=>'Teknik',
                         'others'=>'Lainnya',
                     ]),
-            ])
+            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
             ->recordActions([
                 Action::make('toggle')
                 ->label(fn($record)=>$record->is_active

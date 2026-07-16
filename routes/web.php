@@ -22,6 +22,11 @@ Route::get('/public-stats', function () {
 
 
 
+
+
+
+
+
 Route::get('/storage/{filename}', function ($filename) {
     $path = storage_path('app/public/' . $filename);
 
@@ -208,6 +213,10 @@ Route::get('/admin/login/google/callback', function (\Illuminate\Http\Request $r
         ]);
     }
 })->middleware(['web'])->name('google.callback');
+
+
+
+
 
 
 
