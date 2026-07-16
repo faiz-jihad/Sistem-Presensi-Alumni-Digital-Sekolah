@@ -17,10 +17,9 @@ class ForgotPasswordMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        public string $otpCode
+    ) {}
 
     /**
      * Get the message envelope.
@@ -28,7 +27,7 @@ class ForgotPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Forgot Password Mail',
+            subject: 'Kode OTP Reset Password',
         );
     }
 
@@ -38,7 +37,7 @@ class ForgotPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.forgot-password',
         );
     }
 

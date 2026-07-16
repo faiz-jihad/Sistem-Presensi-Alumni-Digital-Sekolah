@@ -62,12 +62,7 @@ class AuthController extends BaseController
             'is_used' => false,
         ]);
 
-        Mail::raw(
-            "Kode OTP reset password Anda adalah {$otpCode}.\n\nKode ini berlaku selama 10 menit. Abaikan email ini jika Anda tidak meminta reset password.",
-            function ($message) use ($email) {
-                $message->to($email)->subject('Kode OTP Reset Password');
-            }
-        );
+        Mail::to($email)->send(new \App\Mail\ForgotPasswordMail($otpCode));
 
         Cache::put($rateKey, true, now()->addSeconds(60));
 
