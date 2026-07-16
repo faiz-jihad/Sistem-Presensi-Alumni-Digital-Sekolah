@@ -6,37 +6,71 @@ self.addEventListener('activate', function (event) {
     event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('push', function (event) {
-    var payload = {
-        title: 'Notifikasi Baru',
-        body: '',
-        data: {}
+function parseJsonObject(value) {
+    if (!value) return {};
+    if (typeof value === 'object') return value;
+
+    try {
+        var parsed = JSON.parse(value);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (error) {
+        return {};
+    }
+}
+
+function resolveNotificationPayload(payload) {
+    var rootPayload = payload && typeof payload === 'object' ? payload : {};
+    var rootData = parseJsonObject(rootPayload.data);
+    var fcmEnvelope = parseJsonObject(
+        rootPayload.FCM_MSG ||
+        rootData.FCM_MSG ||
+        rootData.fcmMessage
+    );
+    var notification = rootPayload.notification || fcmEnvelope.notification || {};
+    var envelopeData = parseJsonObject(fcmEnvelope.data);
+    var data = Object.assign({}, envelopeData, rootData);
+
+    delete data.FCM_MSG;
+    delete data.fcmMessage;
+
+    return {
+        title: rootPayload.title || notification.title || data.title || 'SIMPAD',
+        body: rootPayload.body || notification.body || data.body || 'Ada informasi terbaru untuk Anda.',
+        icon: rootPayload.icon || notification.icon || data.icon || '/favicon.ico',
+        badge: rootPayload.badge || notification.badge || data.badge || '/favicon.ico',
+        image: rootPayload.image || notification.image || data.image,
+        tag: rootPayload.tag || notification.tag || data.tag || 'simpad-notification',
+        actions: rootPayload.actions || notification.actions || [],
+        data: Object.assign({}, data, {
+            url: data.url || rootPayload.url || '/admin'
+        })
     };
+}
+
+self.addEventListener('push', function (event) {
+    var payload = {};
 
     if (event.data) {
         try {
             payload = event.data.json();
         } catch (e) {
-            payload.body = event.data.text();
+            payload = { body: event.data.text() };
         }
     }
 
-    var payloadData = payload.data || {};
-    var title = payload.title || payloadData.title || 'Notifikasi Baru';
+    var resolvedPayload = resolveNotificationPayload(payload);
     var options = {
-        body: payload.body || payloadData.body || '',
-        icon: payload.icon || payloadData.icon || '/favicon.ico',
-        badge: payload.badge || payloadData.badge || '/favicon.ico',
-        image: payload.image || payloadData.image,
-        tag: payload.tag || payloadData.tag || 'simpad-notification',
+        body: resolvedPayload.body,
+        icon: resolvedPayload.icon,
+        badge: resolvedPayload.badge,
+        image: resolvedPayload.image,
+        tag: resolvedPayload.tag,
         renotify: true,
-        actions: payload.actions || [],
-        data: Object.assign({}, payloadData, {
-            url: payloadData.url || payload.url || '/admin'
-        })
+        actions: resolvedPayload.actions,
+        data: resolvedPayload.data
     };
 
-    event.waitUntil(self.registration.showNotification(title, options));
+    event.waitUntil(self.registration.showNotification(resolvedPayload.title, options));
 });
 
 self.addEventListener('notificationclick', function (event) {

@@ -10,9 +10,11 @@ use Illuminate\Support\Collection;
 
 class FilamentChangeNotificationService
 {
+    private static int $suppressionDepth = 0;
+
     public function notifyModelChanged(Model $model, string $event): void
     {
-        if (! auth()->check()) {
+        if (self::$suppressionDepth > 0 || ! auth()->check()) {
             return;
         }
 
@@ -42,6 +44,17 @@ class FilamentChangeNotificationService
         };
 
         $this->sendImmediately($notification, $recipients);
+    }
+
+    public function withoutModelChangeNotifications(callable $callback): mixed
+    {
+        self::$suppressionDepth++;
+
+        try {
+            return $callback();
+        } finally {
+            self::$suppressionDepth--;
+        }
     }
 
     public function sendToUsers(iterable $users, string $title, string $body, string $status = 'info'): void

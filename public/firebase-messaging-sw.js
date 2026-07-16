@@ -26,10 +26,10 @@ messaging.onBackgroundMessage(function (payload) {
     if (payload.notification) return;
 
     const data = payload.data || {};
-    const title = data.title || 'Notifikasi Baru';
+    const title = data.title || 'SIMPAD';
 
     self.registration.showNotification(title, {
-        body: data.body || '',
+        body: data.body || 'Ada informasi terbaru untuk Anda.',
         icon: data.icon || '/favicon.ico',
         badge: data.badge || '/favicon.ico',
         tag: data.notification_id

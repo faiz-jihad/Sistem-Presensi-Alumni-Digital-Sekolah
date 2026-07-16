@@ -162,6 +162,8 @@ class FirebaseNotificationService
                             'Urgency' => 'high',
                         ],
                         'notification' => [
+                            'title' => $title,
+                            'body' => $body,
                             'icon' => url('/favicon.ico'),
                             'badge' => url('/favicon.ico'),
                             'tag' => isset($data['notification_id'])
