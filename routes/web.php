@@ -205,7 +205,7 @@ Route::get('/admin/login/google/callback', function (\Illuminate\Http\Request $r
         // Regenerate session untuk keamanan
         $request->session()->regenerate();
 
-        return redirect('/admin');
+        return redirect('http://127.0.0.1:8000/admin/');
 
     } catch (\Exception $e) {
         return redirect('/admin/login')->withErrors([
