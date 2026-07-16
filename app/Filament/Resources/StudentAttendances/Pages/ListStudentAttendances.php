@@ -17,7 +17,8 @@ class ListStudentAttendances extends ListRecords
                 ->label('Presensi Siswa (Per Kelas)')
                 ->icon('heroicon-o-pencil-square')
                 ->color('success')
-                ->url(fn () => StudentAttendanceResource::getUrl('manual')),
+                ->url(fn () => StudentAttendanceResource::getUrl('manual'))
+                ->visible(fn () => auth()->user()->role !== 'teacher'),
         ];
     }
 

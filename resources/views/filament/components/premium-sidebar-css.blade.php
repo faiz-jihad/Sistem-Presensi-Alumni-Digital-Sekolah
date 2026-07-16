@@ -1310,6 +1310,27 @@
         min-height: 400px !important;
         overflow-y: scroll !important;
     }
+
+    /* Scrollbar for table filters dropdown */
+    .fi-dropdown-panel .fi-ta-filters,
+    .fi-ta-filters-dropdown .fi-ta-filters {
+        max-height: 65vh !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin !important;
+    }
+    .fi-dropdown-panel .fi-ta-filters::-webkit-scrollbar,
+    .fi-ta-filters-dropdown .fi-ta-filters::-webkit-scrollbar {
+        width: 6px !important;
+    }
+    .fi-dropdown-panel .fi-ta-filters::-webkit-scrollbar-track,
+    .fi-ta-filters-dropdown .fi-ta-filters::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+    .fi-dropdown-panel .fi-ta-filters::-webkit-scrollbar-thumb,
+    .fi-ta-filters-dropdown .fi-ta-filters::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.45) !important;
+        border-radius: 3px !important;
+    }
 </style>
 
 <script>

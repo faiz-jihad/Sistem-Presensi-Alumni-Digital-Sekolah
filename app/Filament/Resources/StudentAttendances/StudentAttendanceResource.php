@@ -90,4 +90,24 @@ class StudentAttendanceResource extends Resource
 
         return $user->school?->status === 'active';
     }
+
+    public static function getNavigationItems(): array
+    {
+        if (! static::hasPage('index')) {
+            return [];
+        }
+
+        return [
+            \Filament\Navigation\NavigationItem::make(static::getNavigationLabel())
+                ->group(static::getNavigationGroup())
+                ->parentItem(static::getNavigationParentItem())
+                ->icon(static::getNavigationIcon())
+                ->activeIcon(static::getActiveNavigationIcon())
+                ->isActiveWhen(fn (): bool => \Filament\Support\original_request()->routeIs(static::getRouteBaseName() . '.*') && ! \Filament\Support\original_request()->routeIs(static::getRouteBaseName() . '.manual'))
+                ->badge(static::getNavigationBadge(), color: static::getNavigationBadgeColor())
+                ->badgeTooltip(static::getNavigationBadgeTooltip())
+                ->sort(static::getNavigationSort())
+                ->url(static::getNavigationUrl()),
+        ];
+    }
 }
