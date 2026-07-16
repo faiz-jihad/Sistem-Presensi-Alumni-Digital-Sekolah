@@ -7,6 +7,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -18,16 +19,26 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama')
+                    ->label('Nama Lengkap')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('email')
                     ->label('Email')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('role')
                     ->label('Peran')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
+                        'super_admin' => 'danger',
+                        'admin' => 'warning',
+                        'teacher' => 'success',
+                        'student' => 'info',
+                        'parent' => 'gray',
+                        'alumni' => 'primary',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'super_admin' => 'Super Admin',
                         'admin' => 'Admin',
                         'teacher' => 'Guru',
@@ -35,27 +46,29 @@ class UsersTable
                         'parent' => 'Orang Tua / Wali',
                         'alumni' => 'Alumni',
                         default => $state,
-                    }),
+                    })
+                    ->sortable(),
+                TextColumn::make('school.name')
+                    ->label('Sekolah')
+                    ->searchable()
+                    ->sortable()
+                    ->visible(fn () => auth()->user()->isSuperAdmin()),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'active' => 'success',
-                        'suspended' => 'danger',
-                        default => 'warning',
+                        'inactive' => 'danger',
+                        'suspended' => 'warning',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'active' => 'Aktif',
                         'inactive' => 'Tidak Aktif',
                         'suspended' => 'Ditangguhkan',
                         default => $state,
-                    }),
-                TextColumn::make('google_id')
-                    ->label('Google')
-                    ->badge()
-                    ->color(fn ($state) => $state ? 'success' : 'gray')
-                    ->formatStateUsing(fn ($state) => $state ? 'Terhubung' : 'Belum')
-                    ->tooltip(fn ($state) => $state ? "ID Google: " . $state : 'Belum ditautkan ke akun Google'),
+                    })
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y')
@@ -105,7 +118,7 @@ class UsersTable
 
                 TrashedFilter::make()
                     ->label('Sampah (Soft Delete)'),
-            ])
+            ], layout: FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->filtersTriggerAction(fn ($action) => $action
                 ->button()

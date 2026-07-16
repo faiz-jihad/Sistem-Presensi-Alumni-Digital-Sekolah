@@ -9,6 +9,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -93,7 +94,7 @@ class SemestersTable
                         '0' => 'Tidak Aktif',
                     ])
                     ->placeholder('Semua Status'),
-            ])
+            ], layout: FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->filtersTriggerAction(fn ($action) => $action
                 ->button()

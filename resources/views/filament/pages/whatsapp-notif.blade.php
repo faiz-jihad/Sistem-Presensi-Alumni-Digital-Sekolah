@@ -240,7 +240,7 @@
                 <div class="wn-header-title">Kirim Notifikasi WhatsApp</div>
                 <div class="wn-header-desc">
                     Kirim rekapitulasi kehadiran massal ke nomor WhatsApp orang tua siswa terdaftar secara otomatis.
-                    Notifikasi akan <strong style="color:white;">dikirim via Fonnte</strong> ke orang tua siswa.
+                    Notifikasi akan <strong style="color:white;">dikirim via WhatsApp Gateway lokal</strong>.
                 </div>
             </div>
         </div>
@@ -250,6 +250,89 @@
             Antrean Aktif
         </div>
     </div>
+
+    {{-- Gateway Status Card --}}
+    @php
+        $gwStatus = $gatewayStatus ?? app(\App\Services\WhatsAppService::class)->getGatewayStatus();
+        $gwReady  = $gwStatus['ready'] ?? false;
+    @endphp
+
+    @if($gwReady)
+    <div style="
+        display:flex;align-items:center;gap:1rem;
+        padding:1rem 1.5rem;border-radius:1rem;
+        background:#ecfdf5;border:1px solid #a7f3d0;
+        box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    ">
+        <div style="
+            width:2.5rem;height:2.5rem;flex-shrink:0;border-radius:50%;
+            background:#059669;display:flex;align-items:center;justify-content:center;
+        ">
+            <x-heroicon-s-check style="width:18px;height:18px;color:white;" />
+        </div>
+        <div>
+            <div style="font-weight:700;color:#065f46;font-size:0.9rem;">WhatsApp Gateway Terhubung</div>
+            <div style="font-size:0.75rem;color:#047857;margin-top:0.15rem;">
+                Siap mengirim pesan. Node.js gateway berjalan di <code style="background:#d1fae5;padding:0.1rem 0.4rem;border-radius:0.25rem;">localhost:5000</code>.
+            </div>
+        </div>
+    </div>
+    @else
+    <div style="
+        border-radius:1rem;
+        background:#fff7ed;border:1px solid #fed7aa;
+        box-shadow:0 2px 8px rgba(0,0,0,0.04);overflow:hidden;
+    ">
+        <div style="display:flex;align-items:flex-start;gap:1rem;padding:1.25rem 1.5rem;">
+            <div style="
+                width:2.75rem;height:2.75rem;flex-shrink:0;border-radius:50%;
+                background:#ea580c;display:flex;align-items:center;justify-content:center;margin-top:2px;
+            ">
+                <x-heroicon-s-exclamation-triangle style="width:18px;height:18px;color:white;" />
+            </div>
+            <div style="flex:1;">
+                <div style="font-weight:700;color:#9a3412;font-size:0.9rem;">WhatsApp Gateway Belum Terhubung</div>
+                <div style="font-size:0.78rem;color:#c2410c;margin-top:0.35rem;line-height:1.5;">
+                    Gateway WhatsApp (Node.js) tidak aktif atau belum login. Anda perlu menjalankan gateway dan scan QR Code terlebih dahulu sebelum bisa mengirim notifikasi.
+                </div>
+                <div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+                    <a href="http://localhost:5000/qr" target="_blank" style="
+                        display:inline-flex;align-items:center;gap:0.5rem;
+                        padding:0.5rem 1.25rem;border-radius:0.6rem;font-size:0.8rem;font-weight:600;
+                        background:#ea580c;color:white;text-decoration:none;
+                        box-shadow:0 2px 8px rgba(234,88,12,0.3);
+                        transition:background 0.2s;
+                    " onmouseover="this.style.background='#c2410c'" onmouseout="this.style.background='#ea580c'">
+                        <x-heroicon-o-qr-code style="width:16px;height:16px;" />
+                        Scan QR Code Login WhatsApp
+                    </a>
+                    <span style="font-size:0.72rem;color:#9a3412;">
+                        Atau jalankan <code style="background:#fed7aa;padding:0.1rem 0.4rem;border-radius:0.25rem;">node whatsapp-service.js</code> di terminal
+                    </span>
+                </div>
+
+                @if(!empty($gwStatus['error']))
+                <div style="
+                    margin-top:0.75rem;padding:0.6rem 0.9rem;
+                    background:#ffedd5;border-radius:0.5rem;
+                    font-size:0.7rem;color:#7c2d12;
+                ">
+                    ⚠️ {{ $gwStatus['error'] }}
+                </div>
+                @endif
+            </div>
+        </div>
+        <div style="padding:0.75rem 1.5rem;background:#fff3e0;border-top:1px solid #fed7aa;">
+            <div style="font-size:0.7rem;color:#9a3412;font-weight:600;">Langkah untuk mengaktifkan:</div>
+            <div style="display:flex;gap:1.5rem;margin-top:0.35rem;flex-wrap:wrap;">
+                <span style="font-size:0.7rem;color:#c2410c;">① Buka terminal → <code style="background:#fed7aa;padding:0.1rem 0.35rem;border-radius:0.25rem;">node whatsapp-service.js</code></span>
+                <span style="font-size:0.7rem;color:#c2410c;">② Klik tombol "Scan QR Code" di atas</span>
+                <span style="font-size:0.7rem;color:#c2410c;">③ Scan dengan WhatsApp di HP Anda</span>
+                <span style="font-size:0.7rem;color:#c2410c;">④ Refresh halaman ini</span>
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- Stats Cards --}}
     <div class="wn-stats-grid">
