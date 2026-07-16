@@ -52,17 +52,26 @@
                         
                         <div class="day-schedules-list">
                             @foreach($dayData['schedules'] as $schedule)
-                                <div class="cal-schedule-item" title="{{ $schedule->subject->name }} - {{ $schedule->class->name }} (Ruang {{ $schedule->room }})">
-                                    <div class="cal-schedule-class">{{ $schedule->class->name }}</div>
-                                    <div class="cal-schedule-subject">{{ $schedule->subject->name }}</div>
-                                    <div class="cal-schedule-time">
-                                        @if($schedule->classHour)
+                                @if($schedule->classHour?->is_break)
+                                    <div class="cal-schedule-item is-break-item" title="Istirahat ({{ substr($schedule->classHour->start_time, 0, 5) }} - {{ substr($schedule->classHour->end_time, 0, 5) }})">
+                                        <div class="cal-schedule-class">Istirahat</div>
+                                        <div class="cal-schedule-time">
                                             {{ substr($schedule->classHour->start_time, 0, 5) }} - {{ substr($schedule->classHour->end_time, 0, 5) }}
-                                        @else
-                                            -
-                                        @endif
+                                        </div>
                                     </div>
-                                </div>
+                                @else
+                                    <div class="cal-schedule-item" title="{{ $schedule->subject?->name }} - {{ $schedule->class?->name }} (Ruang {{ $schedule->room }})">
+                                        <div class="cal-schedule-class">{{ $schedule->class?->name }}</div>
+                                        <div class="cal-schedule-subject">{{ $schedule->subject?->name }}</div>
+                                        <div class="cal-schedule-time">
+                                            @if($schedule->classHour)
+                                                {{ substr($schedule->classHour->start_time, 0, 5) }} - {{ substr($schedule->classHour->end_time, 0, 5) }}
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
                             @endforeach
                         </div>
                     </div>
@@ -306,6 +315,27 @@
 
         .dark .cal-schedule-item:hover {
             background: var(--cal-accent-hover);
+        }
+
+        .cal-schedule-item.is-break-item {
+            background: #d97706;
+            box-shadow: 0 2px 4px rgba(217, 119, 6, 0.15);
+            cursor: default;
+        }
+
+        .cal-schedule-item.is-break-item:hover {
+            transform: translateY(-2px);
+            background: #b45309;
+            box-shadow: 0 4px 8px rgba(217, 119, 6, 0.3);
+        }
+
+        .dark .cal-schedule-item.is-break-item {
+            background: #d97706;
+            box-shadow: none;
+        }
+
+        .dark .cal-schedule-item.is-break-item:hover {
+            background: #b45309;
         }
 
         .cal-schedule-class {

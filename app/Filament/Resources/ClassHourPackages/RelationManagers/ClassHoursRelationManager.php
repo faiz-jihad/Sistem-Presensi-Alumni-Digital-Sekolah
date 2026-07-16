@@ -7,6 +7,7 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use App\Filament\Resources\ClassHours\ClassHourResource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
@@ -176,17 +177,11 @@ class ClassHoursRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->mutateFormDataUsing(function (array $data, $livewire): array {
-                        $data['school_id'] = $livewire->ownerRecord->school_id;
-                        return $data;
-                    }),
+                    ->url(fn ($livewire) => ClassHourResource::getUrl('create', ['package_id' => $livewire->ownerRecord->id])),
             ])
             ->recordActions([
                 EditAction::make()
-                    ->mutateFormDataUsing(function (array $data, $livewire): array {
-                        $data['school_id'] = $livewire->ownerRecord->school_id;
-                        return $data;
-                    }),
+                    ->url(fn ($record) => ClassHourResource::getUrl('edit', ['record' => $record])),
                 DeleteAction::make(),
             ])
             ->toolbarActions([

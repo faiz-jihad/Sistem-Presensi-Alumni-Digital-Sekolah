@@ -55,11 +55,32 @@ class TeacherCalendarWidget extends Widget
             ];
         }
 
-        // Fetch teacher schedules
-        $schedules = Schedule::where('teacher_id', $teacher->id)
+        // Fetch teacher teaching schedules
+        $teachingSchedules = Schedule::where('teacher_id', $teacher->id)
             ->where('is_active', true)
             ->with(['class', 'subject', 'classHour'])
             ->get();
+
+        // Fetch corresponding break schedules
+        $teacherSemesterIds = $teachingSchedules->pluck('semester_id')->unique()->filter()->values();
+        
+        if ($teacherSemesterIds->isEmpty()) {
+            $teacherSemesterIds = \App\Models\Semester::where('is_active', true)
+                ->whereHas('academicYear', function ($q) use ($teacher) {
+                    $q->where('school_id', $teacher->school_id);
+                })
+                ->pluck('id');
+        }
+
+        $breakSchedules = Schedule::where('school_id', $teacher->school_id)
+            ->whereNull('teacher_id')
+            ->whereIn('semester_id', $teacherSemesterIds)
+            ->where('is_active', true)
+            ->with(['classHour'])
+            ->get();
+
+        // Combine teaching and break schedules
+        $schedules = $teachingSchedules->concat($breakSchedules);
 
         // Group schedules by day value (e.g. 'monday', 'tuesday')
         $schedulesByDay = [];

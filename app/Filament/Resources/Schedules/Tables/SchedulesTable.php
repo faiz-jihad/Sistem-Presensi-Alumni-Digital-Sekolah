@@ -134,26 +134,29 @@ class SchedulesTable
                     ->icon('heroicon-o-clock')
                     ->color('warning')
                     ->button()
-                    ->url(fn () => \App\Filament\Resources\Schedules\ScheduleResource::getUrl('create-break')),
+                    ->url(fn () => \App\Filament\Resources\Schedules\ScheduleResource::getUrl('create-break'))
+                    ->visible(fn () => auth()->user()->role !== 'teacher'),
                 \Filament\Actions\Action::make('create_schedule')
                     ->label('Tambah Jadwal')
                     ->icon('heroicon-o-plus')
                     ->button()
-                    ->url(fn () => \App\Filament\Resources\Schedules\ScheduleResource::getUrl('create')),
+                    ->url(fn () => \App\Filament\Resources\Schedules\ScheduleResource::getUrl('create'))
+                    ->visible(fn () => auth()->user()->role !== 'teacher'),
             ])
             ->recordActions([
                 \Filament\Actions\EditAction::make()
                     ->url(fn ($record) => $record->classHour?->is_break
                         ? \App\Filament\Resources\Schedules\ScheduleResource::getUrl('edit-break', ['record' => $record->id])
                         : \App\Filament\Resources\Schedules\ScheduleResource::getUrl('edit', ['record' => $record->id])
-                    ),
+                    )
+                    ->visible(fn () => auth()->user()->role !== 'teacher'),
             ])
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->recordActionsColumnLabel('Aksi')
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                ]),
+                ])->visible(fn () => auth()->user()->role !== 'teacher'),
             ]);
     }
 }

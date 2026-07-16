@@ -59,7 +59,7 @@ class CreateBreakSchedule extends CreateRecord
                             ->placeholder('Pilih Paket Jam')
                             ->afterStateUpdated(fn (callable $set) => $set('class_hour_id', null)),
                         \Filament\Forms\Components\Select::make('class_hour_id')
-                            ->label('Jam Pelajaran')
+                            ->label('Jam Istirahat')
                             ->options(function (callable $get) {
                                 $packageId = $get('class_hour_package_id');
                                 if (!$packageId) return [];
