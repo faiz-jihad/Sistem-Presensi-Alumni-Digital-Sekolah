@@ -10,6 +10,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Enums\FiltersLayout;
 
 class TeachersTable
 {
@@ -165,7 +166,7 @@ class TeachersTable
 
                 TrashedFilter::make()
                     ->label('Sampah (Soft Delete)'),
-            ])
+            ], layout: FiltersLayout::Modal)
             ->filtersFormColumns(2)
             ->filtersTriggerAction(fn ($action) => $action
                 ->button()

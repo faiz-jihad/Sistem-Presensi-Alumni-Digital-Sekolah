@@ -28,7 +28,7 @@ if (process.platform === 'win32') {
 }
 
 const puppeteerConfig = {
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-accelerated-2d-canvas', '--no-first-run', '--no-zygote', '--single-process', '--disable-gpu'],
     headless: true
 };
 
@@ -37,12 +37,11 @@ if (chromePath) {
 }
 
 // Inisialisasi client whatsapp-web.js dengan strategi autentikasi lokal
-const client = new Client({
+let client = new Client({
     authStrategy: new LocalAuth(),
     puppeteer: puppeteerConfig,
     webVersionCache: {
-        type: 'remote',
-        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html'
+        type: 'local',
     }
 });
 
@@ -84,8 +83,22 @@ client.on('disconnected', (reason) => {
     console.log('[WARNING] WhatsApp Web terputus:', reason);
     isReady = false;
     // Inisialisasi ulang client
-    console.log('[INFO] Mencoba menghubungkan ulang...');
-    client.initialize();
+    console.log('[INFO] Mencoba menghubungkan ulang dalam 5 detik...');
+    setTimeout(async () => {
+        try {
+            await client.destroy();
+        } catch (e) {}
+        client = new Client({
+            authStrategy: new LocalAuth(),
+            puppeteer: puppeteerConfig,
+            webVersionCache: {
+                type: 'local',
+            }
+        });
+        client.on('qr', (qr) => { latestQr = qr; });
+        client.on('ready', () => { isReady = true; });
+        client.initialize();
+    }, 5000);
 });
 
 /**
