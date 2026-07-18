@@ -35,11 +35,11 @@ class Student extends Model
     {
         static::deleted(function ($student) {
             // Find student's own login user record
-            $studentUser = \App\Models\User::withTrashed()
+            $studentUser = User::withTrashed()
                 ->where('role', 'student')
                 ->where(function ($q) use ($student) {
                     $q->where('email', $student->nis)
-                      ->orWhere('name', $student->name);
+                        ->orWhere('name', $student->name);
                 })->first();
 
             if ($studentUser) {
@@ -58,7 +58,7 @@ class Student extends Model
                         ->where('id', '!=', $student->id)
                         ->exists();
 
-                    if (!$hasOtherStudents) {
+                    if (! $hasOtherStudents) {
                         if ($student->isForceDeleting()) {
                             $parent->forceDelete();
                         } else {
@@ -71,11 +71,11 @@ class Student extends Model
 
         static::restored(function ($student) {
             // Restore student's own user record
-            $studentUser = \App\Models\User::onlyTrashed()
+            $studentUser = User::onlyTrashed()
                 ->where('role', 'student')
                 ->where(function ($q) use ($student) {
                     $q->where('email', $student->nis)
-                      ->orWhere('name', $student->name);
+                        ->orWhere('name', $student->name);
                 })->first();
 
             if ($studentUser) {
@@ -122,5 +122,10 @@ class Student extends Model
     public function attendances()
     {
         return $this->hasMany(StudentAttendance::class);
+    }
+
+    public function prayerAttendances()
+    {
+        return $this->hasMany(PrayerAttendance::class);
     }
 }

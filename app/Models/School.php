@@ -14,6 +14,8 @@ class School extends Model
         'name',
         'npsn',
         'address',
+        'prayer_province',
+        'prayer_city',
         'phone',
         'email',
         'website',
@@ -63,6 +65,11 @@ class School extends Model
         return $this->hasMany(User::class)->where('role', 'alumni');
     }
 
+    public function prayerAttendances()
+    {
+        return $this->hasMany(PrayerAttendance::class);
+    }
+
     /**
      * Relasi ke Admins (User role = admin)
      */
@@ -78,5 +85,4 @@ class School extends Model
     {
         return $this->hasMany(SchoolClass::class);
     }
-
 }

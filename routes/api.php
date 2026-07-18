@@ -1,26 +1,32 @@
 <?php
 
-use App\Http\Controllers\Api\AttendanceController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\PermissionController;
-use App\Http\Controllers\Api\SchoolController;
-use App\Http\Controllers\Api\StudentController;
-use App\Http\Controllers\Api\ClassController;
-use App\Http\Controllers\Api\TeacherController;
-use App\Http\Controllers\Api\StudentAttendanceController;
-use App\Http\Controllers\Api\PresensiSessionController;
-use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\AlumniController;
-use App\Http\Controllers\Api\AlumniProfileController;
-use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\AlumniEventController;
 use App\Http\Controllers\Api\AlumniJobController;
-use App\Http\Controllers\Api\TeacherAttendanceController;
+use App\Http\Controllers\Api\AlumniProfileController;
 use App\Http\Controllers\Api\AlumniVerificationController;
-use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ClassController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EducationNewsController;
+use App\Http\Controllers\Api\ExportController;
+use App\Http\Controllers\Api\FcmTokenController;
+use App\Http\Controllers\Api\GoogleAuthController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\PrayerAttendanceController;
+use App\Http\Controllers\Api\PresensiSessionController;
+use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SchoolController;
+use App\Http\Controllers\Api\StudentAttendanceController;
+use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\TeacherAttendanceController;
+use App\Http\Controllers\Api\TeacherController;
+use App\Models\School;
+use App\Services\FirebaseNotificationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -32,11 +38,11 @@ Route::prefix('v1')->group(function () {
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/alumni/register', [AlumniController::class, 'register']);
-    Route::post('/auth/google', [\App\Http\Controllers\Api\GoogleAuthController::class, 'login']);
+    Route::post('/auth/google', [GoogleAuthController::class, 'login']);
     Route::get('/schools/public', function () {
         return response()->json([
-            'status' => 'success', 
-            'data' => \App\Models\School::with('classes:id,school_id,name,major')->select('id', 'name')->get()
+            'status' => 'success',
+            'data' => School::with('classes:id,school_id,name,major')->select('id', 'name')->get(),
         ]);
     });
 
@@ -45,15 +51,33 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
-        Route::post('/device-token', [\App\Http\Controllers\Api\FcmTokenController::class, 'register']);
+        Route::post('/device-token', [FcmTokenController::class, 'register']);
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
         Route::get('/education-news', [EducationNewsController::class, 'index']);
-        Route::get('/test-fcm', function (\Illuminate\Http\Request $request) {
-            $service = app(\App\Services\FirebaseNotificationService::class);
+        Route::get('/test-fcm', function (Request $request) {
+            $service = app(FirebaseNotificationService::class);
             $result = $service->sendPushNotification($request->user(), 'Test Notifikasi', 'Ini adalah notifikasi uji coba dari Firebase!');
+
             return response()->json($result);
+        });
+
+        Route::prefix('prayer-attendances')->group(function () {
+            Route::get('/today', [PrayerAttendanceController::class, 'today'])
+                ->middleware('role:student');
+            Route::post('/', [PrayerAttendanceController::class, 'store'])
+                ->middleware('role:student');
+            Route::get('/pending', [PrayerAttendanceController::class, 'pending'])
+                ->middleware('role:teacher');
+            Route::post('/verify-all', [PrayerAttendanceController::class, 'verifyAll'])
+                ->middleware('role:teacher');
+            Route::get('/history', [PrayerAttendanceController::class, 'history'])
+                ->middleware('role:student,teacher');
+            Route::post('/{prayerAttendance}/verify', [PrayerAttendanceController::class, 'verify'])
+                ->middleware('role:teacher');
+            Route::get('/{prayerAttendance}', [PrayerAttendanceController::class, 'show'])
+                ->middleware('role:student,teacher');
         });
 
         // Alumni Profile
@@ -109,19 +133,19 @@ Route::prefix('v1')->group(function () {
         Route::prefix('attendances')->middleware('feature:has_presensi')->group(function () {
             // List presensi
             Route::get('/', [StudentAttendanceController::class, 'index']);
-            
+
             // Bulk input (Guru/Admin)
             Route::post('/bulk', [StudentAttendanceController::class, 'bulkStore'])
                 ->middleware('role:teacher,admin,super_admin');
-                
+
             // Presensi mandiri (Siswa) via QR Code
             Route::post('/presensi', [StudentAttendanceController::class, 'presensiMandiri'])
                 ->middleware('role:student');
-                
+
             // Ajukan izin/sakit (Siswa)
             Route::post('/izin', [StudentAttendanceController::class, 'storeIzin'])
                 ->middleware('role:student');
-                
+
             // Verifikasi izin (Admin & Guru/Wali Kelas)
             Route::post('/{id}/verify', [StudentAttendanceController::class, 'verifyIzin'])
                 ->middleware('role:admin,super_admin,teacher');
@@ -150,7 +174,7 @@ Route::prefix('v1')->group(function () {
                 ->middleware('role:teacher');
             Route::get('/teacher-attendance/today', [TeacherAttendanceController::class, 'today'])
                 ->middleware('role:teacher');
-            Route::get('/teacher/schedules', [\App\Http\Controllers\Api\TeacherController::class, 'schedules'])
+            Route::get('/teacher/schedules', [TeacherController::class, 'schedules'])
                 ->middleware('role:teacher');
 
             Route::post('/attendance/open', [AttendanceController::class, 'open'])
@@ -194,7 +218,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/', [AlumniEventController::class, 'store']);
             Route::post('/{id}', [AlumniEventController::class, 'update']);
             Route::delete('/{id}', [AlumniEventController::class, 'destroy']);
-            
+
             Route::post('/{id}/approve', [AlumniEventController::class, 'approve'])
                 ->middleware('role:admin,super_admin');
             Route::post('/{id}/reject', [AlumniEventController::class, 'reject'])

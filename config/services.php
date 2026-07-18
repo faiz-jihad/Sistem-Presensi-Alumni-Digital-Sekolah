@@ -51,4 +51,13 @@ return [
         'service_account_json' => env('FIREBASE_SERVICE_ACCOUNT_JSON'),
     ],
 
+    'equran_prayer' => [
+        'base_url' => env('EQURAN_PRAYER_URL', 'https://equran.id/api/v2/shalat'),
+        'province' => env('PRAYER_DEFAULT_PROVINCE', 'Jawa Barat'),
+        'city' => env('PRAYER_DEFAULT_CITY', 'Kota Bandung'),
+        'cache_hours' => (int) env('PRAYER_SCHEDULE_CACHE_HOURS', 24),
+        'on_time_minutes' => (int) env('PRAYER_ON_TIME_MINUTES', 60),
+        'late_minutes' => (int) env('PRAYER_LATE_MINUTES', 30),
+    ],
+
 ];
