@@ -172,6 +172,13 @@ Route::get('/admin/login/google/callback', function (\Illuminate\Http\Request $r
             ]);
         }
 
+        // Verifikasi role user diizinkan mengakses panel admin (bukan alumni/siswa)
+        if (!in_array($user->role, ['super_admin', 'admin', 'teacher'])) {
+            return redirect('/admin/login')->withErrors([
+                'google' => 'Akun Anda tidak memiliki hak akses untuk login.'
+            ]);
+        }
+
         // Hubungkan google_id dan avatar_url jika diperlukan
         $avatarUrl = $payload['picture'] ?? null;
         $updateData = [];
@@ -205,7 +212,7 @@ Route::get('/admin/login/google/callback', function (\Illuminate\Http\Request $r
         // Regenerate session untuk keamanan
         $request->session()->regenerate();
 
-        return redirect('http://127.0.0.1:8000/admin/');
+        return redirect('/admin');
 
     } catch (\Exception $e) {
         return redirect('/admin/login')->withErrors([

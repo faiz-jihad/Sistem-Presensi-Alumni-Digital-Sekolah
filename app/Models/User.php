@@ -126,8 +126,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         if (! in_array($this->role, [
             'super_admin',
             'admin',
-            'teacher',
-            'alumni',
+            'teacher'
         ])) {
             return false;
         }
