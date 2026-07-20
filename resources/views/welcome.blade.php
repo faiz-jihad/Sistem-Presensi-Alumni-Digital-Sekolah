@@ -294,6 +294,17 @@
             .swiper {
                 height: 240px;
             }
+            .accent-bar {
+                padding-left: 1rem;
+            }
+            .btn-primary,
+            .btn-outline {
+                display: inline-flex;
+                width: 100%;
+                justify-content: center;
+                padding: 0.75rem 1.75rem;
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -302,33 +313,70 @@
     <!-- ============================================================
          HEADER BAR
          ============================================================ -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 border-b border-edu-200">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-edu-200 transition-all duration-300" id="main-header">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-edu-700 flex items-center justify-center">
                     <span class="text-white font-lexend font-bold text-sm">S</span>
                 </div>
                 <span class="font-lexend font-bold text-edu-900 text-lg">SIMPAD</span>
-            </div>
-            <a href="/admin/login" class="mono-label text-[11px] sm:text-xs text-edu-700 link-underline">
-                Masuk Dashboard →
             </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#" class="text-sm font-medium text-edu-900 hover:text-edu-700 transition-colors">Beranda</a>
+                <a href="#roles" class="text-sm font-medium text-edu-900 hover:text-edu-700 transition-colors">Peran</a>
+                <a href="#features" class="text-sm font-medium text-edu-900 hover:text-edu-700 transition-colors">Fitur</a>
+            </nav>
+
+            <!-- Actions -->
+            <div class="hidden md:flex items-center gap-4">
+                <a href="/admin/login" class="mono-label text-[11px] sm:text-xs text-edu-700 link-underline">
+                    Masuk Dashboard →
+                </a>
+            </div>
+
+            <!-- Mobile Hamburger Button -->
+            <button class="md:hidden flex items-center justify-center p-2 text-edu-900 hover:text-edu-700 focus:outline-none" id="mobile-menu-btn" aria-label="Toggle Menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="hamburger-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+                <svg class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="close-icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="md:hidden hidden bg-white border-b border-edu-200 transition-all duration-300" id="mobile-menu">
+            <div class="px-4 pt-2 pb-6 space-y-4 flex flex-col">
+                <a href="#" class="text-base font-medium text-edu-900 hover:text-edu-700 transition-colors py-2 border-b border-edu-100 mobile-nav-link">Beranda</a>
+                <a href="#roles" class="text-base font-medium text-edu-900 hover:text-edu-700 transition-colors py-2 border-b border-edu-100 mobile-nav-link">Peran</a>
+                <a href="#features" class="text-base font-medium text-edu-900 hover:text-edu-700 transition-colors py-2 border-b border-edu-100 mobile-nav-link">Fitur</a>
+                <a href="/admin/login" class="btn-primary mt-2 py-3 text-center justify-center">
+                    <span>Masuk Dashboard</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+            </div>
         </div>
     </header>
 
     <!-- ============================================================
          HERO SECTION
          ============================================================ -->
-    <section class="relative pt-28 pb-20 px-4 sm:px-6 lg:px-12 bg-edu-50">
+    <section class="relative pt-24 sm:pt-28 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-12 bg-edu-50">
         <div class="max-w-7xl mx-auto">
 
             <!-- Label -->
-            <p class="mono-label text-xs text-edu-600 mb-6 reveal">
+            <p class="mono-label text-xs text-edu-600 mb-4 sm:mb-6 reveal">
                 Platform Presensi Digital
             </p>
 
             <!-- Main Headline -->
-            <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+            <div class="grid lg:grid-cols-12 gap-6 sm:gap-8 items-end mb-8 sm:mb-12">
                 <div class="lg:col-span-8 reveal">
                     <h1 class="heading-xl text-4xl sm:text-6xl lg:text-7xl xl:text-8xl text-edu-950">
                         Sistem<br>
@@ -339,7 +387,7 @@
                 </div>
                 <div class="lg:col-span-4 reveal">
                     <div class="accent-bar">
-                        <p class="text-edu-700 text-lg leading-relaxed mb-6">
+                        <p class="text-edu-700 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
                             Kelola presensi dan data alumni dengan sistem digital yang cepat, aman, dan terintegrasi.
                         </p>
                         <a href="/admin/login" class="btn-primary">
@@ -374,22 +422,22 @@
     <!-- ============================================================
          ROLES SECTION
          ============================================================ -->
-    <section class="relative py-24 px-4 sm:px-6 lg:px-12 bg-white">
+    <section id="roles" class="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-white">
         <div class="max-w-7xl mx-auto">
 
             <!-- Section Header -->
-            <div class="flex items-center gap-4 mb-16 reveal">
+            <div class="flex items-center gap-4 mb-10 sm:mb-16 reveal">
                 <span class="mono-label text-xs text-edu-500">01</span>
                 <div class="divider-h flex-1"></div>
                 <h2 class="heading-lg text-3xl sm:text-4xl text-edu-950">Pilih Peran Anda</h2>
             </div>
 
             <!-- Staggered Cards -->
-            <div class="space-y-16">
+            <div class="space-y-12 sm:space-y-16">
 
                 <!-- Card 1: Siswa -->
                 <div class="stagger grid md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-5 md:col-start-1 order-2 md:order-1">
+                    <div class="md:col-span-5 md:col-start-1 order-1 md:order-1">
                         <p class="mono-label text-[10px] text-edu-500 mb-3">Role 01</p>
                         <h3 class="heading-md text-2xl text-edu-900 mb-3">Siswa</h3>
                         <p class="text-edu-600 text-sm leading-relaxed mb-4 max-w-sm">
@@ -397,7 +445,7 @@
                         </p>
                         <a href="#" class="link-underline text-sm text-edu-700 font-medium">Lihat Detail →</a>
                     </div>
-                    <div class="md:col-span-7 md:col-start-6 order-1 md:order-2">
+                    <div class="md:col-span-7 md:col-start-6 order-2 md:order-2 w-full min-w-0 overflow-hidden">
                         <div class="swiper murid-slider">
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide"><img src="{{ asset('murid/murid1.png') }}" alt="Siswa 1" loading="lazy"></div>
@@ -410,7 +458,7 @@
 
                 <!-- Card 2: Guru -->
                 <div class="stagger grid md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-7 md:col-start-1 order-1">
+                    <div class="md:col-span-7 md:col-start-1 order-2 md:order-1 w-full min-w-0 overflow-hidden">
                         <div class="swiper guru-slider">
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide"><img src="{{ asset('guru/guru1.png') }}" alt="Guru 1" loading="lazy"></div>
@@ -419,7 +467,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="md:col-span-5 md:col-start-8 order-2">
+                    <div class="md:col-span-5 md:col-start-8 order-1 md:order-2">
                         <p class="mono-label text-[10px] text-edu-500 mb-3">Role 02</p>
                         <h3 class="heading-md text-2xl text-edu-900 mb-3">Guru</h3>
                         <p class="text-edu-600 text-sm leading-relaxed mb-4 max-w-sm">
@@ -431,7 +479,7 @@
 
                 <!-- Card 3: Alumni -->
                 <div class="stagger grid md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-5 md:col-start-1 order-2 md:order-1">
+                    <div class="md:col-span-5 md:col-start-1 order-1 md:order-1">
                         <p class="mono-label text-[10px] text-edu-500 mb-3">Role 03</p>
                         <h3 class="heading-md text-2xl text-edu-900 mb-3">Alumni</h3>
                         <p class="text-edu-600 text-sm leading-relaxed mb-4 max-w-sm">
@@ -439,7 +487,7 @@
                         </p>
                         <a href="#" class="link-underline text-sm text-edu-700 font-medium">Lihat Detail →</a>
                     </div>
-                    <div class="md:col-span-7 md:col-start-6 order-1 md:order-2">
+                    <div class="md:col-span-7 md:col-start-6 order-2 md:order-2 w-full min-w-0 overflow-hidden">
                         <div class="swiper alumni-slider">
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide"><img src="{{ asset('alumni/alumni1.png') }}" alt="Alumni 1" loading="lazy"></div>
@@ -452,7 +500,7 @@
 
                 <!-- Card 4: Orang Tua -->
                 <div class="stagger grid md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-7 md:col-start-1 order-1">
+                    <div class="md:col-span-7 md:col-start-1 order-2 md:order-1 w-full min-w-0 overflow-hidden">
                         <div class="swiper ortu-slider">
                             <div class="swiper-wrapper">
                                 <div class="swiper-slide"><img src="{{ asset('ortu/ortu1.png') }}" alt="Orang Tua 1" loading="lazy"></div>
@@ -461,7 +509,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="md:col-span-5 md:col-start-8 order-2">
+                    <div class="md:col-span-5 md:col-start-8 order-1 md:order-2">
                         <p class="mono-label text-[10px] text-edu-500 mb-3">Role 04</p>
                         <h3 class="heading-md text-2xl text-edu-900 mb-3">Orang Tua</h3>
                         <p class="text-edu-600 text-sm leading-relaxed mb-4 max-w-sm">
@@ -478,11 +526,11 @@
     <!-- ============================================================
          FEATURES SECTION
          ============================================================ -->
-    <section class="relative py-24 px-4 sm:px-6 lg:px-12 bg-edu-50">
+    <section id="features" class="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-edu-50">
         <div class="max-w-7xl mx-auto">
 
             <!-- Section Header -->
-            <div class="flex items-center gap-4 mb-16 reveal">
+            <div class="flex items-center gap-4 mb-10 sm:mb-16 reveal">
                 <span class="mono-label text-xs text-edu-500">02</span>
                 <div class="divider-h flex-1"></div>
                 <h2 class="heading-lg text-3xl sm:text-4xl text-edu-950">Kenapa SIMPAD?</h2>
@@ -525,7 +573,7 @@
     <!-- ============================================================
          CTA SECTION
          ============================================================ -->
-    <section class="relative py-24 px-4 sm:px-6 lg:px-12 bg-edu-700">
+    <section class="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-12 bg-edu-700">
         <div class="max-w-4xl mx-auto text-center">
 
             <p class="mono-label text-xs text-edu-300 mb-4 reveal">✦ Siap Bergabung?</p>
@@ -535,7 +583,7 @@
                 Presensi Anda
             </h2>
 
-            <p class="text-edu-200 text-lg mb-10 max-w-xl mx-auto reveal">
+            <p class="text-edu-200 text-base sm:text-lg mb-8 sm:mb-10 max-w-xl mx-auto reveal">
                 Bergabung dengan ratusan sekolah yang telah menggunakan sistem presensi digital SIMPAD.
             </p>
 
@@ -577,6 +625,38 @@
     <script>
         (function() {
             'use strict';
+
+            // ============================================================
+            // RESPONSIVE MOBILE MENU CONTROLLER
+            // ============================================================
+            const menuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = document.getElementById('hamburger-icon');
+            const closeIcon = document.getElementById('close-icon');
+
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', () => {
+                    const isOpen = !mobileMenu.classList.contains('hidden');
+                    if (isOpen) {
+                        mobileMenu.classList.add('hidden');
+                        hamburgerIcon.classList.remove('hidden');
+                        closeIcon.classList.add('hidden');
+                    } else {
+                        mobileMenu.classList.remove('hidden');
+                        hamburgerIcon.classList.add('hidden');
+                        closeIcon.classList.remove('hidden');
+                    }
+                });
+
+                // Close menu when clicking links
+                document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                        hamburgerIcon.classList.remove('hidden');
+                        closeIcon.classList.add('hidden');
+                    });
+                });
+            }
 
             // ============================================================
             // INTERSECTION OBSERVER — REVEAL & STAGGER

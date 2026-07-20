@@ -77,7 +77,7 @@
         @media(max-width:768px){
             .hero-content{
                 flex-direction:column;
-                align-items:flex-start;
+                align-items:stretch;
             }
         }
         .greeting-section {
@@ -182,6 +182,19 @@
         @media (max-width: 768px) {
             .summary-card {
                 max-width: none;
+                padding: 14px 16px;
+            }
+            .summary-value {
+                font-size: 24px;
+            }
+        }
+        @media (max-width: 480px) {
+            .attendance-summary-cards {
+                flex-direction: column;
+                width: 100%;
+            }
+            .summary-card {
+                padding: 16px;
             }
         }
         .summary-card:hover{
@@ -207,17 +220,17 @@
         }
         .stats-grid{
             display:grid;
-            grid-template-columns:repeat(4,minmax(0,1fr));
+            grid-template-columns:1fr;
             gap:16px;
         }
-        @media(max-width:992px){
+        @media(min-width:480px){
             .stats-grid{
                 grid-template-columns:repeat(2,minmax(0,1fr));
             }
         }
-        @media(max-width:640px){
+        @media(min-width:768px){
             .stats-grid{
-                grid-template-columns:1fr;
+                grid-template-columns:repeat(4,minmax(0,1fr));
             }
         }
         .stat-icon-wrapper{
@@ -255,11 +268,6 @@
             background:#2563eb;
             color:#fff;
         }
-        @media (min-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
         .stat-card{
             background:#fff;
             border:1px solid #e5e7eb;
@@ -272,6 +280,23 @@
 
             transition:all .35s ease;
             box-shadow:0 10px 25px rgba(0,0,0,.08);
+        }
+        @media (max-width: 640px) {
+            .stat-card {
+                padding: 16px;
+                gap: 14px;
+                border-radius: 14px;
+            }
+            .stat-icon-wrapper {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
+            .dark .stat-icon-wrapper {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+            }
         }
         
         .stat-val{
@@ -340,13 +365,21 @@
         }
         .action-grid{
             display:grid;
-            grid-template-columns:repeat(2,minmax(0,1fr));
-            gap:18px;
+            grid-template-columns:1fr;
+            gap:12px;
+        }
+
+        @media(min-width:480px){
+            .action-grid{
+                grid-template-columns:repeat(2,minmax(0,1fr));
+                gap:16px;
+            }
         }
 
         @media(min-width:768px){
             .action-grid{
                 grid-template-columns:repeat(4,minmax(0,1fr));
+                gap:18px;
             }
         }
         .action-card{
@@ -363,6 +396,29 @@
             box-shadow:0 12px 25px rgba(0,0,0,.18);
 
             transition:all .35s ease;
+        }
+        @media (max-width: 640px) {
+            .action-grid {
+                gap: 12px;
+            }
+            .action-card {
+                padding: 16px;
+                min-height: 120px;
+                border-radius: 14px;
+            }
+            .action-icon-wrapper {
+                width: 42px !important;
+                height: 42px !important;
+                border-radius: 10px;
+                margin-bottom: 12px;
+            }
+            .action-title {
+                font-size: 13px;
+            }
+            .action-desc {
+                font-size: 10px;
+                line-height: 1.2;
+            }
         }
 
         .action-card:hover{
@@ -435,6 +491,18 @@
 
         .quick-actions-section svg{
             color: white !important;
+        }
+
+        /* Force Filament Widget wrappers to span full width on mobile viewports */
+        @media (max-width: 768px) {
+            .fi-wi-widget,
+            .fi-wi,
+            .fi-widget,
+            .col-span-full,
+            [class*="col-span-"] {
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+            }
         }
     </style>
 
